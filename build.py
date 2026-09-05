@@ -1,8 +1,9 @@
 """Local release build.
 
-Runs the tests, freezes both entry points with PyInstaller (`structura/__main__.py`
-through structura.spec and `structura/cli/__main__.py` through structura_cli.spec)
-and writes the release: a **single self-contained executable**, a console twin of
+Runs the data-generation tools (to rebuild lookup tables and assets), the tests,
+freezes both entry points with PyInstaller (`structura/__main__.py` through
+structura.spec and `structura/cli/__main__.py` through structura_cli.spec) and
+writes the release: a **single self-contained executable**, a console twin of
 it for scripts, a zip of both for places that will not carry a bare .exe, and a
 `SHA256SUMS.txt` covering all three. Nothing has to be extracted alongside
 either executable. The lookup tables, the vanilla pack and the TechPack assets
@@ -12,8 +13,9 @@ are all inside.
 the fingerprint published beside it and refuses to install a build it cannot
 check, so a release uploaded without that file cannot be taken by the updater.
 
-    python build.py                    full build
-    python build.py --skip-tests       freeze and package without running tests
+    python build.py                    full build with tools and tests
+    python build.py --skip-tools       freeze and package without regenerating data
+    python build.py --skip-tests       run tools and freeze without running tests
     python build.py --skip-freeze      repackage the executable already in dist/
 
 The version comes from pyproject.toml, which is packed into the executable so
@@ -53,6 +55,32 @@ def run(cmd, what):
     result = subprocess.run(cmd, cwd=ROOT)
     if result.returncode != 0:
         sys.exit("\nBuild stopped: %s failed (exit %d)" % (what, result.returncode))
+
+
+def run_tools():
+    """Regenerate all lookup tables and assets from source data."""
+    tools = [
+        ("tools/make_block_forms.py", "mounted forms, fire and shelf"),
+        ("tools/make_growth_forms.py", "crops, eggs, compost, coral"),
+        ("tools/make_cross_forms.py", "fire, dripstone and sulfur spikes"),
+        ("tools/make_furniture_forms.py", "beds, lecterns, conduits"),
+        ("tools/make_head_forms.py", "mob heads"),
+        ("tools/make_container_forms.py", "shulker boxes and banners"),
+        ("tools/make_bed_textures.py", "the sixteen recoloured beds"),
+        ("tools/make_string_texture.py", "the string tile"),
+        ("tools/make_bookshelf.py", "the bookshelf's 64 states"),
+        ("tools/make_statue_poses.py", "the copper golem's four models"),
+        ("tools/fix_problem_blocks.py", "blocks with custom geometry"),
+        ("tools/make_banner_textures.py", "the dyed banners"),
+        ("tools/make_low_geometry.py", "the simplified shapes"),
+        ("tools/make_icon.py", "both icons"),
+        ("tools/make_fonts.py", "the bundled typefaces"),
+        ("tools/make_special_languages.py", "the five generated languages"),
+    ]
+    for tool_path, description in tools:
+        tool = os.path.join(ROOT, tool_path)
+        if os.path.isfile(tool):
+            run([sys.executable, tool], description)
 
 
 def run_tests():
@@ -154,6 +182,8 @@ def write_sums(files):
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--skip-tools", action="store_true",
+                        help="do not regenerate lookup tables and assets")
     parser.add_argument("--skip-tests", action="store_true",
                         help="do not run the unit tests first")
     parser.add_argument("--skip-freeze", action="store_true",
@@ -164,6 +194,9 @@ def main():
     if release_version == version.FALLBACK:
         sys.exit("Build stopped: pyproject.toml declares no version")
     print("Structura %s" % release_version)
+
+    if not args.skip_tools:
+        run_tools()
 
     if not args.skip_tests:
         run_tests()

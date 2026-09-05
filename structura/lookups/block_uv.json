@@ -12524,32 +12524,32 @@
 				"up": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"down": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"north": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"south": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"east": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"west": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				]
 			}
 		}
@@ -12823,32 +12823,32 @@
 			"overwrite": {
 				"up": [
 					"textures/blocks/lectern_base",
-					"textures/blocks/lectern_sides",
+					"textures/blocks/lectern_front",
 					"textures/blocks/lectern_top"
 				],
 				"down": [
 					"textures/blocks/lectern_base",
-					"textures/blocks/lectern_sides",
+					"textures/blocks/lectern_front",
 					"textures/blocks/lectern_base"
 				],
 				"north": [
 					"textures/blocks/lectern_base",
-					"textures/blocks/lectern_sides",
-					"textures/blocks/lectern_front"
+					"textures/blocks/lectern_front",
+					"textures/blocks/lectern_sides"
 				],
 				"south": [
 					"textures/blocks/lectern_base",
-					"textures/blocks/lectern_sides",
+					"textures/blocks/lectern_front",
 					"textures/blocks/lectern_sides"
 				],
 				"east": [
 					"textures/blocks/lectern_base",
-					"textures/blocks/lectern_sides",
+					"textures/blocks/lectern_front",
 					"textures/blocks/lectern_sides"
 				],
 				"west": [
 					"textures/blocks/lectern_base",
-					"textures/blocks/lectern_sides",
+					"textures/blocks/lectern_front",
 					"textures/blocks/lectern_sides"
 				]
 			}
@@ -19842,7 +19842,7 @@
 					"textures/blocks/lectern_base"
 				],
 				"north": [
-					"textures/blocks/lectern_front"
+					"textures/blocks/lectern_sides"
 				],
 				"south": [
 					"textures/blocks/lectern_sides"
@@ -20953,728 +20953,728 @@
 	"standing_banner": {
 		"0": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_black#44,2",
+					"textures/entity/banner/banner_black#52,0",
 					"textures/entity/banner/banner_black"
 				],
 				"down": [
-					"textures/entity/banner/banner_black#44,2",
+					"textures/entity/banner/banner_black#52,0",
 					"textures/entity/banner/banner_black"
 				],
 				"north": [
-					"textures/entity/banner/banner_black#44,2",
+					"textures/entity/banner/banner_black#52,0",
 					"textures/entity/banner/banner_black"
 				],
 				"south": [
-					"textures/entity/banner/banner_black#44,2",
+					"textures/entity/banner/banner_black#52,0",
 					"textures/entity/banner/banner_black"
 				],
 				"east": [
-					"textures/entity/banner/banner_black#44,2",
+					"textures/entity/banner/banner_black#52,0",
 					"textures/entity/banner/banner_black"
 				],
 				"west": [
-					"textures/entity/banner/banner_black#44,2",
+					"textures/entity/banner/banner_black#52,0",
 					"textures/entity/banner/banner_black"
 				]
 			}
 		},
 		"1": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_red#44,2",
+					"textures/entity/banner/banner_red#52,0",
 					"textures/entity/banner/banner_red"
 				],
 				"down": [
-					"textures/entity/banner/banner_red#44,2",
+					"textures/entity/banner/banner_red#52,0",
 					"textures/entity/banner/banner_red"
 				],
 				"north": [
-					"textures/entity/banner/banner_red#44,2",
+					"textures/entity/banner/banner_red#52,0",
 					"textures/entity/banner/banner_red"
 				],
 				"south": [
-					"textures/entity/banner/banner_red#44,2",
+					"textures/entity/banner/banner_red#52,0",
 					"textures/entity/banner/banner_red"
 				],
 				"east": [
-					"textures/entity/banner/banner_red#44,2",
+					"textures/entity/banner/banner_red#52,0",
 					"textures/entity/banner/banner_red"
 				],
 				"west": [
-					"textures/entity/banner/banner_red#44,2",
+					"textures/entity/banner/banner_red#52,0",
 					"textures/entity/banner/banner_red"
 				]
 			}
 		},
 		"2": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_green#44,2",
+					"textures/entity/banner/banner_green#52,0",
 					"textures/entity/banner/banner_green"
 				],
 				"down": [
-					"textures/entity/banner/banner_green#44,2",
+					"textures/entity/banner/banner_green#52,0",
 					"textures/entity/banner/banner_green"
 				],
 				"north": [
-					"textures/entity/banner/banner_green#44,2",
+					"textures/entity/banner/banner_green#52,0",
 					"textures/entity/banner/banner_green"
 				],
 				"south": [
-					"textures/entity/banner/banner_green#44,2",
+					"textures/entity/banner/banner_green#52,0",
 					"textures/entity/banner/banner_green"
 				],
 				"east": [
-					"textures/entity/banner/banner_green#44,2",
+					"textures/entity/banner/banner_green#52,0",
 					"textures/entity/banner/banner_green"
 				],
 				"west": [
-					"textures/entity/banner/banner_green#44,2",
+					"textures/entity/banner/banner_green#52,0",
 					"textures/entity/banner/banner_green"
 				]
 			}
 		},
 		"3": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_brown#44,2",
+					"textures/entity/banner/banner_brown#52,0",
 					"textures/entity/banner/banner_brown"
 				],
 				"down": [
-					"textures/entity/banner/banner_brown#44,2",
+					"textures/entity/banner/banner_brown#52,0",
 					"textures/entity/banner/banner_brown"
 				],
 				"north": [
-					"textures/entity/banner/banner_brown#44,2",
+					"textures/entity/banner/banner_brown#52,0",
 					"textures/entity/banner/banner_brown"
 				],
 				"south": [
-					"textures/entity/banner/banner_brown#44,2",
+					"textures/entity/banner/banner_brown#52,0",
 					"textures/entity/banner/banner_brown"
 				],
 				"east": [
-					"textures/entity/banner/banner_brown#44,2",
+					"textures/entity/banner/banner_brown#52,0",
 					"textures/entity/banner/banner_brown"
 				],
 				"west": [
-					"textures/entity/banner/banner_brown#44,2",
+					"textures/entity/banner/banner_brown#52,0",
 					"textures/entity/banner/banner_brown"
 				]
 			}
 		},
 		"4": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_blue#44,2",
+					"textures/entity/banner/banner_blue#52,0",
 					"textures/entity/banner/banner_blue"
 				],
 				"down": [
-					"textures/entity/banner/banner_blue#44,2",
+					"textures/entity/banner/banner_blue#52,0",
 					"textures/entity/banner/banner_blue"
 				],
 				"north": [
-					"textures/entity/banner/banner_blue#44,2",
+					"textures/entity/banner/banner_blue#52,0",
 					"textures/entity/banner/banner_blue"
 				],
 				"south": [
-					"textures/entity/banner/banner_blue#44,2",
+					"textures/entity/banner/banner_blue#52,0",
 					"textures/entity/banner/banner_blue"
 				],
 				"east": [
-					"textures/entity/banner/banner_blue#44,2",
+					"textures/entity/banner/banner_blue#52,0",
 					"textures/entity/banner/banner_blue"
 				],
 				"west": [
-					"textures/entity/banner/banner_blue#44,2",
+					"textures/entity/banner/banner_blue#52,0",
 					"textures/entity/banner/banner_blue"
 				]
 			}
 		},
 		"5": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_purple#44,2",
+					"textures/entity/banner/banner_purple#52,0",
 					"textures/entity/banner/banner_purple"
 				],
 				"down": [
-					"textures/entity/banner/banner_purple#44,2",
+					"textures/entity/banner/banner_purple#52,0",
 					"textures/entity/banner/banner_purple"
 				],
 				"north": [
-					"textures/entity/banner/banner_purple#44,2",
+					"textures/entity/banner/banner_purple#52,0",
 					"textures/entity/banner/banner_purple"
 				],
 				"south": [
-					"textures/entity/banner/banner_purple#44,2",
+					"textures/entity/banner/banner_purple#52,0",
 					"textures/entity/banner/banner_purple"
 				],
 				"east": [
-					"textures/entity/banner/banner_purple#44,2",
+					"textures/entity/banner/banner_purple#52,0",
 					"textures/entity/banner/banner_purple"
 				],
 				"west": [
-					"textures/entity/banner/banner_purple#44,2",
+					"textures/entity/banner/banner_purple#52,0",
 					"textures/entity/banner/banner_purple"
 				]
 			}
 		},
 		"6": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_cyan#44,2",
+					"textures/entity/banner/banner_cyan#52,0",
 					"textures/entity/banner/banner_cyan"
 				],
 				"down": [
-					"textures/entity/banner/banner_cyan#44,2",
+					"textures/entity/banner/banner_cyan#52,0",
 					"textures/entity/banner/banner_cyan"
 				],
 				"north": [
-					"textures/entity/banner/banner_cyan#44,2",
+					"textures/entity/banner/banner_cyan#52,0",
 					"textures/entity/banner/banner_cyan"
 				],
 				"south": [
-					"textures/entity/banner/banner_cyan#44,2",
+					"textures/entity/banner/banner_cyan#52,0",
 					"textures/entity/banner/banner_cyan"
 				],
 				"east": [
-					"textures/entity/banner/banner_cyan#44,2",
+					"textures/entity/banner/banner_cyan#52,0",
 					"textures/entity/banner/banner_cyan"
 				],
 				"west": [
-					"textures/entity/banner/banner_cyan#44,2",
+					"textures/entity/banner/banner_cyan#52,0",
 					"textures/entity/banner/banner_cyan"
 				]
 			}
 		},
 		"7": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_silver#44,2",
+					"textures/entity/banner/banner_silver#52,0",
 					"textures/entity/banner/banner_silver"
 				],
 				"down": [
-					"textures/entity/banner/banner_silver#44,2",
+					"textures/entity/banner/banner_silver#52,0",
 					"textures/entity/banner/banner_silver"
 				],
 				"north": [
-					"textures/entity/banner/banner_silver#44,2",
+					"textures/entity/banner/banner_silver#52,0",
 					"textures/entity/banner/banner_silver"
 				],
 				"south": [
-					"textures/entity/banner/banner_silver#44,2",
+					"textures/entity/banner/banner_silver#52,0",
 					"textures/entity/banner/banner_silver"
 				],
 				"east": [
-					"textures/entity/banner/banner_silver#44,2",
+					"textures/entity/banner/banner_silver#52,0",
 					"textures/entity/banner/banner_silver"
 				],
 				"west": [
-					"textures/entity/banner/banner_silver#44,2",
+					"textures/entity/banner/banner_silver#52,0",
 					"textures/entity/banner/banner_silver"
 				]
 			}
 		},
 		"8": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_gray#44,2",
+					"textures/entity/banner/banner_gray#52,0",
 					"textures/entity/banner/banner_gray"
 				],
 				"down": [
-					"textures/entity/banner/banner_gray#44,2",
+					"textures/entity/banner/banner_gray#52,0",
 					"textures/entity/banner/banner_gray"
 				],
 				"north": [
-					"textures/entity/banner/banner_gray#44,2",
+					"textures/entity/banner/banner_gray#52,0",
 					"textures/entity/banner/banner_gray"
 				],
 				"south": [
-					"textures/entity/banner/banner_gray#44,2",
+					"textures/entity/banner/banner_gray#52,0",
 					"textures/entity/banner/banner_gray"
 				],
 				"east": [
-					"textures/entity/banner/banner_gray#44,2",
+					"textures/entity/banner/banner_gray#52,0",
 					"textures/entity/banner/banner_gray"
 				],
 				"west": [
-					"textures/entity/banner/banner_gray#44,2",
+					"textures/entity/banner/banner_gray#52,0",
 					"textures/entity/banner/banner_gray"
 				]
 			}
 		},
 		"9": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_pink#44,2",
+					"textures/entity/banner/banner_pink#52,0",
 					"textures/entity/banner/banner_pink"
 				],
 				"down": [
-					"textures/entity/banner/banner_pink#44,2",
+					"textures/entity/banner/banner_pink#52,0",
 					"textures/entity/banner/banner_pink"
 				],
 				"north": [
-					"textures/entity/banner/banner_pink#44,2",
+					"textures/entity/banner/banner_pink#52,0",
 					"textures/entity/banner/banner_pink"
 				],
 				"south": [
-					"textures/entity/banner/banner_pink#44,2",
+					"textures/entity/banner/banner_pink#52,0",
 					"textures/entity/banner/banner_pink"
 				],
 				"east": [
-					"textures/entity/banner/banner_pink#44,2",
+					"textures/entity/banner/banner_pink#52,0",
 					"textures/entity/banner/banner_pink"
 				],
 				"west": [
-					"textures/entity/banner/banner_pink#44,2",
+					"textures/entity/banner/banner_pink#52,0",
 					"textures/entity/banner/banner_pink"
 				]
 			}
 		},
 		"10": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_lime#44,2",
+					"textures/entity/banner/banner_lime#52,0",
 					"textures/entity/banner/banner_lime"
 				],
 				"down": [
-					"textures/entity/banner/banner_lime#44,2",
+					"textures/entity/banner/banner_lime#52,0",
 					"textures/entity/banner/banner_lime"
 				],
 				"north": [
-					"textures/entity/banner/banner_lime#44,2",
+					"textures/entity/banner/banner_lime#52,0",
 					"textures/entity/banner/banner_lime"
 				],
 				"south": [
-					"textures/entity/banner/banner_lime#44,2",
+					"textures/entity/banner/banner_lime#52,0",
 					"textures/entity/banner/banner_lime"
 				],
 				"east": [
-					"textures/entity/banner/banner_lime#44,2",
+					"textures/entity/banner/banner_lime#52,0",
 					"textures/entity/banner/banner_lime"
 				],
 				"west": [
-					"textures/entity/banner/banner_lime#44,2",
+					"textures/entity/banner/banner_lime#52,0",
 					"textures/entity/banner/banner_lime"
 				]
 			}
 		},
 		"11": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_yellow#44,2",
+					"textures/entity/banner/banner_yellow#52,0",
 					"textures/entity/banner/banner_yellow"
 				],
 				"down": [
-					"textures/entity/banner/banner_yellow#44,2",
+					"textures/entity/banner/banner_yellow#52,0",
 					"textures/entity/banner/banner_yellow"
 				],
 				"north": [
-					"textures/entity/banner/banner_yellow#44,2",
+					"textures/entity/banner/banner_yellow#52,0",
 					"textures/entity/banner/banner_yellow"
 				],
 				"south": [
-					"textures/entity/banner/banner_yellow#44,2",
+					"textures/entity/banner/banner_yellow#52,0",
 					"textures/entity/banner/banner_yellow"
 				],
 				"east": [
-					"textures/entity/banner/banner_yellow#44,2",
+					"textures/entity/banner/banner_yellow#52,0",
 					"textures/entity/banner/banner_yellow"
 				],
 				"west": [
-					"textures/entity/banner/banner_yellow#44,2",
+					"textures/entity/banner/banner_yellow#52,0",
 					"textures/entity/banner/banner_yellow"
 				]
 			}
 		},
 		"12": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_light_blue#44,2",
+					"textures/entity/banner/banner_light_blue#52,0",
 					"textures/entity/banner/banner_light_blue"
 				],
 				"down": [
-					"textures/entity/banner/banner_light_blue#44,2",
+					"textures/entity/banner/banner_light_blue#52,0",
 					"textures/entity/banner/banner_light_blue"
 				],
 				"north": [
-					"textures/entity/banner/banner_light_blue#44,2",
+					"textures/entity/banner/banner_light_blue#52,0",
 					"textures/entity/banner/banner_light_blue"
 				],
 				"south": [
-					"textures/entity/banner/banner_light_blue#44,2",
+					"textures/entity/banner/banner_light_blue#52,0",
 					"textures/entity/banner/banner_light_blue"
 				],
 				"east": [
-					"textures/entity/banner/banner_light_blue#44,2",
+					"textures/entity/banner/banner_light_blue#52,0",
 					"textures/entity/banner/banner_light_blue"
 				],
 				"west": [
-					"textures/entity/banner/banner_light_blue#44,2",
+					"textures/entity/banner/banner_light_blue#52,0",
 					"textures/entity/banner/banner_light_blue"
 				]
 			}
 		},
 		"13": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_magenta#44,2",
+					"textures/entity/banner/banner_magenta#52,0",
 					"textures/entity/banner/banner_magenta"
 				],
 				"down": [
-					"textures/entity/banner/banner_magenta#44,2",
+					"textures/entity/banner/banner_magenta#52,0",
 					"textures/entity/banner/banner_magenta"
 				],
 				"north": [
-					"textures/entity/banner/banner_magenta#44,2",
+					"textures/entity/banner/banner_magenta#52,0",
 					"textures/entity/banner/banner_magenta"
 				],
 				"south": [
-					"textures/entity/banner/banner_magenta#44,2",
+					"textures/entity/banner/banner_magenta#52,0",
 					"textures/entity/banner/banner_magenta"
 				],
 				"east": [
-					"textures/entity/banner/banner_magenta#44,2",
+					"textures/entity/banner/banner_magenta#52,0",
 					"textures/entity/banner/banner_magenta"
 				],
 				"west": [
-					"textures/entity/banner/banner_magenta#44,2",
+					"textures/entity/banner/banner_magenta#52,0",
 					"textures/entity/banner/banner_magenta"
 				]
 			}
 		},
 		"14": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_orange#44,2",
+					"textures/entity/banner/banner_orange#52,0",
 					"textures/entity/banner/banner_orange"
 				],
 				"down": [
-					"textures/entity/banner/banner_orange#44,2",
+					"textures/entity/banner/banner_orange#52,0",
 					"textures/entity/banner/banner_orange"
 				],
 				"north": [
-					"textures/entity/banner/banner_orange#44,2",
+					"textures/entity/banner/banner_orange#52,0",
 					"textures/entity/banner/banner_orange"
 				],
 				"south": [
-					"textures/entity/banner/banner_orange#44,2",
+					"textures/entity/banner/banner_orange#52,0",
 					"textures/entity/banner/banner_orange"
 				],
 				"east": [
-					"textures/entity/banner/banner_orange#44,2",
+					"textures/entity/banner/banner_orange#52,0",
 					"textures/entity/banner/banner_orange"
 				],
 				"west": [
-					"textures/entity/banner/banner_orange#44,2",
+					"textures/entity/banner/banner_orange#52,0",
 					"textures/entity/banner/banner_orange"
 				]
 			}
 		},
 		"15": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"down": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"north": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"south": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"east": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"west": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				]
 			}
 		},
 		"illager": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_illager#44,2",
+					"textures/entity/banner/banner_illager#52,0",
 					"textures/entity/banner/banner_illager#0,64",
 					"textures/entity/banner/banner_illager#16,64",
 					"textures/entity/banner/banner_illager#0,80",
@@ -21685,7 +21685,7 @@
 					"textures/entity/banner/banner_illager#16,112"
 				],
 				"down": [
-					"textures/entity/banner/banner_illager#44,2",
+					"textures/entity/banner/banner_illager#52,0",
 					"textures/entity/banner/banner_illager#0,64",
 					"textures/entity/banner/banner_illager#16,64",
 					"textures/entity/banner/banner_illager#0,80",
@@ -21696,7 +21696,7 @@
 					"textures/entity/banner/banner_illager#16,112"
 				],
 				"north": [
-					"textures/entity/banner/banner_illager#44,2",
+					"textures/entity/banner/banner_illager#52,0",
 					"textures/entity/banner/banner_illager#0,64",
 					"textures/entity/banner/banner_illager#16,64",
 					"textures/entity/banner/banner_illager#0,80",
@@ -21707,7 +21707,7 @@
 					"textures/entity/banner/banner_illager#16,112"
 				],
 				"south": [
-					"textures/entity/banner/banner_illager#44,2",
+					"textures/entity/banner/banner_illager#52,0",
 					"textures/entity/banner/banner_illager#0,64",
 					"textures/entity/banner/banner_illager#16,64",
 					"textures/entity/banner/banner_illager#0,80",
@@ -21718,7 +21718,7 @@
 					"textures/entity/banner/banner_illager#16,112"
 				],
 				"east": [
-					"textures/entity/banner/banner_illager#44,2",
+					"textures/entity/banner/banner_illager#52,0",
 					"textures/entity/banner/banner_illager#0,64",
 					"textures/entity/banner/banner_illager#16,64",
 					"textures/entity/banner/banner_illager#0,80",
@@ -21729,7 +21729,7 @@
 					"textures/entity/banner/banner_illager#16,112"
 				],
 				"west": [
-					"textures/entity/banner/banner_illager#44,2",
+					"textures/entity/banner/banner_illager#52,0",
 					"textures/entity/banner/banner_illager#0,64",
 					"textures/entity/banner/banner_illager#16,64",
 					"textures/entity/banner/banner_illager#0,80",
@@ -21743,24 +21743,24 @@
 		},
 		"designed": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_designed#44,2",
+					"textures/entity/banner/banner_designed#52,0",
 					"textures/entity/banner/banner_designed#0,64",
 					"textures/entity/banner/banner_designed#16,64",
 					"textures/entity/banner/banner_designed#0,80",
@@ -21771,7 +21771,7 @@
 					"textures/entity/banner/banner_designed#16,112"
 				],
 				"down": [
-					"textures/entity/banner/banner_designed#44,2",
+					"textures/entity/banner/banner_designed#52,0",
 					"textures/entity/banner/banner_designed#0,64",
 					"textures/entity/banner/banner_designed#16,64",
 					"textures/entity/banner/banner_designed#0,80",
@@ -21782,7 +21782,7 @@
 					"textures/entity/banner/banner_designed#16,112"
 				],
 				"north": [
-					"textures/entity/banner/banner_designed#44,2",
+					"textures/entity/banner/banner_designed#52,0",
 					"textures/entity/banner/banner_designed#0,64",
 					"textures/entity/banner/banner_designed#16,64",
 					"textures/entity/banner/banner_designed#0,80",
@@ -21793,7 +21793,7 @@
 					"textures/entity/banner/banner_designed#16,112"
 				],
 				"south": [
-					"textures/entity/banner/banner_designed#44,2",
+					"textures/entity/banner/banner_designed#52,0",
 					"textures/entity/banner/banner_designed#0,64",
 					"textures/entity/banner/banner_designed#16,64",
 					"textures/entity/banner/banner_designed#0,80",
@@ -21804,7 +21804,7 @@
 					"textures/entity/banner/banner_designed#16,112"
 				],
 				"east": [
-					"textures/entity/banner/banner_designed#44,2",
+					"textures/entity/banner/banner_designed#52,0",
 					"textures/entity/banner/banner_designed#0,64",
 					"textures/entity/banner/banner_designed#16,64",
 					"textures/entity/banner/banner_designed#0,80",
@@ -21815,7 +21815,7 @@
 					"textures/entity/banner/banner_designed#16,112"
 				],
 				"west": [
-					"textures/entity/banner/banner_designed#44,2",
+					"textures/entity/banner/banner_designed#52,0",
 					"textures/entity/banner/banner_designed#0,64",
 					"textures/entity/banner/banner_designed#16,64",
 					"textures/entity/banner/banner_designed#0,80",
@@ -21829,44 +21829,44 @@
 		},
 		"default": {
 			"uv_sizes": {
-				"up": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"down": [[ 0.125, 0.125 ], [ 1.0, 1.0 ]],
-				"north": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"east": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 0.125, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 0.1875, 0.0625 ], [ 1.0, 1.0 ]],
+				"down": [[ 0.3125, 0.0625 ], [ 1.0, 1.0 ]],
+				"north": [[ 0.0625, 3.9375 ], [ 1.0, 1.0 ]],
+				"south": [[ 0.1875, 3.9375 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.3125, 3.9375 ], [ 1.0, 1.0 ]],
+				"west": [[ 0.4375, 3.9375 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.25, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.1875 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.1875 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.25, 0.1875 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.375, 0.1875 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"down": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"north": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"south": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"east": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				],
 				"west": [
-					"textures/entity/banner/banner_white#44,2",
+					"textures/entity/banner/banner_white#52,0",
 					"textures/entity/banner/banner_white"
 				]
 			}
@@ -21875,20 +21875,20 @@
 	"wall_banner": {
 		"0": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -21919,20 +21919,20 @@
 		},
 		"1": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -21963,20 +21963,20 @@
 		},
 		"2": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22007,20 +22007,20 @@
 		},
 		"3": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22051,20 +22051,20 @@
 		},
 		"4": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22095,20 +22095,20 @@
 		},
 		"5": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22139,20 +22139,20 @@
 		},
 		"6": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22183,20 +22183,20 @@
 		},
 		"7": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22227,20 +22227,20 @@
 		},
 		"8": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22271,20 +22271,20 @@
 		},
 		"9": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22315,20 +22315,20 @@
 		},
 		"10": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22359,20 +22359,20 @@
 		},
 		"11": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22403,20 +22403,20 @@
 		},
 		"12": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22447,20 +22447,20 @@
 		},
 		"13": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22491,20 +22491,20 @@
 		},
 		"14": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22535,20 +22535,20 @@
 		},
 		"15": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22579,20 +22579,20 @@
 		},
 		"illager": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22665,20 +22665,20 @@
 		},
 		"designed": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ], [ -1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [
@@ -22751,20 +22751,20 @@
 		},
 		"default": {
 			"uv_sizes": {
-				"up": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"down": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"north": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"south": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"east": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]],
-				"west": [[ 1.0, 0.25 ], [ 1.0, 1.0 ]]
+				"up": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"down": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"north": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"south": [[ 2.5625, 0.1875 ], [ 1.0, 1.0 ]],
+				"east": [[ 0.0625, 0.1875 ], [ 1.0, 1.0 ]],
+				"west": [[ 2.6875, 0.1875 ], [ 1.0, 1.0 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+				"up": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.125, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.125, 0.125 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.125 ], [ 0.0, 0.0 ]],
+				"west": [[ 2.625, 0.125 ], [ 0.0, 0.0 ]]
 			},
 			"overwrite": {
 				"up": [

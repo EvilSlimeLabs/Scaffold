@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "structura"
-version = "3.0.0"
+version = "3.0.1"
 description = "Turn a .mcstructure file into a Minecraft Bedrock resource pack of semi-transparent ghost blocks."
 readme = "README.md"
 license = "MIT"
