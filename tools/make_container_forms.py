@@ -196,7 +196,7 @@ def standing(sheet, design=False):
     ## the cloth is drawn a shade thinner and finishes just inside the post
     ## instead of on its plane.
     return ([Cube((2, POLE_TALL, 2), (7, 0, 7), sheet + POLE_ART, window=POLE)]
-            + cloth(sheet, (1, 3, 8.6), design))
+            + cloth(sheet, (1, 3, 9), design))
 
 
 def wall(sheet, design=False):
@@ -207,7 +207,8 @@ def wall(sheet, design=False):
     """
     return ([Cube((16, 2, 2), (0, 14, 0), sheet + BAR_ART, window=BAR)]
             ## and out of the wall far enough to clear the bar
-            + cloth(sheet, (1, 15 - CLOTH_TALL, 4), design))
+            # + cloth(sheet, (1, 15 - CLOTH_TALL, 4), design))
+            + cloth(sheet, (1, 14, 2), design))
 
 
 def dyed(shape):

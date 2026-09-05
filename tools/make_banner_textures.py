@@ -100,7 +100,7 @@ SHEET = 64                  # vanilla's own sheet, which stays where it is
 ## `make_container_forms.DESIGN_ACROSS`, `DESIGN_DOWN` and `DESIGN_AT`.
 DESIGN = (32, 64)
 DESIGN_AT = (0, SHEET)
-MARK_GROUND = "black"       # the cloth the logo is on
+SHEET_COLOR = "gray"       # the cloth the logo is on
 
 
 def written(sheet, design):
@@ -119,7 +119,7 @@ def logo_on(cloth):
     across and left where a crest sits rather than stretched to the cloth: the
     rest is cloth, with the folds vanilla drew still on it.
     """
-    ground = cloth.resize(DESIGN, Image.NEAREST)
+    ground = cloth.resize(DESIGN, Image.LANCZOS)
     logo = Image.open(LOGO).convert("RGBA")
     wide = DESIGN[0]
     tall = max(1, int(round(logo.size[1] * wide / float(logo.size[0]))))
@@ -140,9 +140,10 @@ def main():
         made.save(path)
         print("   %2d %-12s %s" % (index, colour, os.path.basename(path)))
 
-    black = tint(sheet, MARK_GROUND)
+    designed = tint(sheet, SHEET_COLOR)
     path = os.path.join(BANNERS, "banner_designed.png")
-    made = written(black, logo_on(black.crop(FRONT)))
+    # The image needs to be mirrored for the face we are putting it on.
+    made = written(designed, logo_on(designed.crop(FRONT)).transpose(Image.FLIP_LEFT_RIGHT))
     made.save(path)
     print("      %-12s %s, %dx%d" % ("designed", os.path.basename(path),
                                      *made.size))
