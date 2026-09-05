@@ -94,14 +94,14 @@ SPORE_BLOSSOM = {"default": [
 
 # --- lectern ----------------------------------------------------------------
 #
-# A post on a base with a desk sloped over the top of it. The desk is one box
-# leaning back, which is as near as a box model gets to vanilla's wedge.
+# A post on a base with a desk sloped over the top of it.
+# The desk is one box leaning back.
 LECTERN = {"default": [
     Cube((16, 2, 16), (0, 0, 0), BLOCKS % "lectern_base"),
-    Cube((8, 10, 8), (4, 2, 4), BLOCKS % "lectern_sides"),
+    Cube((8, 10, 8), (4, 2, 4), BLOCKS % "lectern_front"),
     Cube((16, 4, 14), (0, 12, 1), texture={
         "up": BLOCKS % "lectern_top", "down": BLOCKS % "lectern_base",
-        "north": BLOCKS % "lectern_front", "south": BLOCKS % "lectern_sides",
+        "north": BLOCKS % "lectern_sides", "south": BLOCKS % "lectern_sides",
         "east": BLOCKS % "lectern_sides", "west": BLOCKS % "lectern_sides"},
          rotation=(-22, 0, 0))]}
 

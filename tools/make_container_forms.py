@@ -99,17 +99,18 @@ def shulker(colour):
 # to, the way the game draws it and the way a dragon head and a copper golem
 # statue do here.
 BANNER = "textures/entity/banner/banner_%s"
-POLE_ART = "#44,2"          # the post, up the right of the sheet
+POLE_ART = "#52,0"          # the post, up the right of the sheet
 BAR_ART = "#0,42"           # the bar it hangs from, under the cloth
 CLOTH = {face: (0, 0, 16, 16) for face in
          ("up", "down", "north", "south", "east", "west")}
 ## the post is two across and the sheet draws it forty two down, which is more
 ## than a tile holds; it is one colour, so a sixteen tall slice of it serves
-POLE = {"north": (0, 0, 2, 16), "south": (0, 0, 2, 16),
-        "east": (0, 0, 2, 16), "west": (0, 0, 2, 16),
-        "up": (0, 0, 2, 2), "down": (0, 0, 2, 2)}
-BAR = {face: (0, 0, 16, 4) for face in
-       ("up", "down", "north", "south", "east", "west")}
+POLE = {"north": (0, 3, 1, 63), "south": (2, 3, 3, 63),
+        "east": (4, 3, 5, 63), "west": (6, 3, 7, 63),
+        "up": (2, 0, 3, 1), "down": (4, 0, 5, 1)}
+BAR = {"north": (2, 2, 41, 3), "south": (2, 2, 41, 3),
+       "east": (0, 2, 1, 3), "west": (42, 2, 43, 3),
+       "up": (2, 0, 41, 3), "down": (2, 0, 41, 3)}
 
 POLE_TALL = 30              # nearly two blocks, which is where vanilla stops
 CLOTH_TALL = 27
