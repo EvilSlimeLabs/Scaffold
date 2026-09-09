@@ -1,14 +1,14 @@
 import json
 import unittest
 
-from structura import paths
-from structura import version
-from structura.pack import manifest
+from scaffold import paths
+from scaffold import version
+from scaffold.pack import manifest
 class DisplayNameTests(unittest.TestCase):
     """Every pack this program builds groups together in the player's list."""
 
     def test_the_name_carries_the_prefix(self):
-        self.assertEqual(manifest.display_name("Sorter"), "Structura: Sorter")
+        self.assertEqual(manifest.display_name("Sorter"), "Scaffold: Sorter")
 
     def test_prefixing_twice_does_not_stack(self):
         once = manifest.display_name("Sorter")
@@ -16,12 +16,12 @@ class DisplayNameTests(unittest.TestCase):
 
     def test_the_derived_uuid_ignores_the_prefix(self):
         # the prefix is presentation, so it stays out of the UUID: folding it
-        # in makes a pack built by a Structura without the prefix look like a
+        # in makes a pack built by a Scaffold without the prefix look like a
         # different pack to the game.
         self.assertEqual(manifest.derived_pack_uuids("Sorter"),
                          manifest.derived_pack_uuids("Sorter"))
         self.assertNotEqual(manifest.derived_pack_uuids("Sorter"),
-                            manifest.derived_pack_uuids("Structura: Sorter"))
+                            manifest.derived_pack_uuids("Scaffold: Sorter"))
 
 
 class PackIdentityTests(unittest.TestCase):
@@ -30,7 +30,7 @@ class PackIdentityTests(unittest.TestCase):
     Deriving the UUID from the content means an unchanged rebuild really is the
     same pack and any change is a different one. The name alone cannot carry
     that: two builds of a changed pack would share a UUID, and share a version
-    as well, because the version is the Structura version.
+    as well, because the version is the Scaffold version.
     """
 
     SAMPLE = "name=Sorter|opacity=0.35|model=a1b2"
@@ -63,7 +63,7 @@ class DescriptionTests(unittest.TestCase):
     def test_the_credits_are_always_last(self):
         text = manifest.build_description()
         self.assertEqual(text.count("\n"), 0)
-        self.assertTrue(text.startswith("Structura %s" % version.read()))
+        self.assertTrue(text.startswith("Scaffold %s" % version.read()))
 
     def test_every_part_appears_in_order(self):
         text = manifest.build_description(("north", "south"), "floor 3", "0.2.22")
@@ -71,7 +71,7 @@ class DescriptionTests(unittest.TestCase):
         self.assertEqual(lines[0], "floor 3")
         self.assertEqual(lines[1], "Nametags: north, south")
         self.assertEqual(lines[2], "TechPack 0.2.22 included")
-        self.assertTrue(lines[3].startswith("Structura "))
+        self.assertTrue(lines[3].startswith("Scaffold "))
 
     def test_the_techpack_line_is_absent_when_it_is_not_bundled(self):
         text = manifest.build_description(("north",), "note", None)
@@ -93,12 +93,12 @@ class ManifestFileTests(unittest.TestCase):
     def test_the_written_manifest_is_utf8_and_keeps_the_colour_codes(self):
         import tempfile
         import os
-        work = tempfile.mkdtemp(prefix="structura-test-")
+        work = tempfile.mkdtemp(prefix="scaffold-test-")
         try:
             manifest.export(work, "Sorter", nameTags=("a",), user_text="note")
             with open(os.path.join(work, "manifest.json"), encoding="utf-8") as f:
                 data = json.load(f)
-            self.assertEqual(data["header"]["name"], "Structura: Sorter")
+            self.assertEqual(data["header"]["name"], "Scaffold: Sorter")
             self.assertIn("§a", data["header"]["description"])
             self.assertEqual(data["format_version"], 2)
             self.assertEqual(len(data["modules"]), 1)
@@ -114,8 +114,8 @@ class FingerprintTests(unittest.TestCase):
     """What the pack's identity is actually built from."""
 
     def make(self, **kw):
-        from structura import core
-        pack = core.structura.__new__(core.structura)
+        from scaffold import core
+        pack = core.scaffold.__new__(core.scaffold)
         pack.display_name = kw.get("name", "Sorter")
         pack.description = kw.get("description", "")
         pack.opacity = kw.get("opacity", 0.35)
@@ -165,8 +165,8 @@ class VersionTests(unittest.TestCase):
         self.assertEqual(version.read(), self.project()["project"]["version"])
 
     def test_the_package_exposes_it_the_usual_way(self):
-        import structura
-        self.assertEqual(structura.__version__, version.read())
+        import scaffold
+        self.assertEqual(scaffold.__version__, version.read())
 
     def test_it_is_written_down_exactly_once(self):
         # a second copy is one that can disagree; version.read() is the only
@@ -176,7 +176,7 @@ class VersionTests(unittest.TestCase):
         here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         wanted = re.compile(r"^%s$" % re.escape(version.read()))
         found = []
-        for base, dirs, names in os.walk(os.path.join(here, "structura")):
+        for base, dirs, names in os.walk(os.path.join(here, "scaffold")):
             dirs[:] = [d for d in dirs if d != "__pycache__"]
             for name in names:
                 if not name.endswith(".py"):

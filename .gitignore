@@ -124,7 +124,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 structura.zip
+scaffold.zip
 structura.exe
+scaffolda.exe
 tmp/test Nametags.txt
 *.mcpack
 * Nametags.txt
@@ -137,9 +139,20 @@ structura16-26082023.zip
 *.zip
 armor_stand_geo_class.test.2025-10-15.py
 Structura.lnk
+Scaffold.lnk
 lookups/block_shapes.⏩.tabbed.json
 Models  &  Structure Exports.lnk
 Open in VS Code.lnk
 .vscode/
 # written by the GUI whenever it starts; the program recreates it
 settings.json
+
+# The tufup update repository, staged here and pushed to the gh-pages branch.
+# The signed metadata is public; the keys that signed it are in ~/.scaffold-keys
+# and are not in this repository at all.
+pages/
+
+# Where tools/checks/render.py leaves its pictures. They are for looking at
+# while a block is being worked on and are drawn again whenever they are wanted,
+# so none of them belongs in the history.
+renders/

@@ -3,23 +3,16 @@ import os
 import sys
 import unittest
 
-from structura import lang_parse
+from scaffold import lang_parse
 
 
 def tool(name):
-    """One of the scripts in tools/, imported by path.
+    """One of the generators in tools/, by its dotted name.
 
-    They are not part of the package, so there is nothing to import normally.
+    They are a package of their own rather than part of Scaffold, so they are
+    imported the ordinary way and nothing here has to know where they sit.
     """
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    folder = os.path.join(root, "tools")
-    if folder not in sys.path:
-        sys.path.insert(0, folder)
-    spec = importlib.util.spec_from_file_location(
-        name, os.path.join(folder, "%s.py" % name))
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return importlib.import_module(name)
 
 
 class LanguageFileTests(unittest.TestCase):
@@ -75,7 +68,7 @@ class SpecialLanguageTests(unittest.TestCase):
     def setUpClass(cls):
         cls.table = lang_parse.parse()
         cls.english = cls.table["en_US"]
-        cls.lang_fun = tool("lang_fun")
+        cls.lang_fun = tool("tools.app.transforms")
 
     ## Two proper names and the three axis letters, which stay as they are, and
     ## the key that describes the language rather than labels anything.
@@ -96,7 +89,7 @@ class SpecialLanguageTests(unittest.TestCase):
                              % (code, untouched))
 
     def test_enchanting_is_carried_by_the_font_not_by_substitution(self):
-        from structura.ui import ui_fonts
+        from scaffold.ui import ui_fonts
 
         for key, value in self.english.items():
             if key in lang_parse.META:
@@ -117,9 +110,9 @@ class SpecialLanguageTests(unittest.TestCase):
                 spoken.format("a thing")
 
     def test_the_generated_files_are_in_step_with_the_generator(self):
-        # they are written by tools/make_special_languages.py from en_US.lang, so
+        # they are written by tools/app/languages.py from en_US.lang, so
         # an English string changed without re-running it leaves them behind
-        maker = tool("make_special_languages")
+        maker = tool("tools.app.languages")
         english = maker.source()
         for code, (transform, name, badge) in self.lang_fun.TRANSFORMS.items():
             expected = {}
@@ -131,7 +124,7 @@ class SpecialLanguageTests(unittest.TestCase):
             expected[lang_parse.BADGE_KEY] = badge
             self.assertEqual(self.table[code], expected,
                              "%s has drifted: re-run "
-                             "tools/make_special_languages.py" % code)
+                             "python -m tools.app.languages" % code)
 
     def test_upside_down_reverses_the_line(self):
         # the whole line turns over, so the pieces swap ends as well as the
@@ -154,7 +147,7 @@ class DesktopLocaleTests(unittest.TestCase):
     """What the machine says its language is, and what that is taken to mean."""
 
     def test_a_locale_is_tidied_into_the_shape_the_files_use(self):
-        from structura import system_locale
+        from scaffold import system_locale
 
         for reported, wanted in (
                 ("es-MX", "es_MX"),            # Windows writes it with a dash
@@ -168,7 +161,7 @@ class DesktopLocaleTests(unittest.TestCase):
             self.assertEqual(system_locale.tidy(reported), wanted, reported)
 
     def test_what_is_not_a_locale_is_no_answer(self):
-        from structura import system_locale
+        from scaffold import system_locale
 
         for reported in ("C", "POSIX", "", None, "english_UNITED STATES"):
             self.assertIsNone(system_locale.tidy(reported), reported)
@@ -176,14 +169,14 @@ class DesktopLocaleTests(unittest.TestCase):
     def test_reading_the_desktop_never_raises(self):
         # every way of asking is platform specific and none of them is a reason
         # to refuse to start
-        from structura import system_locale
+        from scaffold import system_locale
 
         found = system_locale.read()
         if found is not None:
             self.assertEqual(system_locale.tidy(found), found)
 
     def test_a_locale_is_matched_to_the_file_that_serves_it_best(self):
-        from structura import settings
+        from scaffold import settings
 
         settings.langs = lang_parse.parse()
         self.assertEqual(settings.match_locale("uk_UA"), "uk_UA")
@@ -199,7 +192,7 @@ class BadgeTests(unittest.TestCase):
 
     def test_the_flipped_badge_is_the_english_one_turned_over(self):
         from PIL import ImageOps
-        from structura.ui import lang_icons
+        from scaffold.ui import lang_icons
 
         english = lang_icons.badge("en_US", 44, text=(255, 255, 255))
         upside_down = lang_icons.badge("en_UD", 44, text=(255, 255, 255))
@@ -211,7 +204,7 @@ class BadgeTests(unittest.TestCase):
     def test_the_slant_of_the_bands_turns_over_with_it(self):
         # English is two colours split along the diagonal, so a flip has to
         # swap which corner each of them is in
-        from structura.ui import lang_icons
+        from scaffold.ui import lang_icons
 
         english = lang_icons.badge("en_US", 44)
         upside_down = lang_icons.badge("en_UD", 44)
@@ -220,7 +213,7 @@ class BadgeTests(unittest.TestCase):
                                 upside_down.getpixel((x, y))[:3])
 
     def test_no_other_language_borrows_a_badge(self):
-        from structura.ui import lang_icons
+        from scaffold.ui import lang_icons
 
         self.assertEqual(set(lang_icons.UPSIDE_DOWN), {"en_UD"})
 

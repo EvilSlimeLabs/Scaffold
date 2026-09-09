@@ -9,20 +9,20 @@ if os.path.isfile(pack_file):
     os.remove(pack_file)
 os.chdir(root)
 
-from structura.core import Structura
+from scaffold.core import Scaffold
 
 opacity = 20
 offset = [0, 0, 0]
 
-structura_base = Structura(pack_name)
-structura_base.set_opacity(opacity)
-structura_base.add_model("", structure)
-structura_base.set_model_offset("", offset)
-structura_base.generate_with_nametags()
-structura_base.compile_pack()
+scaffold_base = Scaffold(pack_name)
+scaffold_base.set_opacity(opacity)
+scaffold_base.add_model("", structure)
+scaffold_base.set_model_offset("", offset)
+scaffold_base.generate_with_nametags()
+scaffold_base.compile_pack()
 
-unique_blocks = list(set(structura_base.unsupported_blocks))
-total_count = structura_base.get_unique_blocks_count()
+unique_blocks = list(set(scaffold_base.unsupported_blocks))
+total_count = scaffold_base.get_unique_blocks_count()
 unsupported_count = len(unique_blocks)
 coverage =  round((100 - (unsupported_count / total_count) * 100), 1)
 

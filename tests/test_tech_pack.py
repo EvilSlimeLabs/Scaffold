@@ -1,16 +1,16 @@
 import unittest
 
-from structura.pack import armor_stand_class
-from structura.pack import tech_pack
+from scaffold.pack import armor_stand_class
+from scaffold.pack import tech_pack
 
 
 class ArmorStandMergeTests(unittest.TestCase):
-    """Folding a second client entity description into Structura's.
+    """Folding a second client entity description into Scaffold's.
 
     A client entity file replaces the vanilla one rather than merging with it,
     and between two packs only the higher in the player's list is read, so a
     pack that carries both feature sets has to hold both sets of declarations in
-    one file. Structura's own entries have to survive that merge intact.
+    one file. Scaffold's own entries have to survive that merge intact.
     """
 
     def setUp(self):
@@ -34,7 +34,7 @@ class ArmorStandMergeTests(unittest.TestCase):
     def description(self):
         return self.stand.stand["minecraft:client_entity"]["description"]
 
-    def test_structura_geometry_survives_a_clashing_default(self):
+    def test_scaffold_geometry_survives_a_clashing_default(self):
         # the larger render bounds are what keep the model drawing once the
         # stand is off screen; losing them to another pack's default is the
         # one conflict that would break the ghost blocks outright
@@ -44,7 +44,7 @@ class ArmorStandMergeTests(unittest.TestCase):
         self.assertEqual(self.stand.geos["spin"], "geometry.spin")
         self.assertIn("ghost_blocks_house", self.stand.geos)
 
-    def test_structura_animations_win_and_the_rest_are_added(self):
+    def test_scaffold_animations_win_and_the_rest_are_added(self):
         self.stand.merge_description(self.extra)
         animations = self.description()["animations"]
         self.assertEqual(animations["default_pose"], "animation.armor_stand.default_pose")
@@ -87,7 +87,7 @@ class TechPackSubmoduleTests(unittest.TestCase):
         # declare is a "can't find animation <name>" in the content log and an
         # animation that silently stops playing. TechPack on its own asks for
         # vanilla's pose controllers without declaring them; merged with
-        # Structura, which does declare them, nothing is left dangling.
+        # Scaffold, which does declare them, nothing is left dangling.
         stand = armor_stand_class.ArmorStand()
         stand.add_model("house")
         stand.merge_description(tech_pack.description())
@@ -100,12 +100,12 @@ class TechPackSubmoduleTests(unittest.TestCase):
     def test_the_shared_geometry_file_is_the_same_asset(self):
         # both projects ship models/entity/armor_stand.larger_render.geo.json
         # and both declare geometry.armor_stand.larger_render. copy_assets
-        # skips the file rather than overwriting Structura's, which is only
+        # skips the file rather than overwriting Scaffold's, which is only
         # safe while the two are identical.
         import os
 
-        from structura import jsonc
-        from structura import paths
+        from scaffold import jsonc
+        from scaffold import paths
         ours = jsonc.load(paths.lookup("armor_stand.larger_render.geo.json"))
         theirs = jsonc.load(os.path.join(tech_pack.ROOT, "models", "entity",
                                          "armor_stand.larger_render.geo.json"))
@@ -118,7 +118,7 @@ class TechPackModeTests(unittest.TestCase):
     """Leave it alone, declare it, or carry it."""
 
     def test_a_mode_is_read_from_whatever_a_caller_passes(self):
-        from structura.pack import tech_pack
+        from scaffold.pack import tech_pack
         # a boolean is what a stored setting or a caller written against the
         # older switch carries: True is the whole pack, False is none
         self.assertEqual(tech_pack.mode_of(True), tech_pack.FULL)
@@ -129,14 +129,14 @@ class TechPackModeTests(unittest.TestCase):
         self.assertEqual(tech_pack.mode_of("nonsense"), tech_pack.NONE)
 
     def test_the_window_and_the_settings_agree_on_the_modes(self):
-        from structura import settings
-        from structura.pack import tech_pack
+        from scaffold import settings
+        from scaffold.pack import tech_pack
 
         self.assertEqual(tuple(settings.TECH_PACK_MODES), tech_pack.MODES)
         self.assertEqual(settings.DEFAULT_TECH_PACK, tech_pack.NONE)
 
     def test_every_mode_has_a_label_in_every_language(self):
-        from structura import settings
+        from scaffold import settings
         settings.langs = settings.read_languages()
         for language in settings.choices():
             for mode in settings.TECH_PACK_MODES:
@@ -145,18 +145,18 @@ class TechPackModeTests(unittest.TestCase):
                                 "%s has no %s" % (language, key))
 
     def test_only_the_full_bundle_ships_files(self):
-        from structura.pack import tech_pack
+        from scaffold.pack import tech_pack
 
         if not tech_pack.available():
             raise unittest.SkipTest("be_tech_pack is not checked out")
         import os
         import tempfile
         import zipfile
-        from structura import core
+        from scaffold import core
         counts = {}
         folder = tempfile.mkdtemp()
         for mode in tech_pack.MODES:
-            pack = core.structura(os.path.join(folder, "t_" + mode))
+            pack = core.scaffold(os.path.join(folder, "t_" + mode))
             pack.set_tech_pack(mode)
             pack.add_model("m", "test_structures/stoneSlabs.mcstructure")
             pack.set_model_offset("m", [0, 0, 0])
@@ -172,16 +172,13 @@ class StagedAssetTests(unittest.TestCase):
     """The copy inside the package has to match the submodule it came from."""
 
     def stager(self):
-        import os
-        import sys
-        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        sys.path.insert(0, os.path.join(here, "tools"))
-        import stage_tech_pack
-        return stage_tech_pack
+        import importlib
+
+        return importlib.import_module("tools.vendor.tech_pack")
 
     def test_the_staged_copy_is_not_stale(self):
         # be_tech_pack is seventy megabytes and cannot be package data, so the
-        # megabyte a generated pack needs is staged into structura/techpack/
+        # megabyte a generated pack needs is staged into scaffold/techpack/
         # and committed. Update the submodule without re-staging and a release
         # would quietly ship the old assets.
         stager = self.stager()
@@ -189,7 +186,7 @@ class StagedAssetTests(unittest.TestCase):
         if wrong is None:
             raise unittest.SkipTest("nothing to compare against")
         self.assertEqual(wrong[:8], [],
-                         "run tools/stage_tech_pack.py (%d files differ)"
+                         "run python -m tools.vendor.tech_pack (%d files differ)"
                          % len(wrong))
 
     def test_the_staged_copy_is_what_gets_used(self):

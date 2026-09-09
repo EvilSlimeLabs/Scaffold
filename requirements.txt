@@ -1,4 +1,4 @@
-# Structura's dependencies are declared in pyproject.toml, which is where
+# Scaffold's dependencies are declared in pyproject.toml, which is where
 # PEP 621 says they belong. This file exists so that `pip install -r
 # requirements.txt` still does the right thing.
 #

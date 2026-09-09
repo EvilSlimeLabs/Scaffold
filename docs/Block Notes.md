@@ -7,8 +7,8 @@ this is the accumulated knowledge that is not obvious from reading them.
 Coverage is closed and stays closed. Check it at any time:
 
 ```bash
-python tools/audit_blocks.py         every declared block resolved to a texture
-python tools/coverage_report.py      what the bundled structures drop
+python -m tools.checks.blocks         every declared block resolved to a texture
+python -m tools.checks.coverage      what the bundled structures drop
 ```
 
 Both should report nothing missing. `coverage_report.py` drives the real
@@ -22,7 +22,7 @@ whether a lookup change broke something.
 1. `lookups/block_definition.json` maps the block id to a **shape family**. No
    entry means the block is skipped and reported, not drawn.
 2. `lookups/nbt_defs.json` says what each of the block's **states** means.
-3. `structura.core._process_block` turns those states into a rotation, a
+3. `scaffold.core._process_block` turns those states into a rotation, a
    texture variant, a shape variant and a few flags.
 4. `armor_stand_geo_class.make_block` reads `block_shapes.json` and
    `block_uv.json` with the resulting variant name and emits cubes.
@@ -180,7 +180,7 @@ one palette entry for all of them, and the pose is in
 (x outermost).
 
 `structure_reader.get_block_entity(x, y, z)` reads it and
-`structura.core.ENTITY_SHAPES` says which field of which block entity names the
+`scaffold.core.ENTITY_SHAPES` says which field of which block entity names the
 shape. Add to that mapping to support another one. A block entity carries a
 great deal that has nothing to do with how a block looks, so only the named
 fields are read.
@@ -188,10 +188,10 @@ fields are read.
 **A block entity may hold another whole block.** What is planted in a flower pot
 is kept beside the block as `PlantBlock`, a compound with a name and states of
 its own, and nothing about it is in the pot's states. `core.ENTITY_HOLDS` names
-that field, and `core.Structura._drawn_at` turns one position into the pot plus
+that field, and `core.Scaffold._drawn_at` turns one position into the pot plus
 the plant, so the plant is drawn where the pot is and by whatever family it
 belongs to. That is what makes every pottable plant work without a variant
-apiece; the cost is that a plant Structura cannot draw lands in the skipped list
+apiece; the cost is that a plant Scaffold cannot draw lands in the skipped list
 while the pot around it is still drawn.
 
 Two things follow from it. The plant is drawn at its own full size rather than
@@ -210,7 +210,7 @@ itself, named with the `__low` suffix (`bell__low` beside `bell`), and a pack
 built with low geometry uses it. A family without one is drawn as it always is,
 which is most of them.
 
-`tools/make_low_geometry.py` generates those forms for every family carrying
+`tools/blocks/simplify.py` generates those forms for every family carrying
 three or more cubes: the box the detailed shape fits inside, textured with the
 window that box covers. **Re-run it after changing a detailed shape**, or the
 simple form will still be the old one's outline.
@@ -226,7 +226,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   and `copper_golem_star`, and each is the golem's nine or eleven cubes with the
   arms and the legs turned where that pose puts them. Which `Pose` number goes
   with which file is the guess left in it: the order below is the order the game
-  numbers them in, and only a world settles that. `tools/make_statue_poses.py`.
+  numbers them in, and only a world settles that. `tools/blocks/statues.py`.
 - **The statue is taller than the block it stands on**, twenty four pixels to
   the top of its pompom, and is drawn at that size. Shrinking it would put the
   ghost somewhere the real statue will not be, which is the same reason a dragon
@@ -267,14 +267,14 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   states, so `core.ENTITY_ADDS` joins the two and a variant is named
   `<head_piece_bit>-<colour>`. That is the one field of a block entity that goes
   *with* a shape state rather than instead of it. The game holds a model per
-  colour rather than tinting anything, so `tools/make_bed_textures.py` recolours
+  colour rather than tinting anything, so `tools/textures/beds.py` recolours
   the red tiles the pack ships: only the blanket, which is the only strongly red
   part, and each pixel keeps how bright it is against an ordinary blanket pixel
   in its own tile. Multiplying a red tile by a dye gives mud. A bed with no
   entity beside it falls back to red.
 - **A banner is drawn in its colour but without its patterns.** The colour is
   the block entity's `Base`, counted in the same order as wool, and
-  `tools/make_banner_textures.py` dyes the sheet once per colour so each has a
+  `tools/textures/banners.py` dyes the sheet once per colour so each has a
   texture to read: vanilla tints one white sheet at run time and a ghost block
   cannot tint. Patterns are a different matter. A banner may carry six, each
   with a colour of its own, which is more combinations than could be written to
@@ -316,7 +316,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   seven of its pieces, at the sizes and UV corners Mojang drew.
 - **A bone that turns has to be turned on the way in.** The piglin's ears are
   bones the game leans thirty degrees about pivots of their own, and a head
-  built from the cubes alone leaves them flat against the skull. Structura turns
+  built from the cubes alone leaves them flat against the skull. Scaffold turns
   a cube about the cube's own middle, so `make_head_forms.on_its_own` moves the
   middle to where the bone's pivot would have put it and keeps the same turn on
   the cube, which comes to the same thing. Bedrock's angles run the other way
@@ -361,7 +361,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   of faint single pixels across a quarter of the tile, drawn on a quad turned to
   face the way the wire runs and lit at full brightness. On a half-transparent
   plate lying flat in its block it cannot be seen from more than a few blocks
-  away, so `tools/make_string_texture.py` writes a cross of solid lines instead.
+  away, so `tools/textures/string.py` writes a cross of solid lines instead.
   **A cross because the direction is not in the block:** `trip_wire` carries
   `attached_bit`, `disarmed_bit`, `powered_bit` and `suspended_bit` and nothing
   saying which way the wire runs, so the game works that out from the blocks
@@ -384,7 +384,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   top row, so what those tiles are meant to be read as is not settled.
 
 The forms a block takes from how it is mounted are written by
-`tools/make_block_forms.py`, which owns the shapes and the UV windows for
+`tools/blocks/mounted.py`, which owns the shapes and the UV windows for
 `hanging_sign`, `bell`, `grindstone` and `campfire`. Each mounting is a
 different list of cubes rather than the same list moved:
 
@@ -410,10 +410,10 @@ Three more scripts write the families whose form follows a state:
 
 | Script | What it owns |
 | --- | --- |
-| `tools/make_growth_forms.py` | the crops, sweet berry bushes, cocoa, turtle eggs, composters, seagrass and coral fans |
-| `tools/make_furniture_forms.py` | beds, lecterns, enchanting tables, conduits, daylight detectors, spore blossoms |
-| `tools/make_head_forms.py` | the mob heads |
-| `tools/make_container_forms.py` | shulker boxes and banners |
+| `tools/blocks/growing.py` | the crops, sweet berry bushes, cocoa, turtle eggs, composters, seagrass and coral fans |
+| `tools/blocks/furniture.py` | beds, lecterns, enchanting tables, conduits, daylight detectors, spore blossoms |
+| `tools/blocks/heads.py` | the mob heads |
+| `tools/blocks/containers.py` | shulker boxes and banners |
 
 **A stage is a family, not a variant of `cross_texture`.** Wheat has eight
 textures, one per step of `growth`, and every crop, berry bush and cocoa pod has
@@ -487,7 +487,7 @@ tile fits, which is what `make_block_forms.on_sheet` does and what
 
 **A colour that is a whole colour gets a tile of its own, built.** A cauldron's
 dye is an RGB in its block entity, not one of a list, so no lookup table could
-name a texture for it and a ghost block cannot tint as it draws. Structura is a
+name a texture for it and a ghost block cannot tint as it draws. Scaffold is a
 build step, though: a texture written `<name>~tint` in a table has the block's
 own colour put in its place, `core.ENTITY_TINTS` says which field of which block
 entity carries one, and `extend_uv_image` multiplies the tile by it on the way
@@ -567,11 +567,11 @@ any test structure.
    words.
 4. If any of its states change how it looks, map them in `nbt_defs.json`.
 5. If it is built from more than one cube, give it an `overwrite`.
-6. If it now carries three or more cubes, re-run `tools/make_low_geometry.py`.
-7. Run `tools/coverage_report.py` and `tools/audit_blocks.py`. Both should
+6. If it now carries three or more cubes, re-run `tools/blocks/simplify.py`.
+7. Run `tools/checks/coverage.py` and `tools/checks/blocks.py`. Both should
    report nothing.
 
 Keep the tables compact. `json.dumps` explodes short numeric arrays across a
 line each, which turns a one-value change into an unreviewable diff;
-`tools/lookup_writer.py` edits one family's span and leaves the rest of the file
+`tools/blocks/tables.py` edits one family's span and leaves the rest of the file
 byte for byte alone.

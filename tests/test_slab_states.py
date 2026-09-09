@@ -2,12 +2,12 @@ import unittest
 
 from nbtlib import Byte, String
 
-from structura.core import structura
+from scaffold.core import scaffold
 
 
 class SlabStateTests(unittest.TestCase):
     def setUp(self):
-        self.processor = structura.__new__(structura)
+        self.processor = scaffold.__new__(scaffold)
 
     def process(self, states):
         block = {

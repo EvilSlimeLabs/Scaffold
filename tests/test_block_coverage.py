@@ -3,8 +3,8 @@ import os
 import re
 import unittest
 
-from structura import paths
-from structura.pack import armor_stand_geo_class as asgc
+from scaffold import paths
+from scaffold.pack import armor_stand_geo_class as asgc
 
 ## Education Edition and other blocks no vanilla pack ships textures for. They
 ## are declared so a structure containing one is named rather than mysterious,
@@ -115,7 +115,7 @@ class TileTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from structura import jsonc
+        from scaffold import jsonc
 
         cls.pack = paths.vanilla_pack()
         cls.blocks = jsonc.load(os.path.join(cls.pack, "blocks.json"))
@@ -124,7 +124,7 @@ class TileTests(unittest.TestCase):
         cls.ink = {}
 
     def covered(self, path):
-        """How much of the tile Structura reads is not transparent."""
+        """How much of the tile Scaffold reads is not transparent."""
         from PIL import Image
 
         if path not in self.ink:
@@ -176,7 +176,7 @@ class TileTests(unittest.TestCase):
                 if self.covered(path) == 0:
                     empty.append("%s %s -> %s" % (block, face, path))
         self.assertEqual(empty, [],
-                         "textures with nothing in the 16x16 Structura reads")
+                         "textures with nothing in the 16x16 Scaffold reads")
 
 
 class MountingTests(unittest.TestCase):
@@ -507,14 +507,14 @@ class MountingTests(unittest.TestCase):
         # block above turns in sixteen steps with ground_sign_direction, and
         # every other mounting turns with facing_direction, which is why the
         # two numberings cannot share a rotation entry.
-        from structura import core
+        from scaffold import core
 
         wall = {"states": {"attached_bit": 0, "hanging": 0,
                            "facing_direction": 4, "ground_sign_direction": 0}}
         fixed = {"states": {"attached_bit": 1, "hanging": 1,
                             "facing_direction": 0, "ground_sign_direction": 10}}
-        self.assertEqual(core.Structura._process_block(None, wall)[0], 4)
-        self.assertEqual(core.Structura._process_block(None, fixed)[0], 10)
+        self.assertEqual(core.Scaffold._process_block(None, wall)[0], 4)
+        self.assertEqual(core.Scaffold._process_block(None, fixed)[0], 10)
 
     def test_each_mounting_turns_by_its_own_numbering(self):
         def angle(variant, rot):
@@ -550,14 +550,14 @@ class MountingTests(unittest.TestCase):
     def test_a_dyed_cauldron_is_drawn_in_its_own_colour(self):
         # a cauldron's dye is a whole RGB in the block entity, not one of a
         # list, so no lookup table could carry a texture for it and a ghost
-        # block cannot tint as it draws. Structura builds the pack, so the tile
+        # block cannot tint as it draws. Scaffold builds the pack, so the tile
         # is multiplied by the colour on its way into the atlas and every dye in
         # a structure lands there as a tile of its own.
-        from structura import core
+        from scaffold import core
 
-        pack = core.Structura.__new__(core.Structura)
+        pack = core.Scaffold.__new__(core.Scaffold)
         states = {"cauldron_liquid": "water", "fill_level": 4}
-        plain = core.Structura._process_block(
+        plain = core.Scaffold._process_block(
             pack, {"name": "minecraft:cauldron", "states": states},
             {"id": "Cauldron"})
         self.assertEqual(plain[4], "water-4")
@@ -565,7 +565,7 @@ class MountingTests(unittest.TestCase):
 
         seen = {}
         for colour in (0xFF3030, 0x3030FF):
-            props = core.Structura._process_block(
+            props = core.Scaffold._process_block(
                 pack, {"name": "minecraft:cauldron", "states": states},
                 {"id": "Cauldron", "CustomColor": colour})
             self.assertEqual(props[4], "dyed-4",
@@ -590,11 +590,11 @@ class MountingTests(unittest.TestCase):
         # shape states are. There is one set of tiles per colour: the game holds
         # a model each rather than tinting anything, and a ghost block has
         # nothing to tint at run time either.
-        from structura import core
+        from scaffold import core
 
-        pack = core.Structura.__new__(core.Structura)
+        pack = core.Scaffold.__new__(core.Scaffold)
         for half, base, colour in ((0, 11, "blue"), (1, 5, "lime")):
-            data = core.Structura._process_block(
+            data = core.Scaffold._process_block(
                 pack, {"name": "minecraft:bed",
                        "states": {"head_piece_bit": half, "direction": 0}},
                 {"id": "Bed", "color": base})[4]
@@ -763,11 +763,70 @@ class MountingTests(unittest.TestCase):
         wall = self.cubes("wall_banner", rot=3)
         self.assertLess(min(origin[1] * 16 for origin, _size in wall), 0)
 
-        written = load("block_uv")["standing_banner"]["14"]["overwrite"]
-        post = [texture for texture in written["north"] if "#" in texture]
-        self.assertEqual(len(post), 1, "the post does not name its own corner")
-        self.assertTrue(post[0].endswith("#44,2"),
-                        "the post reads the cloth and not the wood")
+    def test_a_banner_reads_a_corner_that_leaves_a_whole_tile_on_the_sheet(self):
+        # Only the sixteen square from the corner becomes a tile, and
+        # extend_uv_image throws a corner away and reads from 0,0 instead when
+        # sixteen more would run off the edge -- silently. 0,0 on a banner sheet
+        # is the cloth, so a post asked for past the edge came out dyed.
+        from PIL import Image
+
+        pack = paths.vanilla_pack()
+        uv = load("block_uv")
+        sizes = {}
+        for family in ("standing_banner", "wall_banner"):
+            for variant, entry in uv[family].items():
+                if variant.endswith("__low"):
+                    continue
+                for face, written in entry["overwrite"].items():
+                    for texture in written:
+                        if "#" not in texture:
+                            continue
+                        name, corner = texture.split("#")
+                        across, down = (int(n) for n in corner.split(","))
+                        if name not in sizes:
+                            with Image.open(os.path.join(pack, name + ".png")) as s:
+                                sizes[name] = s.size
+                        wide, tall = sizes[name]
+                        self.assertLessEqual(
+                            across + 16, wide,
+                            "%s/%s %s: %s runs off the sheet, so it reads 0,0"
+                            % (family, variant, face, texture))
+                        self.assertLessEqual(
+                            down + 16, tall,
+                            "%s/%s %s: %s runs off the sheet, so it reads 0,0"
+                            % (family, variant, face, texture))
+
+    def test_a_banners_post_and_bar_read_the_wood(self):
+        # both the post and the cloth were reading a window in the cloth's
+        # corner of the sheet, so a banner was a coloured post with a coloured
+        # cloth on it. A dyed sheet leaves the wood alone, so nothing the post
+        # or the bar reads may carry the dye.
+        from PIL import Image
+
+        pack = paths.vanilla_pack()
+        entry = load("block_uv")["standing_banner"]["14"]     # red
+        shape = load("block_shapes")["standing_banner"]["14"]
+        with Image.open(os.path.join(
+                pack, "textures/entity/banner/banner_red.png")) as cloth:
+            dye = cloth.convert("RGBA").getpixel((10, 20))
+        wooden = 0
+        for index, texture in enumerate(entry["overwrite"]["south"]):
+            if "#" not in texture:
+                continue
+            name, corner = texture.split("#")
+            across, down = (int(n) for n in corner.split(","))
+            x, y = entry["offset"]["south"][index]
+            wide, tall = entry["uv_sizes"]["south"][index]
+            at = (across + int(round(x * 16)) + max(int(round(wide * 16)), 1) // 2,
+                  down + int(round(y * 16)) + max(int(round(tall * 16)), 1) // 2)
+            with Image.open(os.path.join(pack, name + ".png")) as sheet:
+                painted = sheet.convert("RGBA").getpixel(at)
+            self.assertNotEqual(painted, dye,
+                                "%s reads the cloth, not the wood" % texture)
+            wooden += 1
+        self.assertGreaterEqual(wooden, 2,
+                                "a banner has a post and a bar to read wood for")
+        self.assertEqual(len(shape["size"]), len(entry["overwrite"]["south"]))
 
     def test_the_dye_leaves_a_banners_post_alone(self):
         # the game tints only the cloth. Multiplying the whole sheet gives every
@@ -788,15 +847,15 @@ class MountingTests(unittest.TestCase):
         self.assertEqual(len(cloths), 3, "the dye does not reach the cloth")
 
     def test_a_banner_is_drawn_in_the_colour_its_block_entity_names(self):
-        from structura import core
+        from scaffold import core
 
-        pack = core.Structura.__new__(core.Structura)
+        pack = core.Scaffold.__new__(core.Scaffold)
         # `Base` is the dye's own number, which runs the opposite way round
         # from wool's: 0 is black and 15 is white. An ominous banner and one
         # carrying patterns are not a dye at all and have sheets of their own.
         for base, colour in ((0, "black"), (6, "cyan"), (15, "white")):
             entity = {"id": "Banner", "Base": base}
-            data = core.Structura._process_block(
+            data = core.Scaffold._process_block(
                 pack, {"name": "minecraft:standing_banner",
                        "states": {"ground_sign_direction": 0}}, entity)[4]
             self.geo.blocks = {}
@@ -809,20 +868,31 @@ class MountingTests(unittest.TestCase):
                 {n.split("/")[-1].split("#")[0] for n in self.geo.uv_map},
                 {"banner_%s" % colour})
 
+        ## A marked banner reads its own sheet, and may borrow one more for its
+        ## edges: a sheet's plain cloth is what vanilla dyes from rather than
+        ## what the banner reads as, and the ominous sheet's is a light grey
+        ## against a dark face, so it takes black's cloth instead. Nothing else
+        ## may creep in, which is what the set comparison is for.
+        from tools.blocks.banners import BANNER_EDGE
+
         for entity, colour in (({"id": "Banner", "Base": 0, "Type": 1},
                                 "illager"),
                                ({"id": "Banner", "Base": 0,
                                  "Patterns": [{"Color": 1}]}, "designed")):
-            data = core.Structura._process_block(
+            data = core.Scaffold._process_block(
                 pack, {"name": "minecraft:standing_banner",
                        "states": {"ground_sign_direction": 0}}, entity)[4]
             self.geo.blocks = {}
             self.geo.uv_map = {}
             self.geo.uv_array = None
             self.geo.make_block(0, 0, 0, "standing_banner", rot=0, data=data)
+            allowed = {"banner_%s" % colour}
+            borrowed = BANNER_EDGE.get(colour)
+            if borrowed:
+                allowed.add("banner_%s" % borrowed)
             self.assertEqual(
                 {n.split("/")[-1].split("#")[0] for n in self.geo.uv_map},
-                {"banner_%s" % colour})
+                allowed)
 
     def test_a_banner_with_a_design_hangs_it_across_a_grid_of_tiles(self):
         # only sixteen by sixteen of a texture becomes a tile and a quad reads
@@ -831,6 +901,18 @@ class MountingTests(unittest.TestCase):
         shapes = load("block_shapes")["standing_banner"]
         entry = load("block_uv")["standing_banner"]
         plain = shapes["0"]["size"]
+
+        def design_corner(name):
+            """The tile a design quad reads, or None for the post and the bar.
+
+            The design is written under vanilla's own 64 tall sheet, so a corner
+            at or below that is one of its tiles and everything above it is the
+            wood the banner hangs on.
+            """
+            if "#" not in name:
+                return None
+            across, down = (int(n) for n in name.split("#")[1].split(","))
+            return (across, down) if down >= 64 else None
         for form in ("illager", "designed"):
             tiles = [name for name in entry[form]["overwrite"]["south"]
                      if "banner_%s#" % form in name]
@@ -844,37 +926,71 @@ class MountingTests(unittest.TestCase):
             # the least x, top row at the greatest y
             placed = {}
             for index, name in enumerate(entry[form]["overwrite"]["south"]):
-                if "#" not in name or name.endswith("#44,2"):
+                corner = design_corner(name)
+                if corner is None:
                     continue
-                across, down = (int(n) for n in name.split("#")[1].split(","))
-                placed[(across, down)] = shapes[form]["offsets"][index]
+                placed[corner] = shapes[form]["offsets"][index]
             for (across, down), at in placed.items():
                 for (other_across, other_down), other in placed.items():
                     if other_across > across:
-                        self.assertLess(at[0], other[0],
-                                        "%s runs its columns backwards" % form)
+                        ## **The columns run backwards, and have to.** The sheet
+                        ## holds the design mirrored -- tools/textures/banners.py
+                        ## writes it that way on purpose -- and the face turns it
+                        ## back. Mirroring a picture cut into columns swaps the
+                        ## columns as well as flipping each one, so the design's
+                        ## last column belongs at the least x. Doing only the
+                        ## tiles cut an ominous banner's face down the middle and
+                        ## swapped its halves.
+                        self.assertGreater(at[0], other[0],
+                                           "%s does not mirror its columns, so "
+                                           "its design comes out cut in half "
+                                           "and swapped" % form)
                     if other_down > down:
+                        ## rows are untouched: a mirror is left to right
                         self.assertGreater(at[1], other[1],
                                            "%s runs its rows backwards" % form)
 
-            # and the side a banner is looked at reads its tile the other way
-            # round, because the two faces of a plane run opposite each other
+            # **Both faces turn their tile round.** The sheet holds the design
+            # mirrored -- written that way on purpose -- so every face reading
+            # it has to mirror it back, not only the one a banner is looked at.
+            # The two faces of a plane already run opposite each other, which is
+            # what makes the back come out as the mirror of the front once both
+            # are turned. Leaving the back alone cancelled one flip against the
+            # other and split it down the middle.
             for index, name in enumerate(entry[form]["overwrite"]["south"]):
-                if "banner_%s#" % form not in name or name.endswith("#44,2"):
+                if design_corner(name) is None:
                     continue
-                self.assertLess(entry[form]["uv_sizes"]["south"][index][0], 0,
-                                "%s is not mirrored on its front" % form)
-                self.assertGreater(entry[form]["uv_sizes"]["north"][index][0], 0,
-                                   "%s is mirrored on its back as well" % form)
+                for face in ("south", "north"):
+                    self.assertLess(
+                        entry[form]["uv_sizes"][face][index][0], 0,
+                        "%s does not turn its tile round on its %s, so the "
+                        "design comes out split" % (form, face))
+
+            # and only those two carry the picture. The other four are the
+            # cloth's edges and the seams between the quads, a pixel wide, and
+            # the design squashed down one is a stripe of noise. They take the
+            # banner's own base colour, from the corner a dyed banner reads.
+            plain_corner = None
+            for face in ("east", "west", "up", "down"):
+                for index, name in enumerate(entry[form]["overwrite"][face]):
+                    if "#" not in name:
+                        continue
+                    self.assertIsNone(
+                        design_corner(name),
+                        "%s reads the design on its %s, which is an edge"
+                        % (form, face))
+                    plain_corner = plain_corner or name
+            self.assertIsNotNone(plain_corner,
+                                 "%s has no cloth on its edges at all" % form)
 
     def test_a_head_on_the_floor_turns_with_its_block_entity(self):
         # the states say only which of the six faces a head is fixed to; a head
         # standing on the floor keeps its sixteen steps in the block entity
-        from structura import core
+        from scaffold import core
 
         entity = {"id": "Skull", "Rotation": 90.0}
-        rot = core.Structura._process_block(
-            core.Structura.__new__(core.Structura),
+        rot = core.Scaffold._process_block(
+            core.Scaffold.__new__(core.Scaffold),
             {"name": "minecraft:skeleton_skull",
              "states": {"facing_direction": 1}}, entity)[0]
         self.assertEqual(rot, "spin4", "ninety degrees is the fourth step")
@@ -1076,13 +1192,13 @@ class MountingTests(unittest.TestCase):
         # a flower pot keeps its contents in the block entity beside it, as a
         # whole block with a name and states of its own, so the plant is drawn
         # where the pot is and by whatever family it belongs to
-        from structura import core
+        from scaffold import core
 
         pot = {"name": "minecraft:flower_pot", "states": {}}
-        alone = core.Structura._drawn_at(pot, {"id": "FlowerPot"})
+        alone = core.Scaffold._drawn_at(pot, {"id": "FlowerPot"})
         self.assertEqual(len(alone), 1, "an empty pot draws only the pot")
 
-        planted = core.Structura._drawn_at(pot, {
+        planted = core.Scaffold._drawn_at(pot, {
             "id": "FlowerPot",
             "PlantBlock": {"name": "minecraft:red_flower",
                            "states": {"flower_type": "orchid"}}})
@@ -1094,7 +1210,7 @@ class MountingTests(unittest.TestCase):
 
         # and every block without one is unaffected
         plain = {"name": "minecraft:stone", "states": {}}
-        self.assertEqual(core.Structura._drawn_at(plain, {}),
+        self.assertEqual(core.Scaffold._drawn_at(plain, {}),
                          [(plain, {})])
 
     def test_a_decorated_pot_names_the_part_of_its_sheet_each_face_reads(self):
@@ -1158,12 +1274,86 @@ class MountingTests(unittest.TestCase):
 
 
 
+class TurnedTileTests(unittest.TestCase):
+    """A face that reads its picture a quarter round.
+
+    Bedrock's per-face UV is a corner and a size: a negative size mirrors an
+    axis and there is no angle in it at all. So a turn cannot be asked for in
+    the geometry and is baked into the tile on the way into the atlas instead,
+    with the angle travelling in the texture's name the way a window and a tint
+    already do.
+    """
+
+    def test_the_mark_reads_alongside_a_window_and_a_tint(self):
+        from scaffold.pack.armor_stand_geo_class import (
+            split_tint, split_turn, split_window)
+
+        self.assertEqual(split_turn("blocks/a")[1], 0)
+        self.assertEqual(split_turn("blocks/a^90")[1], 90)
+        # a name may carry all three, and each has to see past the others
+        whole = "blocks/a#4,8^270~ff0000"
+        self.assertEqual(split_turn(whole), ("blocks/a#4,8", 270))
+        self.assertEqual(split_window(whole), ("blocks/a", (4, 8)))
+        self.assertEqual(split_tint(whole)[1], (255, 0, 0))
+
+    def test_an_angle_that_is_not_a_right_angle_is_no_turn(self):
+        # the tables are written by hand, and a wrong number should draw the
+        # block rather than stop the build
+        from scaffold.pack.armor_stand_geo_class import split_turn
+
+        self.assertEqual(split_turn("blocks/a^45")[1], 0)
+        self.assertEqual(split_turn("blocks/a^nonsense")[1], 0)
+
+    def test_a_window_that_turns_is_refused_a_half_angle_as_it_is_written(self):
+        # and the generator says so outright, because a table it writes is read
+        # by everything afterwards
+        from tools.blocks.geometry import Cube
+
+        self.assertRaises(ValueError,
+                          Cube((1, 1, 1), (0, 0, 0), "x",
+                               window={"up": (0, 0, 16, 16, 45)}).paint, "up")
+
+    def test_the_tile_in_the_atlas_is_the_straight_one_turned(self):
+        from numpy import array_equal, rot90
+        from scaffold.pack import armor_stand_geo_class as asgc
+
+        source = os.path.join(paths.vanilla_pack(),
+                              "textures/blocks/lectern_sides.png")
+        geo = asgc.ArmorStandGeo("turn", offsets=[0, 0, 0])
+        geo.alpha = 1.0
+
+        geo.uv_array = None
+        geo.extend_uv_image(source, (0, 0), None, 0)
+        straight = geo.uv_array[:16, :16, :3].copy()
+
+        ## the mark is read clockwise and rot90 turns the other way
+        for degrees, quarters in ((90, -1), (180, 2), (270, 1)):
+            geo.uv_array = None
+            geo.extend_uv_image(source, (0, 0), None, degrees)
+            self.assertTrue(
+                array_equal(geo.uv_array[:16, :16, :3],
+                            rot90(straight, quarters)),
+                "a %d turn is not the straight tile turned" % degrees)
+
+    def test_a_turned_tile_does_not_displace_the_straight_one(self):
+        # the atlas is keyed by the whole name, so a block reading a texture
+        # both ways gets a tile of each rather than one that has to be both
+        from scaffold.pack import armor_stand_geo_class as asgc
+
+        geo = asgc.ArmorStandGeo("turn", offsets=[0, 0, 0])
+        geo.make_block(0, 0, 0, "lectern", rot=0)
+        sides = [name for name in geo.uv_map if "lectern_sides" in name]
+        self.assertIn("textures/blocks/lectern_sides", sides)
+        self.assertIn("textures/blocks/lectern_sides"
+                      + asgc.TURN_MARK + "90", sides)
+
+
 class GeometryDetailTests(unittest.TestCase):
     """The low geometry setting, and the simplified shapes it reaches for."""
 
     def tables(self):
         import json
-        from structura import paths
+        from scaffold import paths
         with open(paths.lookup("block_shapes.json")) as handle:
             shapes = json.load(handle)
         with open(paths.lookup("block_uv.json")) as handle:
@@ -1174,7 +1364,7 @@ class GeometryDetailTests(unittest.TestCase):
         # a family described in one table and not the other silently falls back
         # to default, which is how a half-height cube ends up wearing a
         # full-height texture
-        from structura.pack import armor_stand_geo_class as asgc
+        from scaffold.pack import armor_stand_geo_class as asgc
 
         shapes, uv = self.tables()
         for name in shapes:
@@ -1185,7 +1375,7 @@ class GeometryDetailTests(unittest.TestCase):
                 self.assertIn(name, shapes, "%s has a UV but no shape" % name)
 
     def test_a_simplified_shape_is_simpler(self):
-        from structura.pack import armor_stand_geo_class as asgc
+        from scaffold.pack import armor_stand_geo_class as asgc
 
         shapes, _uv = self.tables()
         found = 0
@@ -1199,7 +1389,7 @@ class GeometryDetailTests(unittest.TestCase):
         self.assertGreater(found, 0, "no simplified shapes at all")
 
     def test_the_setting_reaches_the_geometry(self):
-        from structura.pack import armor_stand_geo_class as asgc
+        from scaffold.pack import armor_stand_geo_class as asgc
 
         plain = asgc.ArmorStandGeo("t", low_geometry=True)
         full = asgc.ArmorStandGeo("t", low_geometry=False)
@@ -1214,7 +1404,7 @@ class ChiseledBookshelfTests(unittest.TestCase):
     def test_every_arrangement_of_books_is_described(self):
         # books_stored is a six bit number, so there are sixty-four of them
         import json
-        from structura import paths
+        from scaffold import paths
         with open(paths.lookup("block_shapes.json")) as handle:
             shapes = json.load(handle)["chiseled_bookshelf"]
         with open(paths.lookup("block_uv.json")) as handle:
@@ -1231,7 +1421,7 @@ class ChiseledBookshelfTests(unittest.TestCase):
         # ships and terrain_texture.json has no entry for
         import json
         import os
-        from structura import paths
+        from scaffold import paths
         with open(paths.lookup("block_uv.json")) as handle:
             uv = json.load(handle)["chiseled_bookshelf"]
         for mask in ("0", "63"):
@@ -1283,8 +1473,8 @@ class LayeringTests(unittest.TestCase):
 
     def test_the_command_line_never_reaches_the_window(self):
         import os
-        reached = self.reachable(os.path.join("structura", "cli", "__main__.py"))
-        inside = os.path.join("structura", "ui") + os.sep
+        reached = self.reachable(os.path.join("scaffold", "cli", "__main__.py"))
+        inside = os.path.join("scaffold", "ui") + os.sep
         window = sorted(p for p in reached if p.startswith(inside))
         self.assertEqual(window, [],
                          "the command line build pulls in %s" % window)
@@ -1292,19 +1482,19 @@ class LayeringTests(unittest.TestCase):
     def test_the_command_line_package_imports_no_interface(self):
         import io
         import os
-        folder = os.path.join("structura", "cli")
+        folder = os.path.join("scaffold", "cli")
         for name in sorted(os.listdir(folder)):
             if not name.endswith(".py"):
                 continue
             body = io.open(os.path.join(folder, name), encoding="utf-8").read()
-            where = "structura/cli/%s" % name
-            self.assertNotIn("from structura.ui import", body, where)
+            where = "scaffold/cli/%s" % name
+            self.assertNotIn("from scaffold.ui import", body, where)
             for line in body.split("\n"):
-                self.assertNotEqual(line.strip(), "from structura import ui", where)
+                self.assertNotEqual(line.strip(), "from scaffold import ui", where)
 
     def test_both_entry_points_share_one_argument_parser(self):
         # a script written against one build has to run against the other
-        from structura import cli
+        from scaffold import cli
         first = cli.arguments.parse(["--structure", "a", "--pack_name", "b"])
         self.assertEqual(first.tech_pack, "none")
         self.assertFalse(first.low_geometry)
@@ -1312,7 +1502,7 @@ class LayeringTests(unittest.TestCase):
 
     def test_nothing_to_do_is_reported_rather_than_guessed(self):
         # the entry points answer it differently, so cli.main must not decide
-        from structura import cli
+        from scaffold import cli
         self.assertEqual(cli.main([]), cli.NOTHING_ASKED)
 
 

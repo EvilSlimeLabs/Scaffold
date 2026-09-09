@@ -2,8 +2,8 @@ import unittest
 
 from nbtlib import Byte, String
 
-from structura.pack import armor_stand_geo_class as asgc
-from structura.core import structura
+from scaffold.pack import armor_stand_geo_class as asgc
+from scaffold.core import scaffold
 
 
 class SlabGeometryTests(unittest.TestCase):
@@ -11,7 +11,7 @@ class SlabGeometryTests(unittest.TestCase):
     plain cube every other block is built from."""
 
     def setUp(self):
-        self.processor = structura.__new__(structura)
+        self.processor = scaffold.__new__(scaffold)
         self.geo = asgc.ArmorStandGeo("test", alpha=1.0, size=[1, 4, 1], offsets=[0, 0, 0])
 
     def build(self, name, states, y=0):

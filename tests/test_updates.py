@@ -1,203 +1,139 @@
-import hashlib
+import io
 import os
-import pathlib
 import shutil
-import sys
 import tempfile
-import threading
 import unittest
 
-from structura import updates
+from scaffold import lang_parse
+from scaffold import paths
+from scaffold import updates
 
 
-class VersionTests(unittest.TestCase):
-    """Which release counts as newer than the one running."""
+class ChannelTests(unittest.TestCase):
+    """Which releases a build is willing to be offered.
 
-    def test_a_tag_is_read_with_or_without_its_v(self):
-        self.assertEqual(updates.as_numbers("v3.1.0"), (3, 1, 0))
-        self.assertEqual(updates.as_numbers("3.1"), (3, 1, 0))
-        self.assertEqual(updates.as_numbers("3.1.0-rc2"), (3, 1, 0))
+    tufup filters pre-releases out unless it is asked for a channel, so this is
+    what decides whether somebody running a release candidate keeps being
+    offered them or waits for the final.
+    """
 
-    def test_a_release_candidate_is_not_newer_than_its_release(self):
-        # read the other way round, 3.0.0-rc2 comes out as 3.0.2 and everybody
-        # running 3.0.0 is offered a candidate of what they already have
-        self.assertFalse(updates.newer("3.0.0-rc2", "3.0.0"))
-        self.assertTrue(updates.newer("3.1.0-rc1", "3.0.0"))
+    def test_a_final_release_is_offered_only_final_releases(self):
+        for running in ("3.0.0", "3.0.1", "10.2.3"):
+            self.assertIsNone(updates.channel(running), running)
 
-    def test_only_a_later_release_counts(self):
-        self.assertTrue(updates.newer("3.0.1", "3.0.0"))
-        self.assertTrue(updates.newer("v10.0.0", "3.0.0"))
-        self.assertFalse(updates.newer("3.0.0", "3.0.0"))
-        self.assertFalse(updates.newer("2.9.9", "3.0.0"))
+    def test_a_pre_release_is_offered_its_own_kind(self):
+        self.assertEqual(updates.channel("3.1.0rc2"), "rc")
+        self.assertEqual(updates.channel("3.1.0b1"), "b")
+        self.assertEqual(updates.channel("3.1.0a4"), "a")
 
-    def test_a_tag_that_is_not_a_version_is_never_newer(self):
-        # a repository can tag anything at all, and an unreadable tag must not
-        # send everybody an update
-        for tag in ("rubbish", "", None, "latest"):
-            self.assertFalse(updates.newer(tag, "3.0.0"), tag)
+    def test_a_release_candidate_is_not_read_as_an_alpha(self):
+        # "rc" contains neither an "a" nor a "b", but a naive search over the
+        # whole version string finds the "a" in a date or a build tag
+        self.assertEqual(updates.channel("3.1.0rc1"), "rc")
 
 
-class ReplacementTests(unittest.TestCase):
-    """Putting a new build in the place of the running one."""
+class SourceTests(unittest.TestCase):
+    """A checkout has nothing to replace, and says so rather than trying."""
+
+    def test_a_checkout_is_not_something_to_update(self):
+        self.assertFalse(paths.frozen())
+        self.assertIsNone(updates.running_file())
+        self.assertFalse(updates.ready())
+        self.assertIsNone(updates.available())
+
+    def test_asking_to_install_from_a_checkout_is_answered_not_attempted(self):
+        reason, detail = updates.install_latest()
+        self.assertEqual(reason, "update source")
+        self.assertEqual(detail, "")
+
+
+class TrustTests(unittest.TestCase):
+    """The root of trust, which is the one thing an update cannot fetch."""
+
+    def test_the_root_is_looked_for_inside_the_package(self):
+        # it ships compiled into the executable, so it has to resolve through
+        # paths like every other piece of data
+        wanted = os.path.join("scaffold", "trust", "root.json")
+        self.assertTrue(updates.trusted_root().replace("\\", "/")
+                        .endswith(wanted.replace("\\", "/")))
+
+    def test_the_trust_directory_is_shipped(self):
+        self.assertIn("trust", paths.DATA_DIRS)
+
+    def test_without_a_root_there_is_nothing_to_check_against(self):
+        # a build that shipped without root.json must refuse to update rather
+        # than fetch one, because fetching it is exactly what it cannot do
+        real = updates.trusted_root
+        updates.trusted_root = lambda: os.path.join(tempfile.gettempdir(),
+                                                    "no-such-root.json")
+        try:
+            self.assertFalse(updates.ready())
+        finally:
+            updates.trusted_root = real
+
+
+class LeftoverTests(unittest.TestCase):
+    """Tidying up after the updater this one replaced.
+
+    Scaffold used to update by renaming the running file to `.old` and writing
+    the new build where it stood. Nothing does that any more, but anyone coming
+    from 3.0 or older arrives with one on disk.
+    """
 
     def setUp(self):
         self.folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.folder, True)
-        self.exe = os.path.join(self.folder, "Structura.exe")
-        shutil.copy(sys.executable, self.exe)
-        self.real_frozen = updates.paths.frozen
-        self.real_exe = sys.executable
-        updates.paths.frozen = lambda: True
-        sys.executable = self.exe
-        self.addCleanup(setattr, sys, "executable", self.real_exe)
-        self.addCleanup(setattr, updates.paths, "frozen", self.real_frozen)
+        self.exe = os.path.join(self.folder, "Scaffold.exe")
+        io.open(self.exe, "wb").write(b"MZ")
+        self.real = updates.running_file
+        updates.running_file = lambda: self.exe
+        self.addCleanup(setattr, updates, "running_file", self.real)
 
-    def test_only_a_built_program_has_something_to_replace(self):
-        updates.paths.frozen = lambda: False
-        self.assertIsNone(updates.running_file())
-        self.assertIsNone(updates.available())
-
-    def test_what_is_not_a_program_is_refused(self):
-        # a rate limit answers with a page, not a build, and installing it
-        # would leave nothing to run
-        junk = os.path.join(self.folder, "junk")
-        with open(junk, "w") as file:
-            file.write("rate limit exceeded")
-        self.assertFalse(updates.looks_like_a_program(junk))
-        self.assertTrue(updates.looks_like_a_program(self.exe))
-
-    def test_the_displaced_build_is_cleared_by_a_later_launch(self):
-        # the file a process is running from cannot delete itself, so the
-        # update leaves it and the next launch takes it away
-        displaced = self.exe + updates.DISPLACED
-        shutil.copy(sys.executable if os.path.isfile(sys.executable)
-                    else self.exe, displaced)
-        self.assertTrue(os.path.isfile(displaced))
+    def test_a_displaced_build_is_taken_away(self):
+        left = self.exe + updates.DISPLACED
+        io.open(left, "wb").write(b"MZ")
         self.assertTrue(updates.clear_displaced())
-        self.assertFalse(os.path.isfile(displaced))
+        self.assertFalse(os.path.exists(left))
 
     def test_clearing_is_quiet_when_there_is_nothing_to_clear(self):
-        self.assertFalse(updates.clear_displaced())
-
-    def test_a_build_that_will_not_start_is_refused(self):
-        # the size and the first two bytes are right and the file is still not
-        # a program, which is what a half-written or emptied download looks like
-        stub = os.path.join(self.folder, "stub.exe")
-        with open(stub, "wb") as file:
-            file.write(b"MZ" + b"\0" * (updates.SMALLEST * 2))
-        self.assertTrue(updates.looks_like_a_program(stub))
-        self.assertFalse(updates.answers_for_itself(stub, timeout=30))
-
-    def test_a_program_that_runs_answers_for_itself(self):
-        # the interpreter is the one program certainly on this machine
-        self.assertTrue(updates.answers_for_itself(self.real_exe, timeout=60))
-
-    def release(self, name="release.exe", content=None):
-        """A file standing in for a release asset, and what it hashes to."""
-        where = os.path.join(self.folder, name)
-        if content is None:
-            shutil.copy(self.real_exe, where)
-        else:
-            with open(where, "wb") as file:
-                file.write(content)
-        with open(where, "rb") as file:
-            return pathlib.Path(where).as_uri(), hashlib.sha256(
-                file.read()).hexdigest()
-
-    def untouched(self, was):
-        self.assertEqual(os.path.getsize(self.exe), was)
-        self.assertFalse(os.path.exists(self.exe + updates.INCOMING))
-        self.assertFalse(os.path.exists(self.exe + updates.DISPLACED))
-
-    def test_nothing_is_touched_when_the_download_will_not_run(self):
-        # every refusal before the swap has to leave the folder as it was
-        url, digest = self.release(
-            content=b"MZ" + b"\0" * (updates.SMALLEST * 2))
-        was = os.path.getsize(self.exe)
-        answer = updates.install(url, digest, restart=False)
-        self.assertEqual(answer[0], "update does not run")
-        self.untouched(was)
-
-    def test_a_download_that_does_not_match_its_fingerprint_is_refused(self):
-        # the check that catches a build altered between the release and here
-        url, digest = self.release()
-        was = os.path.getsize(self.exe)
-        answer = updates.install(url, digest.replace(digest[0], "f", 1),
-                                 restart=False)
-        self.assertEqual(answer[0], "update wrong fingerprint")
-        self.untouched(was)
-
-    def test_the_swap_leaves_the_old_build_to_fall_back_to(self):
-        # the interpreter stands in for a release: it is a real program, so it
-        # answers --help and the install runs the whole way through
-        url, digest = self.release()
-        self.assertIsNone(updates.install(url, digest, restart=False))
-        self.assertTrue(os.path.isfile(self.exe))
-        self.assertTrue(os.path.isfile(self.exe + updates.DISPLACED))
-        self.assertFalse(os.path.exists(self.exe + updates.INCOMING))
-
-    def test_fingerprints_are_read_the_way_sha256sum_writes_them(self):
-        sums = os.path.join(self.folder, updates.SUMS)
-        with open(sums, "w", encoding="utf-8") as file:
-            file.write("# a comment nobody has to argue with\n"
-                       "%s  Structura.exe\n"
-                       "%s *Structura-cli.exe\n" % ("a" * 64, "B" * 64))
-        found = updates.fingerprints(pathlib.Path(sums).as_uri())
-        self.assertEqual(found, {"Structura.exe": "a" * 64,
-                                 "Structura-cli.exe": "b" * 64})
-
-    @unittest.skipUnless(sys.platform.startswith("win"),
-                         "only Windows has a hidden attribute")
-    def test_the_displaced_build_is_hidden_and_still_clears(self):
-        displaced = self.exe + updates.DISPLACED
-        shutil.copy(self.exe, displaced)
-        self.assertTrue(updates.hide(displaced))
         self.assertTrue(updates.clear_displaced())
-        self.assertFalse(os.path.exists(displaced))
 
-    @unittest.skipUnless(sys.platform.startswith("win"),
-                         "only Windows refuses to delete a file in use")
-    def test_a_held_build_is_waited_for_rather_than_left(self):
-        # the launch an update starts races the build it replaced, which is
-        # still shutting down; patience is what wins that race
-        displaced = self.exe + updates.DISPLACED
-        shutil.copy(self.exe, displaced)
-        holding = open(displaced, "rb")
-        try:
-            self.assertFalse(updates.clear_displaced())
-            threading.Timer(0.5, holding.close).start()
-            self.assertTrue(updates.clear_displaced(updates.PATIENCE))
-        finally:
-            holding.close()
-        self.assertFalse(os.path.isfile(displaced))
+    def test_a_checkout_has_nothing_to_clear(self):
+        updates.running_file = lambda: None
+        self.assertTrue(updates.clear_displaced())
 
 
-class ReleaseTests(unittest.TestCase):
-    """The two ends of the fingerprint file, which have to agree.
+class ReasonTests(unittest.TestCase):
+    """Every way this reports a failure has to be a string the window can show.
 
-    build.py writes it and updates.py reads it, and nothing else would notice
-    the day one of them changed the name or the format.
+    `install_latest` returns the *name* of a string rather than the string, so
+    the window can put it in the running language. A name the table does not
+    carry reaches the screen as itself, and nothing else would notice.
     """
 
-    def test_the_build_writes_the_file_the_updater_looks_for(self):
-        import build
-        self.assertEqual(build.SUMS_NAME, updates.SUMS)
+    ## every key updates.py can hand back, which is short enough to keep by hand
+    ## and long enough that the test is worth having
+    REASONS = ("update source", "update no release", "update current",
+               "update download failed", "update wrong fingerprint",
+               "update cannot place", "update stage checking",
+               "update stage downloading")
 
-    def test_what_the_build_writes_is_what_the_updater_reads(self):
-        import build
-        folder = tempfile.mkdtemp()
-        self.addCleanup(shutil.rmtree, folder, True)
-        asset = os.path.join(folder, "Structura.exe")
-        with open(asset, "wb") as file:
-            file.write(b"MZ, near enough for a fingerprint")
+    def test_every_reason_is_a_string_the_window_can_show(self):
+        english = lang_parse.parse()["en_US"]
+        missing = sorted(key for key in self.REASONS if key not in english)
+        self.assertEqual(missing, [], "updates.py names strings nothing carries")
 
-        was, build.DIST = build.DIST, folder
-        try:
-            sums = build.write_sums([asset])
-        finally:
-            build.DIST = was
-        self.assertEqual(updates.fingerprints(pathlib.Path(sums).as_uri()),
-                         {"Structura.exe": build.digest_of(asset)})
+    def test_the_reasons_the_source_names_are_the_reasons_listed(self):
+        # the list above is what the test above checks, so it has to be the
+        # list the module actually uses
+        import re
+
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        body = io.open(os.path.join(here, "scaffold", "updates.py"),
+                       encoding="utf-8").read()
+        named = set(re.findall(r'"(update [a-z ]+)"', body))
+        self.assertEqual(named - set(self.REASONS), set(),
+                         "updates.py names a string this test does not check")
 
 
 if __name__ == "__main__":

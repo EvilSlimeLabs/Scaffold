@@ -2,8 +2,8 @@ import os
 import re
 import unittest
 
-from structura import settings
-from structura import lang_parse
+from scaffold import settings
+from scaffold import lang_parse
 def open_window():
     """A fresh App, or a skip when there is no display to put one on.
 
@@ -12,12 +12,12 @@ def open_window():
     process finds the first one's images and cannot use them. Tests get a clean
     slate rather than the leftovers of whichever test ran first.
     """
-    from structura.ui import structura_gui
+    from scaffold.ui import scaffold_gui
 
-    structura_gui._image_cache.clear()
-    del structura_gui._fonts[:]
+    scaffold_gui._image_cache.clear()
+    del scaffold_gui._fonts[:]
     try:
-        return structura_gui.App()
+        return scaffold_gui.App()
     except Exception as complaint:
         raise unittest.SkipTest("no window: %s" % complaint)
 
@@ -41,7 +41,7 @@ class TransparencyTests(unittest.TestCase):
         # the window, the CLI's --opacity and the core's own default all have to
         # land on the same ghost block, or a pack built one way looks different
         # from the same pack built another
-        from structura.pack import armor_stand_geo_class as asgc
+        from scaffold.pack import armor_stand_geo_class as asgc
 
         alpha = settings.transparency_to_alpha(settings.DEFAULT_TRANSPARENCY)
         self.assertAlmostEqual(alpha, asgc.DEFAULT_ALPHA)
@@ -74,13 +74,13 @@ class LanguageTests(unittest.TestCase):
                             "%s does not name itself" % code)
 
     def test_a_language_remembered_by_name_still_resolves(self):
-        # Structura stored the name rather than the code until 3.0
+        # Scaffold stored the name rather than the code until 3.0
         self.assertEqual(settings.language_code("Español"), "es_ES")
         self.assertEqual(settings.language_code("LOLCAT"), "lol_US")
         self.assertIsNone(settings.language_code("Klingon"))
 
     def test_every_language_has_colours_and_they_differ_by_language(self):
-        from structura.ui import lang_icons
+        from scaffold.ui import lang_icons
 
         seen = {}
         for code in settings.choices():
@@ -103,7 +103,7 @@ class LanguageTests(unittest.TestCase):
         self.assertEqual(names, sorted(names))
 
     def test_an_unlisted_language_falls_back_to_the_default_colour(self):
-        from structura.ui import lang_icons
+        from scaffold.ui import lang_icons
 
         table = lang_icons.colours()
         self.assertIn(lang_icons.DEFAULT_KEY, table)
@@ -134,7 +134,7 @@ class StringCoverageTests(unittest.TestCase):
     """
 
     def test_every_key_the_window_uses_is_translated(self):
-        with open(os.path.join("structura", "ui", "structura_gui.py"),
+        with open(os.path.join("scaffold", "ui", "scaffold_gui.py"),
                   encoding="utf-8") as f:
             source = f.read()
         keys = set(re.findall(r'(?:self\.)?text\(\s*"([^"]+)"', source))
@@ -161,15 +161,15 @@ class ThemeTests(unittest.TestCase):
         self.assertIn(settings.FALLBACK_THEME, settings.THEMES)
 
     def test_an_undetectable_desktop_resolves_to_dark(self):
-        from structura.ui import structura_gui
+        from scaffold.ui import scaffold_gui
 
-        real = structura_gui.darkdetect
+        real = scaffold_gui.darkdetect
         try:
-            structura_gui.darkdetect = None
-            self.assertEqual(structura_gui.resolve_theme("system"), "dark")
-            self.assertEqual(structura_gui.resolve_theme("light"), "light")
+            scaffold_gui.darkdetect = None
+            self.assertEqual(scaffold_gui.resolve_theme("system"), "dark")
+            self.assertEqual(scaffold_gui.resolve_theme("light"), "light")
         finally:
-            structura_gui.darkdetect = real
+            scaffold_gui.darkdetect = real
 
 
 
@@ -179,7 +179,7 @@ class FontTests(unittest.TestCase):
 
     def test_the_bundled_files_are_present_with_their_licences(self):
         import os
-        from structura.ui import ui_fonts
+        from scaffold.ui import ui_fonts
 
         for name in ui_fonts.FILES:
             self.assertTrue(os.path.isfile(ui_fonts.path(name)), name)
@@ -188,7 +188,7 @@ class FontTests(unittest.TestCase):
                             "%s must travel with the fonts" % licence)
 
     def test_a_language_whose_script_is_not_covered_gets_its_own_face(self):
-        from structura.ui import ui_fonts
+        from scaffold.ui import ui_fonts
         # Source Sans Pro has no CJK glyphs and is not the enchanting alphabet,
         # and Tk will not fall back to a privately registered font by itself
         self.assertNotEqual(ui_fonts.family("zh_CN"), ui_fonts.family("en_US"))
@@ -203,7 +203,7 @@ class IconControlTests(unittest.TestCase):
         # the background and the preview are masked to the frame's own outline,
         # and the outline is cut out of that same mask, so no part of the
         # control may have any opacity where the mask has none
-        from structura.ui import ui_icons
+        from scaffold.ui import ui_icons
         from PIL import Image
         size, radius, width = 128, 14, 2
         art = Image.new("RGBA", (64, 64), (255, 255, 255, 255))
@@ -225,7 +225,7 @@ class IconControlTests(unittest.TestCase):
         # the cut is drawn small on purpose, which makes it a small target, so
         # the clickable corner is pushed out past it. Whatever else it does, it
         # has to accept every point the wedge is actually drawn over.
-        from structura.ui import ui_icons
+        from scaffold.ui import ui_icons
 
         size = 128
         top, side = ui_icons.WEDGE_TOP, ui_icons.WEDGE_SIDE
@@ -238,7 +238,7 @@ class IconControlTests(unittest.TestCase):
                         "the drawn wedge is not clickable at %.2f,%.2f" % (fx, fy))
 
     def test_the_clickable_corner_stays_in_its_corner(self):
-        from structura.ui import ui_icons
+        from scaffold.ui import ui_icons
 
         size = 128
         for x, y in ((size // 2, size // 2), (4, 4), (4, size - 4),
@@ -277,8 +277,8 @@ class RuneFaceTests(unittest.TestCase):
 
     def face(self):
         from fontTools.ttLib import TTFont
-        from structura import paths
-        path = paths.data("fonts", "StructuraEnchanting.ttf")
+        from scaffold import paths
+        path = paths.data("fonts", "ScaffoldEnchanting.ttf")
         if not os.path.isfile(path):
             raise unittest.SkipTest("the rune face is not built")
         return TTFont(path)
@@ -305,7 +305,7 @@ class RuneFaceTests(unittest.TestCase):
         self.assertGreater(len(widths), 1, "every glyph has the same advance")
 
     def test_the_face_is_asked_for_smaller_than_the_interface_face(self):
-        from structura.ui import ui_fonts
+        from scaffold.ui import ui_fonts
 
         self.assertLess(ui_fonts.scale("en_SGA"), 1.0)
         self.assertEqual(ui_fonts.scale("en_US"), 1.0)
@@ -370,7 +370,7 @@ class LanguageMenuTests(unittest.TestCase):
         # fading it out and back while it does, which does not survive a drag
         # between monitors intact
         import customtkinter
-        from structura.ui import structura_gui                            # noqa: F401
+        from scaffold.ui import scaffold_gui                            # noqa: F401
         self.assertTrue(
             customtkinter.ScalingTracker.deactivate_automatic_dpi_awareness,
             "importing the window should have turned off automatic rescaling")
@@ -411,7 +411,7 @@ class LanguageMenuTests(unittest.TestCase):
     def test_the_selectors_are_wide_enough_for_every_language(self):
         # the boxes are a fixed width now, so nothing measures whether the
         # longest label still fits inside one
-        from structura.ui import structura_gui
+        from scaffold.ui import scaffold_gui
 
         app = open_window()
         try:
@@ -428,9 +428,9 @@ class LanguageMenuTests(unittest.TestCase):
                     # display
                     widest /= menu._get_widget_scaling() or 1.0
                     room = menu.cget("width") - (
-                        structura_gui.BOX_PAD
-                        + (structura_gui.BADGE + 7 if menu.badges else 0)
-                        + 4 + structura_gui.CHEVRON + structura_gui.BOX_PAD)
+                        scaffold_gui.BOX_PAD
+                        + (scaffold_gui.BADGE + 7 if menu.badges else 0)
+                        + 4 + scaffold_gui.CHEVRON + scaffold_gui.BOX_PAD)
                     self.assertLessEqual(
                         widest, room,
                         "%s clips in %s: %d into %d" % (
@@ -478,7 +478,7 @@ class LanguageMenuTests(unittest.TestCase):
             # read from how the rows were packed rather than from where they
             # landed: an unmapped toplevel has not laid its children out, and
             # mapping one needs the program to be the one in use
-            from structura.ui import structura_gui
+            from scaffold.ui import scaffold_gui
 
             rows = menu.popup.winfo_children()[0].winfo_children()
             first = rows[0].pack_info()["pady"]
@@ -490,7 +490,7 @@ class LanguageMenuTests(unittest.TestCase):
             # constant put through the same scaling
             self.assertEqual(
                 int(first[0]),
-                menu._apply_widget_scaling(structura_gui.LIST_PAD))
+                menu._apply_widget_scaling(scaffold_gui.LIST_PAD))
             menu.close()
         finally:
             app.destroy()
@@ -530,7 +530,7 @@ class LanguageMenuTests(unittest.TestCase):
         # inset from it by the same amount all round. A frame whose height
         # comes out odd goes unpainted along its last row, and the
         # colour behind shows through as an extra pixel at the bottom
-        from structura.ui import structura_gui
+        from scaffold.ui import scaffold_gui
 
         app = open_window()
         try:
@@ -545,7 +545,7 @@ class LanguageMenuTests(unittest.TestCase):
                 self.assertEqual(int(ring["padx"]), int(ring["pady"]))
                 self.assertEqual(
                     int(ring["padx"]),
-                    menu._apply_widget_scaling(structura_gui.LIST_RING))
+                    menu._apply_widget_scaling(scaffold_gui.LIST_RING))
                 menu.close()
         finally:
             app.destroy()
@@ -664,7 +664,7 @@ class FieldTests(unittest.TestCase):
     def test_the_text_clears_the_thickest_border_a_field_can_have(self):
         # the border grows from one to two while a field is showing an error,
         # and the text must not shift or be painted over when it does
-        from structura.ui import structura_gui
+        from scaffold.ui import scaffold_gui
 
         app = open_window()
         try:
@@ -675,7 +675,7 @@ class FieldTests(unittest.TestCase):
             self.assertEqual(field.cget("border_width"), 2)
             self.assertGreaterEqual(
                 field.entry.winfo_y(),
-                field._apply_widget_scaling(structura_gui.FIELD_INSET))
+                field._apply_widget_scaling(scaffold_gui.FIELD_INSET))
         finally:
             app.destroy()
 
@@ -698,6 +698,7 @@ class SettingsFileTests(unittest.TestCase):
             "tech_pack": ("compatibility", settings.set_tech_pack),
             "low_geometry": (True, settings.set_low_geometry),
             "check_updates": (False, settings.set_check_updates),
+            "transparency": (42, settings.set_transparency),
             "output_dir": (os.path.join(os.path.expanduser("~"), "Somewhere"),
                            settings.set_output_dir),
         }
@@ -708,7 +709,7 @@ class SettingsFileTests(unittest.TestCase):
         import tempfile
 
         self.folder = tempfile.mkdtemp()
-        self.path = os.path.join(self.folder, ".structura")
+        self.path = os.path.join(self.folder, ".scaffold")
         self._real = settings.settings_file
         settings.settings_file = lambda: self.path
         self.addCleanup(setattr, settings, "settings_file", self._real)
@@ -736,7 +737,7 @@ class SettingsFileTests(unittest.TestCase):
 
     def first_launch(self, desktop):
         """Load with nothing remembered, pretending the desktop says this."""
-        from structura import system_locale
+        from scaffold import system_locale
 
         if os.path.isfile(self.path):
             os.remove(self.path)
@@ -769,7 +770,7 @@ class SettingsFileTests(unittest.TestCase):
         self.assertEqual(self.first_launch("xx_XX"), "en_US")
 
     def test_a_remembered_language_outlives_the_desktops(self):
-        from structura import system_locale
+        from scaffold import system_locale
 
         settings.set_language("en_US")
         real = system_locale.read
@@ -799,7 +800,7 @@ class SettingsFileTests(unittest.TestCase):
         # paths.beside_executable() means the package when not frozen, which is
         # right for reading data and wrong for the user's own settings:
         # site-packages is shared and not theirs to write to
-        from structura import paths
+        from scaffold import paths
 
         settings.settings_file = self._real
         self.assertNotIn(os.path.dirname(os.path.abspath(paths.__file__)),
@@ -847,9 +848,9 @@ class HelpMarkTests(unittest.TestCase):
         # a tip is a borderless window of its own, so nothing closes it unless
         # something is watching for it: a click, a keystroke, the mark going out
         # from under the pointer, the window being dragged
-        from structura.ui import structura_gui
+        from scaffold.ui import scaffold_gui
 
-        tooltip = structura_gui.Tooltip
+        tooltip = scaffold_gui.Tooltip
         app = open_window()
         try:
             settle(app)
@@ -879,9 +880,9 @@ class HelpMarkTests(unittest.TestCase):
     def test_a_click_on_the_mark_itself_keeps_it(self):
         # the mark's own binding opens the tip and the window-wide one runs
         # after it, so a click there must not close what it just opened
-        from structura.ui import structura_gui
+        from scaffold.ui import scaffold_gui
 
-        tooltip = structura_gui.Tooltip
+        tooltip = scaffold_gui.Tooltip
         app = open_window()
         try:
             settle(app)
@@ -901,9 +902,9 @@ class HelpMarkTests(unittest.TestCase):
     def test_only_one_tip_is_up_at_a_time(self):
         # whatever is open is what everything else has to close, so a second
         # one opening has to put the first away rather than leaving it behind
-        from structura.ui import structura_gui
+        from scaffold.ui import scaffold_gui
 
-        tooltip = structura_gui.Tooltip
+        tooltip = scaffold_gui.Tooltip
         app = open_window()
         try:
             settle(app)

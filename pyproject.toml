@@ -3,13 +3,13 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "structura"
-version = "3.0.1"
+name = "mcpe-scaffold"
+version = "0.9.0"
 description = "Turn a .mcstructure file into a Minecraft Bedrock resource pack of semi-transparent ghost blocks."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
-# tomllib, which structura.version reads this file with, is stdlib from 3.11
+# tomllib, which scaffold.version reads this file with, is stdlib from 3.11
 requires-python = ">=3.11"
 authors = [{ name = "EvilSlimeLabs" }]
 maintainers = [{ name = "EvilSlimeLabs" }]
@@ -42,41 +42,52 @@ gui = [
     "customtkinter>=6.0.0",
     "darkdetect>=0.8.0",
     "tkinterdnd2>=0.4.0",
+    # Signed self-updates. Only a compiled release has anything to update, but
+    # the window offers the check, so it belongs with the window.
+    "tufup>=0.10,<1",
 ]
-# Freezing the release, and the scripts in tools/ that regenerate the bundled
-# fonts and icons.
+# Compiling the release, and the scripts in tools/ that regenerate the bundled
+# fonts and icons. Nuitka also needs a C compiler, which it downloads itself the
+# first time; see the README.
 dev = [
-    "structura[gui]",
-    "pyinstaller>=6.6",
+    "mcpe-scaffold[gui]",
+    # the onefile extra is what brings zstandard, and without it a onefile
+    # build is assembled uncompressed: "Onefile mode cannot compress without
+    # 'zstandard' package installed". The release is a single executable
+    # somebody downloads, so its size is the point.
+    "nuitka[onefile]>=2.5",
     "fonttools>=4.53",
 ]
 
 [project.urls]
-Homepage = "https://github.com/EvilSlimeLabs/Structura"
-Issues = "https://github.com/EvilSlimeLabs/Structura/issues"
+Homepage = "https://github.com/EvilSlimeLabs/Scaffold"
+Issues = "https://github.com/EvilSlimeLabs/Scaffold/issues"
 
 [project.scripts]
 # the command line, on any platform with Python 3.11 or newer
-structura-cli = "structura.cli:console_entry"
+scaffold-cli = "scaffold.cli:console_entry"
 
 [project.gui-scripts]
 # the window. gui-scripts rather than scripts so Windows does not open a
 # console behind it.
-structura = "structura.app:window_entry"
+scaffold = "scaffold.app:window_entry"
 
 [tool.setuptools.packages.find]
-include = ["structura*"]
+include = ["scaffold*"]
 
 [tool.setuptools.package-data]
 # The lookup tables, the trimmed vanilla pack, the bundled faces and the two
 # pictures the program opens. These live inside the package precisely so that
 # an install carries them.
-structura = [
+scaffold = [
     "lookups/**",
     "Vanilla_Resource_Pack/**",
     "fonts/**",
     "images/**",
     # TechPack's assets, staged from the submodule by
-    # tools/stage_tech_pack.py so that an install can offer the setting
+    # python -m tools.vendor.tech_pack, so that an install can offer the setting
     "techpack/**",
+    # The TUF root of trust an update is checked against. It has to travel with
+    # the program, because it is the one thing that cannot be fetched.
+    "trust/**",
 ]

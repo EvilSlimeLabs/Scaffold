@@ -1,0 +1,720 @@
+{
+    "metadata": {
+        "version": "1.0.0",
+        "description": "Block categories for Scaffold",
+        "MCVersion": "26.45"
+    },
+	"categories": [
+		{
+			"name": "Flowers and Plants",
+			"match": [
+				"*sapling",
+				"*_leaves",
+				"leaves*",
+				"*flower",
+				"wither_rose",
+				"allium",
+				"azure_bluet",
+				"blue_orchid",
+				"dandelion",
+				"poppy",
+				"oxeye_daisy",
+				"peony",
+				"lilac",
+				"*tulip",
+				"pink_petals",
+				"double_plant",
+				"tallgrass",
+				"tall_grass",
+				"short_grass",
+				"fern",
+				"*fern",
+				"deadbush",
+				"vine",
+				"*vines",
+				"cave_vines*",
+				"lily_pad",
+				"waterlily",
+				"*mushroom",
+				"*_fungus",
+				"*_roots",
+				"hanging_roots",
+				"*_sprouts",
+				"*azalea*",
+				"spore_blossom",
+				"glow_lichen",
+				"*sculk_vein",
+				"big_dripleaf*",
+				"small_dripleaf*",
+				"*_propagule",
+				"chorus_flower",
+				"chorus_plant",
+				"seagrass",
+				"kelp*",
+				"sea_pickle",
+				"*coral_fan",
+				"*coral_fan_hang*",
+				"*coral_wall_fan",
+				"*_coral",
+				"cactus",
+				"sugar_cane",
+				"reeds",
+				"bamboo",
+				"moss_carpet",
+				"pale_moss_carpet",
+				"web",
+				"dead_bush",
+				"pitcher_plant",
+				"coral",
+				"*coral_fan*",
+				"coral_fan_dead",
+				"*_bud",
+				"*amethyst_bud",
+				"amethyst_cluster",
+				"hanging_roots",
+				"sniffer_egg",
+				"turtle_egg",
+				"frog_spawn",
+				"*_bush",
+				"rose_bush"
+			]
+		},
+		{
+			"name": "Crops",
+			"match": [
+				"wheat",
+				"carrots",
+				"potatoes",
+				"beetroot",
+				"melon_stem",
+				"pumpkin_stem",
+				"cocoa",
+				"sweet_berry_bush",
+				"nether_wart",
+				"torchflower_crop",
+				"pitcher_crop",
+				"*_crop"
+			]
+		},
+		{
+			"name": "Redstone",
+			"match": [
+				"*redstone*",
+				"*piston*",
+				"*repeater*",
+				"*comparator*",
+				"observer",
+				"*rail*",
+				"hopper",
+				"dropper",
+				"dispenser",
+				"*lever*",
+				"*button*",
+				"*pressure_plate*",
+				"tripwire*",
+				"trip_wire",
+				"daylight_detector*",
+				"target",
+				"lightning_rod",
+				"*command_block",
+				"structure_block",
+				"structure_void",
+				"jigsaw",
+				"note*",
+				"jukebox",
+				"crafter",
+				"*copper_bulb",
+				"sculk_sensor",
+				"calibrated_sculk_sensor",
+				"sculk_shrieker",
+				"lodestone",
+				"tnt",
+				"slime",
+				"honey_block",
+				"*_bulb",
+				"tripWire"
+			]
+		},
+		{
+			"name": "Heads, Signs and Banners",
+			"match": [
+				"*_head",
+				"*skull",
+				"*statue",
+				"*_banner",
+				"banner",
+				"standing_banner",
+				"wall_banner",
+				"*_sign",
+				"sign",
+				"*_hanging_sign"
+			]
+		},
+		{
+			"name": "Pale Oak",
+			"match": [
+				"pale_oak*",
+				"*_pale_oak*",
+				"*pale_oak*",
+				"*/pale_oak"
+			]
+		},
+		{
+			"name": "Dark Oak",
+			"match": [
+				"dark_oak*",
+				"*_dark_oak*",
+				"*dark_oak*",
+				"*/dark_oak"
+			]
+		},
+		{
+			"name": "Oak",
+			"match": [
+				"oak*",
+				"*_oak*",
+				"*oak*",
+				"*/oak",
+				"planks",
+				"wood",
+				"wooden_slab",
+				"double_wooden_slab",
+				"wooden_door",
+				"trapdoor",
+				"fence_gate",
+				"wooden_button",
+				"wooden_pressure_plate",
+				"fence",
+				"log",
+				"leaves"
+			]
+		},
+		{
+			"name": "Spruce",
+			"match": [
+				"spruce*",
+				"*_spruce*",
+				"*spruce*",
+				"*/spruce"
+			]
+		},
+		{
+			"name": "Birch",
+			"match": [
+				"birch*",
+				"*_birch*",
+				"*birch*",
+				"*/birch"
+			]
+		},
+		{
+			"name": "Jungle",
+			"match": [
+				"jungle*",
+				"*_jungle*",
+				"*jungle*",
+				"*/jungle"
+			]
+		},
+		{
+			"name": "Acacia",
+			"match": [
+				"acacia*",
+				"*_acacia*",
+				"*acacia*",
+				"*/acacia",
+				"log2",
+				"leaves2"
+			]
+		},
+		{
+			"name": "Mangrove",
+			"match": [
+				"mangrove*",
+				"*_mangrove*",
+				"*mangrove*",
+				"*/mangrove"
+			]
+		},
+		{
+			"name": "Cherry",
+			"match": [
+				"cherry*",
+				"*_cherry*",
+				"*cherry*",
+				"*/cherry"
+			]
+		},
+		{
+			"name": "Bamboo",
+			"match": [
+				"bamboo*",
+				"*_bamboo*",
+				"*bamboo*",
+				"*/bamboo"
+			]
+		},
+		{
+			"name": "Crimson",
+			"match": [
+				"crimson*",
+				"*_crimson*",
+				"*crimson*",
+				"*/crimson"
+			]
+		},
+		{
+			"name": "Warped",
+			"match": [
+				"warped*",
+				"*_warped*",
+				"*warped*",
+				"*/warped"
+			]
+		},
+		{
+			"name": "Ores",
+			"match": [
+				"raw_*_block",
+				"*_ore",
+				"*ore"
+			]
+		},
+		{
+			"name": "Copper",
+			"match": [
+				"*copper*"
+			]
+		},
+		{
+			"name": "Iron",
+			"match": [
+				"iron_block",
+				"iron_door",
+				"iron_trapdoor",
+				"iron_bars",
+				"heavy_core",
+				"chain",
+				"anvil",
+				"*anvil"
+			]
+		},
+		{
+			"name": "Gold",
+			"match": [
+				"gold_block",
+				"gilded_blackstone",
+				"light_weighted_pressure_plate",
+				"bell"
+			]
+		},
+		{
+			"name": "Other Metals and Gems",
+			"match": [
+				"diamond_block",
+				"emerald_block",
+				"lapis_block",
+				"netherite_block",
+				"coal_block",
+				"amethyst_block",
+				"budding_amethyst",
+				"ancient_debris",
+				"quartz_block"
+			]
+		},
+		{
+			"name": "Deepslate",
+			"match": [
+				"*deepslate*"
+			]
+		},
+		{
+			"name": "Cobblestone",
+			"match": [
+				"cobblestone*",
+				"mossy_cobblestone*",
+				"infested_cobblestone",
+				"*/cobblestone",
+				"*/mossy_cobblestone"
+			]
+		},
+		{
+			"name": "Red Sandstone",
+			"match": [
+				"*red_sandstone*",
+				"*/red_sandstone",
+				"*/smooth_red_sandstone",
+				"*/cut_red_sandstone"
+			]
+		},
+		{
+			"name": "Sandstone",
+			"match": [
+				"*sandstone*",
+				"*/sandstone",
+				"*/smooth_sandstone",
+				"*/cut_sandstone"
+			]
+		},
+		{
+			"name": "Blackstone",
+			"match": [
+				"*blackstone*"
+			]
+		},
+		{
+			"name": "Tuff",
+			"match": [
+				"*tuff*"
+			]
+		},
+		{
+			"name": "Granite",
+			"match": [
+				"*granite*",
+				"*/granite",
+				"*/polished_granite"
+			]
+		},
+		{
+			"name": "Diorite",
+			"match": [
+				"*diorite*",
+				"*/diorite",
+				"*/polished_diorite"
+			]
+		},
+		{
+			"name": "Andesite",
+			"match": [
+				"*andesite*",
+				"*/andesite",
+				"*/polished_andesite"
+			]
+		},
+		{
+			"name": "Quartz",
+			"match": [
+				"*quartz*",
+				"*/quartz",
+				"*/smooth_quartz"
+			]
+		},
+		{
+			"name": "Purpur",
+			"match": [
+				"*purpur*",
+				"*/purpur"
+			]
+		},
+		{
+			"name": "Prismarine",
+			"match": [
+				"*prismarine*",
+				"sea_lantern",
+				"dark_prismarine*",
+				"*/prismarine_dark",
+				"*/prismarine_brick",
+				"*/prismarine_rough"
+			]
+		},
+		{
+			"name": "Nether Blocks",
+			"match": [
+				"netherrack",
+				"magma",
+				"bone_block",
+				"nether_wart_block",
+				"warped_wart_block"
+			]
+		},
+		{
+			"name": "Nether Brick",
+			"match": [
+				"*nether_brick*",
+				"nether_brick",
+				"*_nether_bricks",
+				"*/nether_brick",
+				"*/red_nether_brick"
+			]
+		},
+		{
+			"name": "End Stone",
+			"match": [
+				"end_stone*",
+				"*end_stone*",
+				"end_bricks",
+				"end_brick*",
+				"end_portal_frame",
+				"*/end_stone_brick"
+			]
+		},
+		{
+			"name": "Basalt",
+			"match": [
+				"*basalt*",
+				"smooth_basalt"
+			]
+		},
+		{
+			"name": "Calcite",
+			"match": [
+				"calcite"
+			]
+		},
+		{
+			"name": "Obsidian",
+			"match": [
+				"obsidian",
+				"*obsidian"
+			]
+		},
+		{
+			"name": "Bricks",
+			"match": [
+				"brick_block",
+				"brick_slab",
+				"brick_stairs",
+				"brick_double_slab",
+				"brick_wall",
+				"bricks",
+				"*/brick"
+			]
+		},
+		{
+			"name": "Mud Bricks",
+			"match": [
+				"mud_brick*",
+				"mud_bricks"
+			]
+		},
+		{
+			"name": "Resin",
+			"match": [
+				"*resin*"
+			]
+		},
+		{
+			"name": "Sculk",
+			"match": [
+				"*sculk*"
+			]
+		},
+		{
+			"name": "Dripstone",
+			"match": [
+				"dripstone_block",
+				"pointed_dripstone"
+			]
+		},
+		{
+			"name": "Organic Blocks",
+			"match": [
+				"hay_block",
+				"dried_kelp_block",
+				"honeycomb_block",
+				"*mushroom_block",
+				"brown_mushroom_block",
+				"red_mushroom_block",
+				"pumpkin",
+				"carved_pumpkin",
+				"melon_block",
+				"melon",
+				"sponge",
+				"*sponge",
+				"*coral_block",
+				"coral_block",
+				"dead_*_coral_block"
+			]
+		},
+		{
+			"name": "Stone",
+			"match": [
+				"stone",
+				"stone_bricks",
+				"stone_brick_*",
+				"*stone_brick*",
+				"stone_stairs",
+				"stone_slab*",
+				"double_stone*",
+				"smooth_stone*",
+				"chiseled_stone*",
+				"infested_stone*",
+				"infested_*",
+				"monster_egg",
+				"stone_pressure_plate",
+				"stone_button",
+				"*_stone_slab*",
+				"stonebrick",
+				"normal_stone_stairs",
+				"normal_stone_double_slab",
+				"stone_block_slab",
+				"stone_block_slab2",
+				"stone_block_slab3",
+				"stone_block_slab4",
+				"*/stone",
+				"*/stone_brick",
+				"*/smooth_stone",
+				"*/mossy_stone_brick"
+			]
+		},
+		{
+			"name": "Dirt and Ground",
+			"match": [
+				"dirt",
+				"dirt*",
+				"coarse_dirt",
+				"dirt_with_roots",
+				"rooted_dirt",
+				"podzol",
+				"mycelium",
+				"grass",
+				"grass_block",
+				"grass_path",
+				"farmland",
+				"moss_block",
+				"pale_moss_block",
+				"mud",
+				"packed_mud",
+				"muddy_mangrove_roots",
+				"*nylium",
+				"soul_sand",
+				"soul_soil",
+				"clay"
+			]
+		},
+		{
+			"name": "Sand and Gravel",
+			"match": [
+				"sand",
+				"red_sand",
+				"gravel",
+				"suspicious_sand",
+				"suspicious_gravel"
+			]
+		},
+		{
+			"name": "Concrete",
+			"match": [
+				"*concrete*"
+			]
+		},
+		{
+			"name": "Wool",
+			"match": [
+				"wool",
+				"*_wool",
+				"carpet",
+				"*_carpet"
+			]
+		},
+		{
+			"name": "Glass",
+			"match": [
+				"glass",
+				"*glass*",
+				"tinted_glass"
+			]
+		},
+		{
+			"name": "Terracotta",
+			"match": [
+				"*terracotta",
+				"*glazed_terracotta",
+				"hardened_clay",
+				"stained_hardened_clay"
+			]
+		},
+		{
+			"name": "Light and Fire",
+			"match": [
+				"torch",
+				"*torch*",
+				"lantern",
+				"*lantern",
+				"campfire",
+				"*campfire",
+				"fire",
+				"soul_fire",
+				"candle",
+				"*candle*",
+				"glowstone",
+				"shroomlight",
+				"*froglight",
+				"froglight*",
+				"beacon",
+				"conduit",
+				"lit_*",
+				"*_lamp",
+				"end_rod"
+			]
+		},
+		{
+			"name": "Ice, Snow and Water",
+			"match": [
+				"ice",
+				"*ice",
+				"snow",
+				"snow_layer",
+				"water",
+				"flowing_water",
+				"lava",
+				"flowing_lava",
+				"powder_snow",
+				"bubble_column"
+			]
+		},
+		{
+			"name": "Storage and Utility",
+			"match": [
+				"chest",
+				"*chest*",
+				"barrel",
+				"furnace",
+				"*furnace",
+				"smoker",
+				"*_shulker_box",
+				"shulker_box",
+				"undyed_shulker_box",
+				"crafting_table",
+				"*_table",
+				"grindstone",
+				"smithing_table",
+				"stonecutter*",
+				"loom",
+				"cartography_table",
+				"fletching_table",
+				"brewing_stand",
+				"cauldron",
+				"*cauldron",
+				"beehive",
+				"bee_nest",
+				"respawn_anchor",
+				"*decorated_pot",
+				"flower_pot",
+				"*flower_pot*",
+				"frame",
+				"glow_frame",
+				"*_bed",
+				"bed",
+				"shelf",
+				"*_shelf",
+				"vault",
+				"trial_spawner",
+				"*_spawner",
+				"mob_spawner",
+				"enchanting_table",
+				"composter",
+				"cake",
+				"dragon_egg",
+				"ladder",
+				"scaffolding",
+				"sponge",
+				"*sponge",
+				"lectern",
+				"bookshelf",
+				"*bookshelf"
+			]
+		}
+	]
+}

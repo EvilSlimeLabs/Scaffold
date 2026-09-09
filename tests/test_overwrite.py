@@ -12,7 +12,7 @@ import shutil
 import tempfile
 import unittest
 
-from structura import core
+from scaffold import core
 
 
 STRUCTURE = os.path.join("test_structures", "01-6xSingleItemSortes.mcstructure")
@@ -49,12 +49,12 @@ class WhatABuildActuallyWritesTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.folder = tempfile.mkdtemp(prefix="structura-outputs-")
+        self.folder = tempfile.mkdtemp(prefix="scaffold-outputs-")
         self.addCleanup(shutil.rmtree, self.folder, True)
 
     def build(self, tags, block_lists):
         target = os.path.join(self.folder, "Sorter")
-        pack = core.Structura(target)
+        pack = core.Scaffold(target)
         for tag in tags:
             pack.add_model(tag, STRUCTURE)
             pack.set_model_offset(tag, [0, 0, 0])
@@ -87,13 +87,13 @@ class RetryTests(unittest.TestCase):
     """A write that fails is offered back before it is given up on."""
 
     def setUp(self):
-        self.folder = tempfile.mkdtemp(prefix="structura-retry-")
+        self.folder = tempfile.mkdtemp(prefix="scaffold-retry-")
         self.addCleanup(shutil.rmtree, self.folder, True)
         self.target = os.path.join(self.folder, "Sorter")
         self.asked = []
 
     def pack(self):
-        pack = core.Structura(self.target)
+        pack = core.Scaffold(self.target)
         pack.add_model("", STRUCTURE)
         pack.set_model_offset("", [0, 0, 0])
         pack.generate_with_nametags()
@@ -163,10 +163,10 @@ class FreeNameTests(unittest.TestCase):
     """The name the window offers instead of writing over a pack."""
 
     def setUp(self):
-        from structura.ui import structura_gui
+        from scaffold.ui import scaffold_gui
 
-        self.free_name = structura_gui.free_name
-        self.folder = tempfile.mkdtemp(prefix="structura-names-")
+        self.free_name = scaffold_gui.free_name
+        self.folder = tempfile.mkdtemp(prefix="scaffold-names-")
         self.addCleanup(shutil.rmtree, self.folder, True)
 
     def took(self, name):

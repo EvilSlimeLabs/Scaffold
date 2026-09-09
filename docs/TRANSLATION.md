@@ -1,16 +1,16 @@
 # Translation Guide
 
-Structura's interface is translated one file per language, in
-`structura/lookups/lang/`. A file is named for its locale and holds one string
+Scaffold's interface is translated one file per language, in
+`scaffold/lookups/lang/`. A file is named for its locale and holds one string
 per line:
 
 ```ini
 # English (en_US)
-# Structura's interface, one string per line as key=value.
+# Scaffold's interface, one string per line as key=value.
 # See docs/TRANSLATION.md before changing anything here.
 
 language name=English
-title=Structura
+title=Scaffold
 error=Error
 browse file=You need to browse for a structure file!
 ```
@@ -48,12 +48,12 @@ with itself.
 5. **Save as UTF-8.** Lines starting with `#` are comments. Everything after the
    first `=` is the string, so a value may contain `=` freely.
 6. **Add a colour** for the *language* in
-   `structura/lookups/language_colors.json` if it has none. It already carries
+   `scaffold/lookups/language_colors.json` if it has none. It already carries
    nearly every ISO code, and a locale with no colours of its own takes its
    language's, so `es_MX` needs nothing: it is Spanish, and it is drawn in
    Spanish's colours. A language with no entry anywhere gets the default amber,
    which is legible but says nothing.
-7. **Try it.** Run Structura, pick your language, and read every screen. The
+7. **Try it.** Run Scaffold, pick your language, and read every screen. The
    window does not resize, so a label far longer than the English one is worth
    shortening.
 8. **Open a pull request** with the new file.
@@ -63,7 +63,7 @@ it, and sorts it in alphabetically among the others. English leads the list,
 being the one the rest are translated from.
 
 **A new file is also what a machine set to that language starts in.** On its
-first run, before anything has been chosen, Structura asks the desktop what
+first run, before anything has been chosen, Scaffold asks the desktop what
 language it is set to and opens in the file that best serves it: that exact
 locale if there is one, otherwise any file for the language, otherwise English.
 So adding `es_MX.lang` is what makes a Mexican desktop open in Spanish.
@@ -82,8 +82,8 @@ and would read EN, so its file asks for PT instead.
 ## Special language cases
 
 Do not edit `en_PT`, `lol_US`, `en_WS`, `en_UD` or `en_SGA`. They are
-**generated**: English put through the transforms in `tools/lang_fun.py`. Edit
-that file instead, then re-run `python tools/make_special_languages.py` to write
+**generated**: English put through the transforms in `tools/app/transforms.py`. Edit
+that file instead, then re-run `python -m tools.app.languages` to write
 the five files out again.
 
 `tests/test_languages.py` fails when the generated files and English have
@@ -93,10 +93,10 @@ of step. A pull request that edits one of the five directly will not pass.
 ## Scripts the bundled font does not cover
 
 The interface ships Source Sans Pro. A language whose script it does not cover
-needs a face of its own, listed in `structura/ui/ui_fonts.py`. That table is read
+needs a face of its own, listed in `scaffold/ui/ui_fonts.py`. That table is read
 by locale and then by language, so listing `zh` covers `zh_CN` and `zh_TW`
 alike. If your language needs a face, say so in the pull request rather than
 adding a font: the file has to be licensed for redistribution and is subset by
-`tools/make_fonts.py` to the characters the window actually uses. Re-run that
+`tools/app/fonts.py` to the characters the window actually uses. Re-run that
 script after adding a translation in a script that is already covered, or its
 new characters will be missing from the subset.

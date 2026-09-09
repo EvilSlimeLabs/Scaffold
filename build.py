@@ -1,51 +1,64 @@
 """Local release build.
 
-Runs the data-generation tools (to rebuild lookup tables and assets), the tests,
-freezes both entry points with PyInstaller (`structura/__main__.py` through
-structura.spec and `structura/cli/__main__.py` through structura_cli.spec) and
-writes the release: a **single self-contained executable**, a console twin of
-it for scripts, a zip of both for places that will not carry a bare .exe, and a
+Regenerates the data, runs the tests, compiles both entry points with **Nuitka**
+(`scaffold/__main__.py` and `scaffold/cli/__main__.py`) and writes the
+release: a **single self-contained executable**, a console twin of it for
+scripts, a zip of both for places that will not carry a bare .exe, and a
 `SHA256SUMS.txt` covering all three. Nothing has to be extracted alongside
 either executable. The lookup tables, the vanilla pack and the TechPack assets
 are all inside.
 
-**Upload SHA256SUMS.txt with the release.** Structura checks a download against
-the fingerprint published beside it and refuses to install a build it cannot
-check, so a release uploaded without that file cannot be taken by the updater.
+**Nuitka needs a C compiler**, because it compiles the program to C rather than
+bundling an interpreter. This build asks for `--zig`, which Nuitka downloads and
+keeps up to date itself the first time it is used; Visual Studio 2022 works too
+if it is installed, and MinGW64 does not, because Nuitka stopped downloading
+that for Python 3.13. The README says the same thing for anyone building from a
+fresh checkout.
 
-    python build.py                    full build with tools and tests
-    python build.py --skip-tools       freeze and package without regenerating data
-    python build.py --skip-tests       run tools and freeze without running tests
-    python build.py --skip-freeze      repackage the executable already in dist/
+**Upload SHA256SUMS.txt with the release.** It is what a hand download is
+checked against. The program's own updates do not use it -- those go through
+`scaffold/updates.py`, which verifies TUF metadata instead -- but a release
+without it gives anyone downloading by hand nothing to check.
+
+    python build.py                    the lot
+    python build.py --skip-tools       do not regenerate the data first
+    python build.py --skip-tests       do not run the tests first
+    python build.py --skip-freeze      repackage what is already in dist/
+
+    python build.py --init-trust       create the signing keys, once
+    python build.py --init-pages       set up pages/ as the gh-pages worktree
+    python build.py --publish          sign a build into the update repository
 
 The version comes from pyproject.toml, which is packed into the executable so
-the frozen program can read it back.
+the compiled program can read it back.
 """
 import argparse
 import hashlib
 import os
+import re
 import shutil
 import subprocess
 import sys
 import zipfile
 
-from structura import paths
-from structura import version
+from scaffold import version
 ROOT = os.path.dirname(os.path.abspath(__file__))
 BUILD = os.path.join(ROOT, "build")
 DIST = os.path.join(ROOT, "dist")
-SPEC = os.path.join(ROOT, "structura.spec")
-CLI_SPEC = os.path.join(ROOT, "structura_cli.spec")
-EXE_NAME = "Structura.exe" if os.name == "nt" else "Structura"
-CLI_NAME = "Structura-cli.exe" if os.name == "nt" else "Structura-cli"
+## the two entry points, which are the same command line with and without the
+## window; see `scaffold/__main__.py`
+WINDOW_ENTRY = "scaffold/__main__.py"
+CLI_ENTRY = "scaffold/cli/__main__.py"
+EXE_NAME = "Scaffold.exe" if os.name == "nt" else "Scaffold"
+CLI_NAME = "Scaffold-cli.exe" if os.name == "nt" else "Scaffold-cli"
 
 ## What travels beside the executable in the release zip. Everything the
-## program reads is packed *inside* it, as structura.spec lays out, so this is
-## only the paperwork.
+## program reads is packed *inside* it, as the compile options above lay out, so
+## this is only the paperwork.
 LOOSE_FILES = ["LICENSE", "README.md"]
 
-## The asset Structura reads before it replaces itself. updates.SUMS is the
-## same name from the other end; the two have to agree.
+## The fingerprints published beside the release, for a hand download to check
+## against. `sha256sum -c SHA256SUMS.txt` reads it.
 SUMS_NAME = "SHA256SUMS.txt"
 
 
@@ -58,29 +71,15 @@ def run(cmd, what):
 
 
 def run_tools():
-    """Regenerate all lookup tables and assets from source data."""
-    tools = [
-        ("tools/make_block_forms.py", "mounted forms, fire and shelf"),
-        ("tools/make_growth_forms.py", "crops, eggs, compost, coral"),
-        ("tools/make_cross_forms.py", "fire, dripstone and sulfur spikes"),
-        ("tools/make_furniture_forms.py", "beds, lecterns, conduits"),
-        ("tools/make_head_forms.py", "mob heads"),
-        ("tools/make_container_forms.py", "shulker boxes and banners"),
-        ("tools/make_bed_textures.py", "the sixteen recoloured beds"),
-        ("tools/make_string_texture.py", "the string tile"),
-        ("tools/make_bookshelf.py", "the bookshelf's 64 states"),
-        ("tools/make_statue_poses.py", "the copper golem's four models"),
-        ("tools/fix_problem_blocks.py", "blocks with custom geometry"),
-        ("tools/make_banner_textures.py", "the dyed banners"),
-        ("tools/make_low_geometry.py", "the simplified shapes"),
-        ("tools/make_icon.py", "both icons"),
-        ("tools/make_fonts.py", "the bundled typefaces"),
-        ("tools/make_special_languages.py", "the five generated languages"),
-    ]
-    for tool_path, description in tools:
-        tool = os.path.join(ROOT, tool_path)
-        if os.path.isfile(tool):
-            run([sys.executable, tool], description)
+    """Regenerate every lookup table and every generated asset.
+
+    The order the generators run in is `tools/generate.py`'s business, not this
+    file's: it is the only place that knows which of them read what the others
+    write. A table generated by an older version of the script that writes it is
+    the kind of thing nobody notices until a block is wrong in game, so this is
+    on by default and `--skip-tools` is the exception.
+    """
+    run([sys.executable, "-m", "tools.generate"], "generating the data")
 
 
 def run_tests():
@@ -88,27 +87,161 @@ def run_tests():
         "unit tests")
 
 
-def freeze():
+# --- compiling ---------------------------------------------------------------
+#
+# Nuitka compiles the program to C and hands the result to a C compiler, so a
+# release is a real executable rather than an interpreter with a zip stapled to
+# it. `--zig` is what compiles it: Nuitka downloads and keeps that toolchain
+# itself, the way it used to download MinGW64, and MinGW64 is not an option here
+# because Nuitka stopped downloading it for Python 3.13. Visual Studio 2022 is
+# used instead if it happens to be installed and `--zig` is dropped.
+#
+# `--mode=onefile` keeps the release one file: the compiled program and
+# everything it reads are packed into a single executable that unpacks itself
+# into a private folder and runs from there.
+#
+# **The data keeps the layout it has in the source tree.** `scaffold/lookups`
+# is packed as `scaffold/lookups`, so inside the unpacked copy the tables sit
+# beside the code that opens them exactly as they do in a checkout, and
+# `paths.py` finds them without knowing it is inside a bundle at all. A copy
+# dropped *beside* the executable still wins, which is what makes a hand-edited
+# lookup table take effect without a rebuild.
+
+## Source art and helper scripts that live in the data directories but have no
+## business in a release.
+SKIP_SUFFIXES = (".afphoto", ".xcf", ".psd", ".py", ".pyc")
+SKIP_NAMES = {"easyItems.txt", "Thumbs.db", ".DS_Store"}
+
+## Scaffold's own data, packed under the package it lives in
+DATA_DIRS = ("lookups", "Vanilla_Resource_Pack", "fonts", "images", "techpack",
+             "trust")
+
+## What the window needs and never names itself, so nothing can find it by
+## following imports: CustomTkinter keeps its themes and widget fonts as JSON
+## inside its own package, and tkinterdnd2 carries a compiled tkdnd library.
+GUI_PACKAGES = ("customtkinter", "darkdetect")
+## Dropping files onto the window is a convenience rather than a requirement, so
+## a machine without this still builds; the window opens and the add button
+## works.
+OPTIONAL_PACKAGES = ("tkinterdnd2",)
+
+COMPILER = "--zig"
+
+
+def has(package):
+    import importlib.util
+
     try:
-        import PyInstaller  # noqa: F401
-    except ImportError:
-        sys.exit("Build stopped: PyInstaller is not installed.\n"
+        return importlib.util.find_spec(package) is not None
+    except (ImportError, ValueError):
+        return False
+
+
+def data_options():
+    """`--include-data-dir` for everything the program reads."""
+    options = []
+    for folder in DATA_DIRS:
+        source = os.path.join("scaffold", folder)
+        if not os.path.isdir(source):
+            continue
+        options.append("--include-data-dir=%s=%s"
+                       % (source, "scaffold/" + folder))
+    ## every pattern Nuitka should leave behind, given once
+    for suffix in SKIP_SUFFIXES:
+        options.append("--noinclude-data-files=*%s" % suffix)
+    for name in SKIP_NAMES:
+        options.append("--noinclude-data-files=%s" % name)
+    ## the version, which a compiled build has no distribution metadata to read
+    options.append("--include-data-files=pyproject.toml=pyproject.toml")
+    return options
+
+
+def nuitka(entry, name, windowed, release_version, extra=()):
+    """One compile, and the file it was supposed to leave behind.
+
+    **Each compile gets an output directory of its own, and the executable is
+    moved out of it.** Nuitka names its working directories after the entry
+    module, and both entry points are called `__main__.py` -- `scaffold` and
+    `scaffold/cli` -- so the window and the command line would otherwise share
+    `dist/__main__.build` and `dist/__main__.dist`. They run one after the
+    other, and `--remove-output` clears up after a compile that works, so
+    nothing collides while everything succeeds. A compile that *fails* leaves
+    its directory behind, and the next one picks it up and builds on top of
+    another entry point's leftovers. Nuitka warns about being handed a
+    `__main__.py` rather than the package around it for the same reason.
+    """
+    work = os.path.join(DIST, "compile-" + os.path.splitext(name)[0])
+    ## anything left by an earlier attempt, so a compile never starts on top of
+    ## one that stopped halfway
+    if os.path.isdir(work):
+        shutil.rmtree(work)
+    options = [sys.executable, "-m", "nuitka",
+               "--mode=onefile",
+               "--output-dir=%s" % os.path.relpath(work, ROOT),
+               "--output-filename=%s" % name,
+               "--assume-yes-for-downloads",
+               "--remove-output",
+               "--company-name=EvilSlimeLabs",
+               "--product-name=Scaffold",
+               "--file-version=%s" % numeric(release_version),
+               "--product-version=%s" % numeric(release_version),
+               "--file-description=Scaffold"]
+    if COMPILER:
+        options.append(COMPILER)
+    if windowed:
+        options += ["--windows-console-mode=disable",
+                    "--enable-plugin=tk-inter",
+                    "--windows-icon-from-ico=scaffold/images/pack_icon.ico"]
+        for package in GUI_PACKAGES:
+            options += ["--include-package=%s" % package,
+                        "--include-package-data=%s" % package]
+        for package in OPTIONAL_PACKAGES:
+            if has(package):
+                options += ["--include-package=%s" % package,
+                            "--include-package-data=%s" % package]
+    else:
+        ## the command line build leaves the window out entirely, which is what
+        ## keeps it small; the exclusion is enforced rather than assumed
+        options += ["--windows-console-mode=force",
+                    "--nofollow-import-to=scaffold.ui"]
+        for package in GUI_PACKAGES + OPTIONAL_PACKAGES:
+            options.append("--nofollow-import-to=%s" % package)
+    options += data_options()
+    options += list(extra)
+    options.append(entry)
+
+    run(options, "Nuitka: %s" % name)
+    built = os.path.join(work, name)
+    if not os.path.isfile(built):
+        sys.exit("Build stopped: Nuitka produced no %s" % name)
+    ## everything downstream -- the zip, the fingerprints, the update archive --
+    ## looks for the executables straight in dist/
+    made = os.path.join(DIST, name)
+    if os.path.isfile(made):
+        os.remove(made)
+    shutil.move(built, made)
+    shutil.rmtree(work, ignore_errors=True)
+    return made
+
+
+def numeric(release_version):
+    """The version as Windows wants it in a file header: four numbers."""
+    parts = [p for p in re.split(r"[^0-9]+", release_version) if p][:4]
+    while len(parts) < 4:
+        parts.append("0")
+    return ".".join(parts)
+
+
+def freeze(release_version):
+    if not has("nuitka"):
+        sys.exit("Build stopped: Nuitka is not installed.\n"
                  '  python -m pip install -e ".[dev]"')
     for path in (BUILD, DIST):
         if os.path.isdir(path):
             shutil.rmtree(path)
-    run([sys.executable, "-m", "PyInstaller", "--clean", "--noconfirm", SPEC],
-        "PyInstaller: the window")
-    exe = os.path.join(DIST, EXE_NAME)
-    if not os.path.isfile(exe):
-        sys.exit("Build stopped: PyInstaller produced no %s" % EXE_NAME)
-
+    exe = nuitka(WINDOW_ENTRY, EXE_NAME, True, release_version)
     ## the same pipeline with no interface, for scripts and batch jobs
-    run([sys.executable, "-m", "PyInstaller", "--noconfirm", CLI_SPEC],
-        "PyInstaller: the command line build")
-    cli = os.path.join(DIST, CLI_NAME)
-    if not os.path.isfile(cli):
-        sys.exit("Build stopped: PyInstaller produced no %s" % CLI_NAME)
+    nuitka(CLI_ENTRY, CLI_NAME, False, release_version)
     return exe
 
 
@@ -152,7 +285,7 @@ def package(exe, release_version):
 
     print("\n>> packaging the executable (%.1f MB) and %d loose files"
           % (os.path.getsize(exe) / 1024 / 1024, len(entries) - 1))
-    return write_zip(os.path.join(DIST, "Structura-%s.zip" % release_version), entries)
+    return write_zip(os.path.join(DIST, "Scaffold-%s.zip" % release_version), entries)
 
 
 def digest_of(path, block=1024 * 1024):
@@ -167,16 +300,220 @@ def digest_of(path, block=1024 * 1024):
 def write_sums(files):
     """Publish a fingerprint for everything the release carries.
 
-    The format is what `sha256sum` itself writes, so the same file serves both
-    readers: `sha256sum -c SHA256SUMS.txt` checks a hand download, and Structura
-    reads it before replacing itself. A release uploaded without this file
-    cannot be installed by the updater at all.
+    The format is what `sha256sum` itself writes, so `sha256sum -c
+    SHA256SUMS.txt` checks a hand download. Scaffold's own updates do not read
+    it: they check signatures instead, which is a stronger thing to check and a
+    different one. This is for the person who downloaded the zip from a browser.
     """
     where = os.path.join(DIST, SUMS_NAME)
     with open(where, "w", encoding="utf-8", newline="\n") as file:
         for path in files:
             file.write("%s  %s\n" % (digest_of(path), os.path.basename(path)))
     return where
+
+
+# --- publishing the update repository ----------------------------------------
+#
+# The program updates itself through TUF, which means a release is not a file
+# somebody uploaded but a signed statement about a file. Four roles sign: root
+# says who the other three are, targets says what the archives hash to, snapshot
+# says which targets file is current, and timestamp says the snapshot is fresh.
+#
+# **The private keys are not in this repository and must never be.** They are in
+# `~/.scaffold-keys`, and anyone holding the targets key can sign a release
+# every copy of Scaffold in the world will install. `scaffold/trust/root.json`
+# is the public half, and it ships inside the executable, because it is the one
+# thing an update cannot fetch.
+#
+# **What is published is a directory of static files.** `pages/metadata` and
+# `pages/targets` go up to the `gh-pages` branch, which GitHub serves at the
+# address `scaffold/updates.py` reads. Nothing here pushes anything: the last
+# step prints the git commands and leaves them to a person, because a release is
+# not something to publish as a side effect of running a build.
+
+KEYS_DIR = os.path.join(os.path.expanduser("~"), ".scaffold-keys")
+PAGES_DIR = os.path.join(ROOT, "pages")
+TRUST_DIR = os.path.join(ROOT, "scaffold", "trust")
+BUNDLE_DIR = os.path.join(BUILD, "bundle")
+ROOT_METADATA = "root.json"
+
+## How long each role's word is good for. Root lasts a year because rotating it
+## is the one update that cannot be automatic; timestamp is short because its
+## whole job is to say the rest has not gone stale.
+EXPIRY = {"root": 365, "targets": 30, "snapshot": 30, "timestamp": 2}
+
+
+def repository():
+    if not has("tufup"):
+        sys.exit("Build stopped: tufup is not installed.\n"
+                 '  python -m pip install -e ".[dev]"')
+    from tufup.repo import Repository
+
+    return Repository(app_name="Scaffold", repo_dir=PAGES_DIR,
+                      keys_dir=KEYS_DIR, expiration_days=dict(EXPIRY))
+
+
+def publish_root(repo):
+    """Copy the public root metadata into the package, where it ships."""
+    source = os.path.join(repo.repo_dir, "metadata", ROOT_METADATA)
+    if not os.path.isfile(source):
+        sys.exit("Build stopped: %s was not written" % source)
+    os.makedirs(TRUST_DIR, exist_ok=True)
+    shutil.copy(source, os.path.join(TRUST_DIR, ROOT_METADATA))
+    print("   %s -> scaffold/trust/" % ROOT_METADATA)
+
+
+## **What GitHub Pages needs beside the metadata.** Pages runs Jekyll over a
+## branch it serves unless told not to, and Jekyll drops anything whose name
+## begins with an underscore and rewrites what it keeps. Nothing tufup writes
+## starts with one today, so this is insurance rather than a fix -- but it is
+## the kind of insurance that costs one empty file and saves a release that
+## silently serves half its metadata. It also skips the build, so a push is
+## live in seconds rather than a minute.
+NOJEKYLL = ".nojekyll"
+
+## And an index, because the address is a real one somebody may open. Without it
+## the root of the site is a 404, which looks like the update server is down.
+INDEX = "index.html"
+INDEX_PAGE = """<!doctype html>
+<meta charset="utf-8">
+<title>Scaffold updates</title>
+<style>
+ body { font: 16px/1.6 system-ui, sans-serif; margin: 4rem auto; max-width: 34rem;
+        padding: 0 1rem; color: #222; }
+ code { background: #f4f4f4; padding: .1em .35em; border-radius: .2em; }
+ a { color: #2a6; }
+</style>
+<h1>Scaffold updates</h1>
+<p>This is not a web page so much as a filing cabinet. Scaffold checks it when
+it starts, to see whether a newer release has been signed.</p>
+<p><a href="metadata/">metadata/</a> holds the signed statements about what
+exists. <a href="targets/">targets/</a> holds the archives themselves. A build
+installs nothing the metadata does not vouch for, and the key that signs it
+never goes near this server.</p>
+<p>The program itself lives at
+<a href="https://github.com/EvilSlimeLabs/Scaffold">github.com/EvilSlimeLabs/Scaffold</a>.</p>
+"""
+
+
+def pages_scaffolding():
+    """Write the files GitHub Pages wants, beside the ones tufup writes.
+
+    Called from every command that touches the repository, so they are there
+    whether the tree was made by `--init-trust` or arrived with a `--publish`.
+    """
+    os.makedirs(PAGES_DIR, exist_ok=True)
+    made = []
+    empty = os.path.join(PAGES_DIR, NOJEKYLL)
+    if not os.path.isfile(empty):
+        open(empty, "wb").close()
+        made.append(NOJEKYLL)
+    ## the index is rewritten every time, so a change here reaches the site
+    with open(os.path.join(PAGES_DIR, INDEX), "w", encoding="utf-8",
+              newline="\n") as page:
+        page.write(INDEX_PAGE)
+    made.append(INDEX)
+    print("   %s -> %s" % (", ".join(made), os.path.relpath(PAGES_DIR, ROOT)))
+
+
+def init_trust():
+    """Create the four roles' keys, once, and the root they answer to."""
+    if os.path.isdir(KEYS_DIR) and os.listdir(KEYS_DIR):
+        print(">> keys already exist in %s, leaving them alone" % KEYS_DIR)
+    repo = repository()
+    repo.initialize()
+    repo.save_config()
+    publish_root(repo)
+    pages_scaffolding()
+    print("\nKeys are in %s. Back them up, and do not commit them." % KEYS_DIR)
+    print("Commit scaffold/trust/%s: it is the public half, and it ships."
+          % ROOT_METADATA)
+    return 0
+
+
+def init_pages():
+    """Make `pages/` a worktree on an orphan `gh-pages` branch.
+
+    **The publishing step assumes this and nothing was creating it.** `pages/`
+    is gitignored in the main tree, so the `git -C pages push` a publish prints
+    had no repository to run in and no branch to push. A worktree gives it one
+    without a second clone: the same object store, a directory of its own, and a
+    branch that shares no history with `master` -- the site is a filing cabinet
+    of built artifacts and has no business carrying the source's history.
+    """
+    if os.path.isdir(os.path.join(PAGES_DIR, ".git")) or \
+            os.path.isfile(os.path.join(PAGES_DIR, ".git")):
+        print(">> %s is already a worktree, leaving it alone"
+              % os.path.relpath(PAGES_DIR, ROOT))
+        pages_scaffolding()
+        return 0
+
+    if os.path.isdir(PAGES_DIR) and os.listdir(PAGES_DIR):
+        sys.exit("Build stopped: %s already has files in it and is not a "
+                 "worktree.\n  Move it aside and run this again."
+                 % os.path.relpath(PAGES_DIR, ROOT))
+
+    here = subprocess.run(["git", "rev-parse", "--verify", "gh-pages"],
+                          cwd=ROOT, capture_output=True, text=True)
+    if here.returncode != 0:
+        ## an orphan branch holding one empty commit, made without touching the
+        ## working tree: hash-object writes an empty tree, commit-tree wraps it
+        print(">> making an orphan gh-pages branch")
+        tree = subprocess.run(["git", "hash-object", "-t", "tree", "-w",
+                               os.devnull],
+                              cwd=ROOT, capture_output=True, text=True)
+        commit = subprocess.run(["git", "commit-tree", tree.stdout.strip(),
+                                 "-m", "gh-pages"],
+                                cwd=ROOT, capture_output=True, text=True)
+        run(["git", "branch", "gh-pages", commit.stdout.strip()],
+            "creating gh-pages")
+
+    run(["git", "worktree", "add", os.path.relpath(PAGES_DIR, ROOT),
+         "gh-pages"], "checking gh-pages out into pages/")
+    pages_scaffolding()
+    print("\n%s is now the gh-pages branch." % os.path.relpath(PAGES_DIR, ROOT))
+    print("In the repository's Settings -> Pages, set:")
+    print("    Source  Deploy from a branch")
+    print("    Branch  gh-pages    Folder  / (root)")
+    print("\nThat serves it at %s, which is what scaffold/updates.py reads."
+          % "https://evilslimelabs.github.io/Scaffold/")
+    return 0
+
+
+def bundle(exe):
+    """The directory an update installs: what the release actually replaces."""
+    if os.path.isdir(BUNDLE_DIR):
+        shutil.rmtree(BUNDLE_DIR)
+    os.makedirs(BUNDLE_DIR)
+    carried = [exe, os.path.join(DIST, CLI_NAME)]
+    carried += [os.path.join(ROOT, name) for name in LOOSE_FILES]
+    for path in carried:
+        if os.path.isfile(path):
+            shutil.copy(path, BUNDLE_DIR)
+    return BUNDLE_DIR
+
+
+def publish(exe, release_version):
+    """Sign this build into the update repository, and say how to push it."""
+    repo = repository()
+    if not os.path.isdir(KEYS_DIR):
+        sys.exit("Build stopped: no keys in %s.\n"
+                 "  python build.py --init-trust" % KEYS_DIR)
+    repo.initialize()
+    print("\n>> signing %s into the update repository" % release_version)
+    repo.add_bundle(new_bundle_dir=bundle(exe), new_version=release_version)
+    repo.publish_changes(private_key_dirs=[KEYS_DIR])
+    publish_root(repo)
+    pages_scaffolding()
+    print("\nThe update repository is in %s." % os.path.relpath(PAGES_DIR, ROOT))
+    print("Push it to the branch GitHub Pages serves:")
+    print("  git -C %s add -A && git -C %s commit -m \"Scaffold %s\""
+          % (os.path.relpath(PAGES_DIR, ROOT), os.path.relpath(PAGES_DIR, ROOT),
+             release_version))
+    print("  git -C %s push origin gh-pages"
+          % os.path.relpath(PAGES_DIR, ROOT))
+    print("\nNothing is published until you do. Until then this release exists "
+          "only here.")
 
 
 def main():
@@ -188,12 +525,25 @@ def main():
                         help="do not run the unit tests first")
     parser.add_argument("--skip-freeze", action="store_true",
                         help="reuse the executable already in dist/")
+    parser.add_argument("--publish", action="store_true",
+                        help="sign this build into the update repository")
+    parser.add_argument("--init-trust", action="store_true",
+                        help="create the signing keys and the root metadata, once")
+    parser.add_argument("--init-pages", action="store_true",
+                        help="make pages/ a worktree on an orphan gh-pages "
+                             "branch, which is what --publish pushes from")
     args = parser.parse_args()
 
     release_version = version.read()
     if release_version == version.FALLBACK:
         sys.exit("Build stopped: pyproject.toml declares no version")
-    print("Structura %s" % release_version)
+    print("Scaffold %s" % release_version)
+
+    if args.init_pages:
+        return init_pages()
+
+    if args.init_trust:
+        return init_trust()
 
     if not args.skip_tools:
         run_tools()
@@ -206,7 +556,7 @@ def main():
         if not os.path.isfile(exe):
             sys.exit("Build stopped: --skip-freeze but dist/%s does not exist" % EXE_NAME)
     else:
-        exe = freeze()
+        exe = freeze(release_version)
 
     zip_path = package(exe, release_version)
 
@@ -220,6 +570,13 @@ def main():
     print("\n%s, to be uploaded with them:" % os.path.relpath(sums, ROOT))
     with open(sums, encoding="utf-8") as file:
         print("  " + "  ".join(file.read().splitlines(True)).rstrip())
+
+    if args.publish:
+        publish(exe, release_version)
+    else:
+        print("\nNobody can update to this yet. To sign it into the update "
+              "repository:\n  python build.py --skip-tools --skip-tests "
+              "--skip-freeze --publish")
     return 0
 
 

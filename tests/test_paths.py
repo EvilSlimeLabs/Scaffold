@@ -3,7 +3,7 @@ import shutil
 import tempfile
 import unittest
 
-from structura import paths
+from scaffold import paths
 class ResolverTests(unittest.TestCase):
     def test_data_finds_the_lookup_tables(self):
         self.assertTrue(os.path.isfile(paths.lookup("block_definition.json")))
@@ -24,7 +24,7 @@ class ResolverTests(unittest.TestCase):
     def test_the_default_output_folder_sits_under_documents(self):
         folder = paths.default_output_dir()
         self.assertTrue(folder.startswith(paths.documents()))
-        self.assertTrue(folder.endswith("Structura Builds"))
+        self.assertTrue(folder.endswith("Scaffold Builds"))
 
 
 class WorkingDirectoryTests(unittest.TestCase):
@@ -38,15 +38,15 @@ class WorkingDirectoryTests(unittest.TestCase):
     """
 
     def test_a_pack_builds_from_an_unrelated_working_directory(self):
-        from structura import core
+        from scaffold import core
         structure = os.path.abspath(
             os.path.join("test_structures", "stoneSlabs.mcstructure"))
         was = os.getcwd()
-        work = tempfile.mkdtemp(prefix="structura-cwd-")
+        work = tempfile.mkdtemp(prefix="scaffold-cwd-")
         pack = None
         try:
             os.chdir(work)
-            pack = core.structura(os.path.join(work, "CwdProbe"))
+            pack = core.scaffold(os.path.join(work, "CwdProbe"))
             pack.add_model("", structure)
             pack.set_model_offset("", [0, 0, 0])
             pack.generate_with_nametags()
