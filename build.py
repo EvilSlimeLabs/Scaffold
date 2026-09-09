@@ -27,7 +27,7 @@ without it gives anyone downloading by hand nothing to check.
 
     python build.py --init-trust       create the signing keys, once
     python build.py --init-pages       set up pages/ as the gh-pages worktree
-    python build.py --publish          sign a build into the update repository
+    python build.py --publish          sign a build in and push it, both branches
 
 The version comes from pyproject.toml, which is packed into the executable so
 the compiled program can read it back.
@@ -327,9 +327,19 @@ def write_sums(files):
 #
 # **What is published is a directory of static files.** `pages/metadata` and
 # `pages/targets` go up to the `gh-pages` branch, which GitHub serves at the
-# address `scaffold/updates.py` reads. Nothing here pushes anything: the last
-# step prints the git commands and leaves them to a person, because a release is
-# not something to publish as a side effect of running a build.
+# address `scaffold/updates.py` reads.
+#
+# **`--publish` pushes, and a plain build pushes nothing.** The flag is the
+# intent: its whole purpose is to make a release real, and stopping short to
+# print two git commands only ever produced releases that were half done --
+# signed here and invisible everywhere else. It commits and pushes both halves,
+# `master` for the source and the root that ships, `gh-pages` for the metadata
+# and the archives.
+#
+# **What it refuses, it refuses before anything is compiled.** No keys, keys
+# that do not match the root, no `pages/` worktree, or a version already
+# published: all four are a second to check and a quarter of an hour to find out
+# about afterwards.
 
 KEYS_DIR = os.path.join(os.path.expanduser("~"), ".scaffold-keys")
 PAGES_DIR = os.path.join(ROOT, "pages")
@@ -417,18 +427,83 @@ def pages_scaffolding():
 
 
 def init_trust():
-    """Create the four roles' keys, once, and the root they answer to."""
+    """Create the four roles' keys, once, and the root they answer to.
+
+    **Once, and it refuses a second time.** `repo.initialize()` makes a key for
+    any role that has not got one, which sounds harmless and is not: root names
+    the four keys by fingerprint, so a role given a *new* key signs with one
+    root has never heard of. Every check then fails verification, and
+    `updates.available()` swallows that and answers "up to date" -- so the
+    updater looks like it works and quietly never updates anything.
+
+    This is not hypothetical. It happened here: `snapshot` was regenerated two
+    minutes after the other three, and two releases went out that no build could
+    ever see. Running this twice used to say "leaving them alone" and then
+    re-initialise anyway, which is the whole of how.
+    """
     if os.path.isdir(KEYS_DIR) and os.listdir(KEYS_DIR):
-        print(">> keys already exist in %s, leaving them alone" % KEYS_DIR)
+        sys.exit(
+            "Build stopped: there are already keys in %s.\n"
+            "\n"
+            "  Initialising again gives a role that is missing a key a brand "
+            "new one,\n"
+            "  which root does not name -- and every update check then fails "
+            "quietly.\n"
+            "\n"
+            "  To start over, and only if nobody is running a build that "
+            "carries the\n"
+            "  current root, delete these and republish from nothing:\n"
+            "      %s\n"
+            "      %s\n"
+            "      %s" % (KEYS_DIR, KEYS_DIR,
+                          os.path.join(PAGES_DIR, "metadata"),
+                          os.path.join(PAGES_DIR, "targets")))
     repo = repository()
     repo.initialize()
     repo.save_config()
     publish_root(repo)
     pages_scaffolding()
+    check_keys()
     print("\nKeys are in %s. Back them up, and do not commit them." % KEYS_DIR)
     print("Commit scaffold/trust/%s: it is the public half, and it ships."
           % ROOT_METADATA)
     return 0
+
+
+def check_keys():
+    """Every role signs with the key root names, or stop.
+
+    The one failure this whole mechanism has actually suffered, caught before a
+    release rather than after two. Cheap enough to run on every publish.
+    """
+    where = os.path.join(PAGES_DIR, "metadata", ROOT_METADATA)
+    if not os.path.isfile(where):
+        return
+    import json
+
+    with open(where, encoding="utf-8") as f:
+        root = json.load(f)["signed"]
+    known = {spec["keyval"]["public"]: kid for kid, spec in root["keys"].items()}
+    wrong = []
+    for role, spec in sorted(root["roles"].items()):
+        public = os.path.join(KEYS_DIR, role + ".pub")
+        if not os.path.isfile(public):
+            wrong.append("%s: no key in %s" % (role, KEYS_DIR))
+            continue
+        text = open(public, encoding="utf-8").read().strip()
+        try:
+            value = json.loads(text)["keyval"]["public"]
+        except Exception:
+            value = text
+        if known.get(value) not in spec["keyids"]:
+            wrong.append("%s: the key on disk is not the one root names" % role)
+    if wrong:
+        sys.exit("Build stopped: the signing keys do not match the root.\n  "
+                 + "\n  ".join(wrong)
+                 + "\n\n  Anything signed with these would fail verification, "
+                   "and the client\n  reports that as \"up to date\". "
+                   "Nothing is published.")
+    print("   all four roles sign with the key root names")
 
 
 def init_pages():
@@ -480,6 +555,77 @@ def init_pages():
     return 0
 
 
+def already_published(release_version):
+    """Whether this version is already signed into the update repository.
+
+    Checked before anything is compiled, because forgetting to bump the version
+    is the ordinary mistake and finding out after a Nuitka run is a wasted
+    quarter of an hour. tufup refuses to add a bundle it already has, so this
+    only moves the refusal to where it costs nothing.
+    """
+    where = os.path.join(PAGES_DIR, "metadata", "targets.json")
+    if not os.path.isfile(where):
+        return False
+    import json
+
+    with open(where, encoding="utf-8") as f:
+        signed = json.load(f)["signed"]["targets"]
+    wanted = "%s-%s.tar.gz" % ("Scaffold", release_version)
+    return wanted in signed
+
+
+def git(args, where, what):
+    """One git command, in one worktree, that has to work."""
+    print("   git -C %s %s" % (os.path.relpath(where, ROOT), " ".join(args)))
+    done = subprocess.run(["git"] + args, cwd=where)
+    if done.returncode != 0:
+        sys.exit("\nBuild stopped: %s failed (exit %d)" % (what, done.returncode))
+
+
+def anything_to_commit(where):
+    done = subprocess.run(["git", "status", "--porcelain"], cwd=where,
+                          capture_output=True, text=True)
+    return bool(done.stdout.strip())
+
+
+def push_release(release_version):
+    """Commit and push both halves of a release: the source, and the site.
+
+    **A publish pushes.** It is the one command whose whole purpose is to make a
+    release real, so leaving the last two steps as printed instructions only
+    ever meant a release half done -- signed here and invisible everywhere else.
+    A plain `python build.py` still pushes nothing.
+
+    Two branches, because they hold different things. `master` carries the
+    source and the public root the build ships; `gh-pages`, checked out at
+    `pages/`, carries the signed metadata and the archives.
+    """
+    branch = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                            cwd=ROOT, capture_output=True, text=True)
+    on = branch.stdout.strip()
+    if on != "master":
+        sys.exit("Build stopped: on branch %r, not master.\n"
+                 "  A release is published from master." % on)
+
+    for where, label in ((ROOT, "master"), (PAGES_DIR, "gh-pages")):
+        print("\n>> %s" % label)
+        if not anything_to_commit(where):
+            print("   nothing to commit")
+            continue
+        subprocess.run(["git", "status", "--short"], cwd=where)
+        git(["add", "-A"], where, "staging %s" % label)
+        git(["commit", "-m", "Scaffold %s" % release_version], where,
+            "committing %s" % label)
+
+    for where, label in ((ROOT, "master"), (PAGES_DIR, "gh-pages")):
+        ## -u so the first push of gh-pages sets its upstream and every one
+        ## after it is a bare `git push`
+        git(["push", "-u", "origin", label], where, "pushing %s" % label)
+
+    print("\nPushed. GitHub Pages rebuilds in under a minute, and a build "
+          "carrying\nthis root will see %s on its next check." % release_version)
+
+
 def bundle(exe):
     """The directory an update installs: what the release actually replaces."""
     if os.path.isdir(BUNDLE_DIR):
@@ -493,27 +639,41 @@ def bundle(exe):
     return BUNDLE_DIR
 
 
-def publish(exe, release_version):
-    """Sign this build into the update repository, and say how to push it."""
-    repo = repository()
-    if not os.path.isdir(KEYS_DIR):
-        sys.exit("Build stopped: no keys in %s.\n"
+def ready_to_publish(release_version):
+    """Everything a publish needs, checked before anything is compiled.
+
+    All of it is cheap and all of it has cost a build: no keys at all, keys that
+    do not match the root, `pages/` never set up, and the ordinary one -- the
+    version was not bumped, which tufup refuses at the very end after a quarter
+    of an hour of Nuitka.
+    """
+    print("\n>> checking this release can be published")
+    if not os.path.isdir(KEYS_DIR) or not os.listdir(KEYS_DIR):
+        sys.exit("Build stopped: no signing keys in %s.\n"
                  "  python build.py --init-trust" % KEYS_DIR)
+    if not os.path.isdir(os.path.join(PAGES_DIR, ".git")) and \
+            not os.path.isfile(os.path.join(PAGES_DIR, ".git")):
+        sys.exit("Build stopped: %s is not the gh-pages worktree.\n"
+                 "  python build.py --init-pages"
+                 % os.path.relpath(PAGES_DIR, ROOT))
+    if already_published(release_version):
+        sys.exit("Build stopped: %s is already published.\n"
+                 "  Bump [project] version in pyproject.toml and run again."
+                 % release_version)
+    check_keys()
+    print("   %s is not published yet" % release_version)
+
+
+def publish(exe, release_version):
+    """Sign this build into the update repository, and push both branches."""
+    repo = repository()
     repo.initialize()
     print("\n>> signing %s into the update repository" % release_version)
     repo.add_bundle(new_bundle_dir=bundle(exe), new_version=release_version)
     repo.publish_changes(private_key_dirs=[KEYS_DIR])
     publish_root(repo)
     pages_scaffolding()
-    print("\nThe update repository is in %s." % os.path.relpath(PAGES_DIR, ROOT))
-    print("Push it to the branch GitHub Pages serves:")
-    print("  git -C %s add -A && git -C %s commit -m \"Scaffold %s\""
-          % (os.path.relpath(PAGES_DIR, ROOT), os.path.relpath(PAGES_DIR, ROOT),
-             release_version))
-    print("  git -C %s push origin gh-pages"
-          % os.path.relpath(PAGES_DIR, ROOT))
-    print("\nNothing is published until you do. Until then this release exists "
-          "only here.")
+    push_release(release_version)
 
 
 def main():
@@ -526,7 +686,8 @@ def main():
     parser.add_argument("--skip-freeze", action="store_true",
                         help="reuse the executable already in dist/")
     parser.add_argument("--publish", action="store_true",
-                        help="sign this build into the update repository")
+                        help="sign this build in, then commit and push both "
+                             "master and gh-pages")
     parser.add_argument("--init-trust", action="store_true",
                         help="create the signing keys and the root metadata, once")
     parser.add_argument("--init-pages", action="store_true",
@@ -544,6 +705,11 @@ def main():
 
     if args.init_trust:
         return init_trust()
+
+    ## before the tools, the tests and a quarter of an hour of Nuitka, because
+    ## every one of these fails for a reason a second could have found
+    if args.publish:
+        ready_to_publish(release_version)
 
     if not args.skip_tools:
         run_tools()
