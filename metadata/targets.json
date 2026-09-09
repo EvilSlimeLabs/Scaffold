@@ -1,0 +1,28 @@
+{
+ "signatures": [
+  {
+   "keyid": "308a8e8dd293f2ac8febb32c1c6c19dbcf262aace82b8a7c92f24145c641f609",
+   "sig": "924ea7e9b45dfee624aa922832f7f2911dcdbe40d6217ea108d01247c3794c7348ce0290e1db9d60f2a343c6da63a5aca319ad0697f67430d396a97621bd1a0c"
+  }
+ ],
+ "signed": {
+  "_type": "targets",
+  "expires": "2026-10-09T18:58:48Z",
+  "spec_version": "1.0.31",
+  "targets": {
+   "Scaffold-0.9.0.tar.gz": {
+    "custom": {
+     "tufup": {
+      "required": false
+     },
+     "user": null
+    },
+    "hashes": {
+     "sha256": "54436377fbdaa33ca6ce1eaa8ba8196a6b403f278d0f73dc69684458be9d046a"
+    },
+    "length": 53077534
+   }
+  },
+  "version": 2
+ }
+}
