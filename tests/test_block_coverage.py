@@ -60,6 +60,39 @@ class LookupTableTests(unittest.TestCase):
                         "%s/%s: %s sizes and offsets disagree" % (family, variant, face))
 
 
+class GeneratorTests(unittest.TestCase):
+    """A generator says what a table is, never what to change it by.
+
+    `build.py` regenerates every table before every compile, so a generator that
+    reads a table, adjusts it and writes it back is correct exactly once. Run
+    twice it is wrong again, and the tables are valid either way, so nothing
+    complains. A carved pumpkin faced a different direction on alternate
+    releases for exactly that reason: `faces.py` added a half turn to its own
+    output every time it ran.
+
+    Whether a generator is idempotent cannot be read off its source: reading a
+    table to *derive* another family from it is ordinary and safe, and
+    `faces.py` does it to build `azalea` and `vault` out of `cube`. Only running
+    them twice settles it, which rewrites the tables and so belongs in a command
+    rather than in here:
+
+        python -m tools.checks.generators
+
+    What this holds is the one that went wrong, so it cannot go wrong again
+    quietly.
+    """
+
+    def test_the_carved_pumpkin_faces_the_way_its_neighbours_do(self):
+        # the six facing_direction words, which furnace and observer carry too
+        rotation = load("block_rotation")
+        words = ("south", "east", "west", "up", "down", "north")
+        pumpkin = {word: rotation["carved_pumpkin"][word] for word in words}
+        for neighbour in ("furnace", "observer"):
+            self.assertEqual(
+                pumpkin, {word: rotation[neighbour][word] for word in words},
+                "carved_pumpkin no longer turns the way %s does" % neighbour)
+
+
 class BlockBuildTests(unittest.TestCase):
     """Blocks that are easy to drop, built in the states that drop them."""
 

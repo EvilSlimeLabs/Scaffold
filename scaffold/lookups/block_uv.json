@@ -12524,32 +12524,32 @@
 				"up": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"down": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"north": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"south": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"east": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				],
 				"west": [
 					"@down",
 					"@north",
-					"@north"
+					"@east"
 				]
 			}
 		}

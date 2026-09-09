@@ -164,9 +164,12 @@ Keys are strings even when the state is a number.
 python -m tools.checks.coverage      what the bundled structures drop
 python -m tools.checks.blocks        every declared block resolved to a texture
 python -m tools.checks.render --manifest    which blocks changed how they look
+python -m tools.checks.generators           the generators are idempotent
 ```
 
-All three should report nothing.
+All of them should report nothing.
+
+The last one is the odd one: it runs every generator twice and compares what they wrote. A generator that reads a table, adjusts it and writes it back is right once and wrong the next time the build regenerates -- a carved pumpkin faced a different way on alternate releases for exactly that. It rewrites the tables to find out, so it is a command you run rather than part of the suite.
 
 ## Finding a block
 

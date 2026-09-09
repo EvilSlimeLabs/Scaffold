@@ -1,0 +1,34 @@
+{
+    "app_name": "Scaffold",
+    "app_version_attr": null,
+    "binary_diff": null,
+    "encrypted_keys": [],
+    "expiration_days": {
+        "root": 365,
+        "snapshot": 30,
+        "targets": 30,
+        "timestamp": 2
+    },
+    "key_map": {
+        "root": [
+            "root"
+        ],
+        "snapshot": [
+            "snapshot"
+        ],
+        "targets": [
+            "targets"
+        ],
+        "timestamp": [
+            "timestamp"
+        ]
+    },
+    "keys_dir": "C:/Users/z00535su/.scaffold-keys",
+    "repo_dir": "pages",
+    "thresholds": {
+        "root": 1,
+        "snapshot": 1,
+        "targets": 1,
+        "timestamp": 1
+    }
+}

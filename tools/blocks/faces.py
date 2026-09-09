@@ -111,13 +111,24 @@ def main():
     changed.append("azalea")
 
     ## --- carved pumpkins: the face was round the back ------------------------
-    ## Its table was written a half turn out from every other block with a
-    ## front: south read 180 where the convention is 0, so a pumpkin carved
-    ## facing south looked north. Every entry turns half round.
-    turned = {}
-    for state, angles in load(ROTATION)["carved_pumpkin"].items():
-        turned[state] = [angles[0], (angles[1] + 180) % 360, angles[2]]
-    lookup_writer.put(ROTATION, "carved_pumpkin", turned, tight=True)
+    ## Its table was written a half turn out from every other block that carries
+    ## `facing_direction`, so a pumpkin carved facing south looked north.
+    ##
+    ## **This is written out, not turned.** It used to read the table, add a
+    ## half turn and write it back, which corrects it exactly once: run twice it
+    ## is wrong again, and `build.py` regenerates everything before every
+    ## compile. The pumpkin faced a different way on alternate releases and
+    ## nothing said so, because the tables were valid either way. A generator
+    ## has to say what a table *is*, never what to change it by.
+    ##
+    ## The words are the six `facing_direction` values and match `furnace` and
+    ## `observer` exactly; the numbers are the four a pumpkin's own `direction`
+    ## carries, which is a different state with its own numbering.
+    lookup_writer.put(ROTATION, "carved_pumpkin", {
+        "south": [0, 180, 0], "east": [0, 90, 0], "west": [0, 270, 0],
+        "up": [270, 0, 0], "down": [90, 0, 0], "north": [0, 0, 0],
+        "0": [0, 0, 0], "1": [0, 90, 0], "2": [0, 180, 0],
+        "3": [0, 270, 0]}, tight=True)
 
     ## --- vault: a cube, but one with a front ---------------------------------
     ## A rotation table is keyed by shape family, and a vault shared `cube` with
