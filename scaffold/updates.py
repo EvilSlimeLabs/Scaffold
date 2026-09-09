@@ -147,13 +147,18 @@ def ready():
     return os.path.isfile(trusted_root())
 
 
-def client():
+def client(running=None):
     """A tufup client, with the trusted root in place for it to start from.
 
     The metadata directory is seeded from the copy compiled into the program the
     first time, and updated from the server after that. Handing it the shipped
     root every time would undo a root rotation, so it is only written when there
     is nothing there.
+
+    `running` is the version to compare against, and defaults to this build's
+    own. It is what a client is built with rather than something set afterwards,
+    because tufup works out which archive it is holding at that moment; a
+    diagnostic asking what an older release would be offered has to say so here.
     """
     from tufup.client import Client
 
@@ -172,7 +177,7 @@ def client():
     return Client(
         app_name=APP_NAME,
         app_install_dir=pathlib.Path(install_dir()),
-        current_version=version.read(),
+        current_version=running or version.read(),
         metadata_dir=pathlib.Path(metadata),
         metadata_base_url=METADATA_URL,
         target_dir=pathlib.Path(targets),

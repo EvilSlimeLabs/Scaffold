@@ -116,13 +116,38 @@ def report_root():
     theirs = json.loads(body)
     say("server root version", theirs["signed"].get("version"))
     same = sorted(mine["signed"]["keys"]) == sorted(theirs["signed"]["keys"])
-    say("same signing keys", same)
+    say("shipped matches server", same)
     if not same:
         print("\n  The build was compiled against different keys from the ones "
               "signing\n  the server's metadata. Every check will fail "
               "verification and report\n  'up to date'. Rebuild after copying "
               "the current root into\n  scaffold/trust/, or re-publish with "
               "the keys the build carries.")
+
+    ## **The root the client uses is the kept one, not the shipped one.**
+    ## `updates.client()` seeds the metadata directory from the build's own root
+    ## only when there is nothing there, so that a rotation already delivered to
+    ## a machine is not undone. Replace the whole trust rather than rotate it and
+    ## that same rule keeps a dead root alive forever, and every check fails
+    ## against keys nobody holds any more.
+    kept = os.path.join(updates.working_dir("metadata"), "root.json")
+    if not os.path.isfile(kept):
+        say("kept root", "none yet, so the shipped one will be used")
+        return
+    with open(kept, encoding="utf-8") as f:
+        cached = json.load(f)
+    say("kept root version", cached["signed"].get("version"))
+    current = sorted(cached["signed"]["keys"]) == sorted(theirs["signed"]["keys"])
+    say("kept matches server", current)
+    if not current:
+        print("\n  This is the one that matters: the client verifies against "
+              "the root it\n  kept, and that root names keys the server no "
+              "longer signs with. Clear it:\n"
+              "\n      python -m tools.checks.updates --forget\n"
+              "\n  The next check then starts from the root the build carries. "
+              "Note that a\n  real user has no such command -- replacing a "
+              "trust rather than rotating it\n  strands every copy already "
+              "installed.")
 
 
 def report_client(pretend):
@@ -133,12 +158,9 @@ def report_client(pretend):
     else:
         say("kept metadata", "(nothing yet)")
     try:
-        client = updates.client()
-        if pretend:
-            ## the client compares against the version it was handed, so a
-            ## checkout can ask what a given release would be offered
-            client.current_archive_info = None
-            client.current_version = pretend
+        ## the version has to be given at construction: tufup works out which
+        ## archive it is holding then, and setting it afterwards changes nothing
+        client = updates.client(running=pretend)
         found = client.check_for_updates(pre=updates.channel(pretend))
     except Exception:
         print("\n  the check raised, which the window would report as "
