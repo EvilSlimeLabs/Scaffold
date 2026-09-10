@@ -33,6 +33,14 @@ and keeps retrying, so the window can take its time shutting down: a running
 executable cannot be written over on Windows, but one that is on its way out
 will be free by the time the copy gets to it.
 
+**A build replaces itself and nothing else.** One archive carries both
+executables and the loose files beside them, because one archive is one thing to
+sign and one thing to verify, but everything except the running program's own
+executable is taken out of the unpacked folder before the copy runs. The window
+replaces `Scaffold.exe`, the command line replaces `Scaffold-cli.exe`, and each
+does it on its own next check; the licence and the readme are not the program
+and are not written over.
+
 `tufup` is imported where it is used rather than at the top, so a checkout
 without it still runs -- there is nothing to update from a checkout anyway.
 
@@ -258,6 +266,45 @@ def _blame(complaint):
     return "update wrong fingerprint"
 
 
+def _ours_only(src_dir):
+    """Leave nothing in the unpacked bundle but this build's own executable.
+
+    One signed archive carries both executables and the loose files that ship
+    beside them, because one archive is one thing to sign and one thing to
+    verify. An update only has to replace the program that is asking for it,
+    though: the window replaces Scaffold.exe, the command line replaces
+    Scaffold-cli.exe, and each does it on its own next check. The licence and
+    the readme are not the program and are not worth writing over.
+
+    tufup extracts the whole archive to a temporary folder and then copies that
+    folder over the install directory, so what is left here is exactly what
+    gets replaced.
+
+    Nothing is removed when the running executable is not in the bundle under
+    the name it runs as. A renamed copy then gets the whole update rather than
+    none of it, which is the old behaviour and better than a no-op.
+    """
+    running = running_file()
+    ours = os.path.basename(running) if running else ""
+    if not ours or not os.path.isfile(os.path.join(src_dir, ours)):
+        return
+    import shutil
+
+    for name in os.listdir(src_dir):
+        if name == ours:
+            continue
+        stray = os.path.join(src_dir, name)
+        try:
+            if os.path.isdir(stray):
+                shutil.rmtree(stray)
+            else:
+                os.remove(stray)
+        except OSError:
+            ## something that will not go is something robocopy will carry
+            ## over, which is what used to happen to all of it anyway
+            pass
+
+
 def _put_in_place(src_dir, dst_dir, **kwargs):
     """Copy the new build over the installed one, and start it.
 
@@ -268,6 +315,9 @@ def _put_in_place(src_dir, dst_dir, **kwargs):
     and retries until the executable is free.
     """
     from tufup.utils import platform_specific
+
+    ## only this build's own executable is replaced; see _ours_only
+    _ours_only(src_dir)
 
     extra = {}
     if os.name == "nt":

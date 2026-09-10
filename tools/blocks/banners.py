@@ -152,15 +152,24 @@ BANNER_MARKED = ("illager", "designed")
 ## `tools/textures/banners.py` tints the whole of it grey before writing on it.
 BANNER_EDGE = {"illager": "black"}
 
-## **A design is bigger than a tile, so a cloth carrying one is a grid.** Only
-## sixteen by sixteen of a texture becomes a tile and a quad reads one tile, so
-## a design on a single quad is a design at sixteen by sixteen -- less than the
-## twenty by forty vanilla draws a cloth at, and squashed to a square besides.
-## The two marked forms hang their cloth as two quads across by four down
+## **A design is taller than a tile, so a cloth carrying one is a column of
+## quads.** Only sixteen by sixteen of a texture becomes a tile and a quad reads
+## one tile, so a design on a single quad is a design at sixteen by sixteen --
+## squashed to a square, where the cloth it sits on is sixteen across by
+## twenty-seven down. The two marked forms hang their cloth as four quads down
 ## instead, each reading a tile of its own out of the design
 ## `tools/textures/banners.py` writes under the sheet. Keep these in step
 ## with that script's `DESIGN`, `DESIGN_AT` and `TILE`.
-DESIGN_ACROSS, DESIGN_DOWN = 2, 4
+##
+## **One quad across, not two.** The cloth is exactly one tile wide, so cutting
+## it in two bought a little horizontal detail and cost a seam down the middle
+## of the banner -- and the two halves have to be swapped as well as each being
+## turned round, since the sheet holds the design mirrored and the mirror of two
+## columns side by side is the right one on the left. In game the front came out
+## split with its halves out of step, with tears along the seam. The design is
+## only ever seen at sixteen pixels across on the block, so the detail was
+## paying for a join that had nothing to hold it together.
+DESIGN_ACROSS, DESIGN_DOWN = 1, 4
 DESIGN_AT = (0, 64)
 TILE = 16
 ## **Both faces of a design turn their tile round, because the sheet holds it
@@ -184,23 +193,19 @@ def art(sheet, corners):
 
 
 def cloth(sheet, at, design=False, edge=None):
-    """The cloth, as one quad or as the grid a design needs.
+    """The cloth, as one quad or as the column of quads a design needs.
 
     **A design is written mirrored and read back mirrored**, which is what
     `tools/textures/banners.py` means by "the image needs to be mirrored for the
     face we are putting it on": the sheet holds the picture the wrong way round
-    and `CLOTH_FRONT` turns it the right way round again on the face a banner is
-    looked at.
+    and `CLOTH_DESIGN` turns it the right way round again on the faces that
+    carry it.
 
-    **Mirroring a picture cut into columns turns the columns round as well.**
-    The mirror of two columns side by side is the right one mirrored on the
-    left, not each one mirrored where it stands -- do only the tiles and the
-    design comes out cut down the middle with its halves swapped, which is what
-    an ominous banner's face did. So the quad at the least x reads the design's
-    *last* column, and each tile is turned round within itself.
-
-    Rows need none of that: mirroring is left to right and `down` counts from
-    the top of the design to the quad at the greatest y.
+    The column arithmetic is kept general, but `DESIGN_ACROSS` is one: the cloth
+    is a tile wide, and cutting it in two put a seam down the middle of the
+    banner that the halves would not meet across. Rows need none of that:
+    mirroring is left to right, and `down` counts from the top of the design to
+    the quad at the greatest y.
     """
     if not design:
         return [Cube((CLOTH_WIDE, CLOTH_TALL, CLOTH_DEEP), at,

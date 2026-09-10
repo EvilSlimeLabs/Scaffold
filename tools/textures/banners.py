@@ -81,12 +81,12 @@ def tint(sheet, colour):
 # and there is nothing to copy, so it gets a mark of this project's own: the
 # Evil Slime Labs logo the About window opens, over a black cloth.
 #
-# **A design is bigger than a tile, so it is written where a grid of tiles can
+# **A design is taller than a tile, so it is written where a column of tiles can
 # read it.** Only sixteen by sixteen of a texture becomes a tile and a quad
-# reads one tile, so a cloth showing a design is drawn as a grid of quads
-# instead of as one, and the design is written at the size that grid reads:
-# thirty two across by sixty four down, which is the cloth's own proportions and
-# more than the twenty by forty vanilla draws it at.
+# reads one tile, so a cloth showing a design is drawn as four quads stacked
+# instead of as one, and the design is written at the size that column reads:
+# sixteen across by sixty four down. Sixteen across is the cloth's own width on
+# the block, so the picture is read pixel for pixel rather than through a seam.
 #
 # It goes below the sheet rather than in it. Both marked sheets keep vanilla's
 # 64 by 64 layout in their top half, so the post and the bar are read by the
@@ -97,8 +97,8 @@ LOGO = os.path.join(ROOT, "scaffold", "images", "evilslimelabs-logo3.png")
 FRONT = (1, 1, 21, 41)      # the face of the cloth, which is what a design is on
 SHEET = 64                  # vanilla's own sheet, which stays where it is
 ## the design, and where it sits under the sheet. Keep these in step with
-## `make_container_forms.DESIGN_ACROSS`, `DESIGN_DOWN` and `DESIGN_AT`.
-DESIGN = (32, 64)
+## `tools/blocks/banners.py`'s `DESIGN_ACROSS`, `DESIGN_DOWN` and `DESIGN_AT`.
+DESIGN = (16, 64)
 DESIGN_AT = (0, SHEET)
 SHEET_COLOR = "gray"       # the cloth the logo is on
 

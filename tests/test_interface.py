@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import unittest
 
 from scaffold import settings
@@ -796,6 +797,58 @@ class SettingsFileTests(unittest.TestCase):
             app.destroy()
             settings.set_low_geometry(False)
 
+    def test_a_file_that_will_not_parse_keeps_english(self):
+        # A file that is there but unreadable means Scaffold has run before, so
+        # the desktop's locale is not the answer: guessing it, and writing the
+        # guess down, is how one torn write turned into the window permanently
+        # coming back in the machine's language.
+        from scaffold import system_locale
+
+        real = system_locale.read
+        system_locale.read = lambda: "zh_CN"
+        try:
+            for broken in ("", "   ", "{not json", "[]"):
+                with self.subTest(contents=broken):
+                    with open(self.path, "w", encoding="utf-8") as handle:
+                        handle.write(broken)
+                    settings.load()
+                    self.assertEqual(settings.settings["lang"],
+                                     settings.DEFAULT_LANGUAGE)
+        finally:
+            system_locale.read = real
+
+    def test_a_file_that_will_not_parse_is_left_alone(self):
+        # the user may be part way through fixing it by hand, and a program that
+        # rewrites the file somebody is editing is a program that loses their work
+        with open(self.path, "w", encoding="utf-8") as handle:
+            handle.write("{not json")
+        settings.load()
+        with open(self.path, encoding="utf-8") as handle:
+            self.assertEqual(handle.read(), "{not json")
+
+    def test_no_file_at_all_still_follows_the_desktop(self):
+        # the guess is for a first launch, and that still has to work
+        self.assertEqual(self.first_launch("uk_UA"), "uk_UA")
+
+    def test_a_write_is_all_or_nothing(self):
+        # save() moves a finished temp file into place, so a crash partway
+        # through can never leave a half-written .scaffold behind
+        settings.set_language("en_US")
+        before = self.on_disk()
+        real = self.json.dump
+
+        def explode(*_args, **_kwargs):
+            raise OSError("disk full")
+
+        self.json.dump = explode
+        try:
+            settings.save()
+        finally:
+            self.json.dump = real
+        self.assertEqual(self.on_disk(), before)
+        self.assertEqual([n for n in os.listdir(self.folder)
+                          if n.endswith(".tmp")], [])
+
     def test_the_file_is_never_inside_the_package(self):
         # paths.beside_executable() means the package when not frozen, which is
         # right for reading data and wrong for the user's own settings:
@@ -806,6 +859,52 @@ class SettingsFileTests(unittest.TestCase):
         self.assertNotIn(os.path.dirname(os.path.abspath(paths.__file__)),
                          settings.settings_file())
 
+
+
+@unittest.skipUnless(sys.platform.startswith("win"),
+                     "explorer is the only shell that takes a file to select")
+class ShowInFolderTests(unittest.TestCase):
+    """The button points at the pack, not at the folder above it.
+
+    Explorer will not parse a quoted `/select,<path>` token: given one it drops
+    the selection and opens a default view, which is how a build in
+    `Documents\\Scaffold Builds` opened `Documents` instead. Passing an argument
+    list quotes the whole token as soon as the path has a space in it, so the
+    command goes as one string with only the path quoted.
+    """
+
+    def commanded(self, folder, reveal):
+        from scaffold.ui import scaffold_gui
+
+        app = open_window()
+        seen = []
+        real = scaffold_gui.subprocess.Popen
+        scaffold_gui.subprocess.Popen = lambda command, *a, **k: seen.append(command)
+        try:
+            dialog = scaffold_gui.ResultDialog(app, "built", ["line"], folder,
+                                              reveal=reveal)
+            dialog.open_folder()
+        finally:
+            scaffold_gui.subprocess.Popen = real
+            app.destroy()
+        return seen
+
+    def test_the_pack_is_picked_out_in_the_folder_it_was_written_to(self):
+        import tempfile
+
+        folder = tempfile.mkdtemp()
+        self.addCleanup(__import__("shutil").rmtree, folder, True)
+        pack = os.path.join(folder, "My Pack.mcpack")
+        with open(pack, "wb") as handle:
+            handle.write(b"PK")
+        seen = self.commanded(folder, pack)
+        self.assertEqual(len(seen), 1)
+        command = seen[0]
+        self.assertIsInstance(command, str,
+                              "an argument list gets the whole token quoted")
+        self.assertTrue(command.startswith("explorer /select,\""),
+                        "the switch must sit outside the quotes: %r" % command)
+        self.assertIn(os.path.normpath(pack), command)
 
 
 class HelpMarkTests(unittest.TestCase):

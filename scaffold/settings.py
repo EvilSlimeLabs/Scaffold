@@ -7,6 +7,7 @@ read from disk until load() is called.
 import json
 import os
 import sys
+import tempfile
 
 from scaffold import lang_parse
 from scaffold import paths
@@ -194,12 +195,38 @@ def choices():
 
 
 def save():
+    """Write the settings file, all at once.
+
+    Written to a temporary file beside the real one and moved into place with
+    os.replace, which is atomic: a crash or a killed process partway through
+    can never leave a truncated .scaffold behind. An empty or half-written file
+    reads back as "no language chosen", and load() then adopts the desktop's
+    locale, so a torn write here has shown up as the window silently coming
+    back in the wrong language.
+    """
+    target = settings_file()
+    directory = os.path.dirname(target) or "."
     try:
-        with open(settings_file(), "w+", encoding="utf-8") as file:
-            json.dump(settings, file, indent=2)
+        handle, temp = tempfile.mkstemp(dir=directory, prefix=".scaffold-",
+                                        suffix=".tmp")
     except OSError:
-        ## a read-only working directory is not a reason to refuse to run
-        pass
+        ## a read-only location is not a reason to refuse to run
+        return
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8") as file:
+            json.dump(settings, file, indent=2)
+        os.replace(temp, target)
+    except BaseException as trouble:
+        ## the half-written temp goes whatever went wrong, so a failed save
+        ## leaves the settings file untouched and no litter beside it
+        try:
+            os.remove(temp)
+        except OSError:
+            pass
+        ## a read-only location is not a reason to refuse to run; anything
+        ## else is a fault worth seeing
+        if not isinstance(trouble, OSError):
+            raise
 
 
 def read_languages():
@@ -222,8 +249,17 @@ def load():
     global settings, langs
     langs = read_languages()
     settings = dict(DEFAULTS)
+    ## A file that is there but will not parse is a different case from no file
+    ## at all: it means Scaffold has run before and the choices are simply
+    ## unreadable this once. Guessing the desktop's locale then, and writing
+    ## that guess down, is how a hand-edit slip or a torn write turned into the
+    ## window permanently coming back in the machine's language. So a broken
+    ## file keeps English and is left untouched until the user changes a
+    ## setting, which rewrites it cleanly.
+    present = os.path.isfile(settings_file())
     stored = _read(settings_file())
-    if stored is None and os.path.exists(LEGACY_SETTINGS_FILE):
+    broken = present and stored is None
+    if stored is None and not present and os.path.exists(LEGACY_SETTINGS_FILE):
         ## carry an older choice over the first time, then leave the old file
         ## alone rather than deleting something the user may still want
         stored = _read(LEGACY_SETTINGS_FILE)
@@ -233,7 +269,7 @@ def load():
     ## better guess than English. Only ever a guess, and only ever now: the
     ## choice is written to the file below, so a person who then picks English
     ## on a Spanish machine keeps English.
-    if not stored or "lang" not in stored:
+    if not broken and (not stored or "lang" not in stored):
         settings["lang"] = (match_locale(system_locale.read())
                             or DEFAULT_LANGUAGE)
     ## an unknown language or theme must not stop the program starting either
@@ -251,7 +287,10 @@ def load():
                                                   DEFAULT_CHECK_UPDATES))
     if not isinstance(settings.get("output_dir"), str):
         settings["output_dir"] = ""
-    save()
+    ## a file that would not parse is left exactly as it is; overwriting it
+    ## would bury whatever the user was in the middle of fixing
+    if not broken:
+        save()
     return language()
 
 

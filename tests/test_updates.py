@@ -103,6 +103,67 @@ class LeftoverTests(unittest.TestCase):
         self.assertTrue(updates.clear_displaced())
 
 
+class BundleTests(unittest.TestCase):
+    """A build takes its own executable out of the archive and nothing else.
+
+    One signed archive carries both executables and the loose files beside them,
+    because one archive is one thing to sign. An update only has to replace the
+    program that asked for it, so the rest is dropped from the unpacked folder
+    before it is copied over the install directory.
+    """
+
+    OTHERS = ("Scaffold-cli.exe", "LICENSE", "README.md")
+
+    def setUp(self):
+        self.folder = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.folder, True)
+        self.unpacked = os.path.join(self.folder, "unpacked")
+        os.makedirs(self.unpacked)
+        self.real = updates.running_file
+        self.addCleanup(setattr, updates, "running_file", self.real)
+
+    def fill(self, *names):
+        for name in names:
+            with io.open(os.path.join(self.unpacked, name), "wb") as handle:
+                handle.write(b"MZ")
+
+    def left(self):
+        return sorted(os.listdir(self.unpacked))
+
+    def running(self, name):
+        updates.running_file = lambda: os.path.join(self.folder, name)
+
+    def test_the_window_keeps_only_its_own_executable(self):
+        self.fill("Scaffold.exe", *self.OTHERS)
+        self.running("Scaffold.exe")
+        updates._ours_only(self.unpacked)
+        self.assertEqual(self.left(), ["Scaffold.exe"])
+
+    def test_the_command_line_keeps_only_its_own_executable(self):
+        # the cli worries about the cli: a command line build updating itself
+        # must not write over the window somebody may be running
+        self.fill("Scaffold.exe", *self.OTHERS)
+        self.running("Scaffold-cli.exe")
+        updates._ours_only(self.unpacked)
+        self.assertEqual(self.left(), ["Scaffold-cli.exe"])
+
+    def test_a_bundle_without_this_build_is_left_whole(self):
+        # a renamed copy gets the whole update rather than none of it, which is
+        # what this did before and better than a no-op
+        self.fill("Scaffold.exe", *self.OTHERS)
+        self.running("Renamed.exe")
+        updates._ours_only(self.unpacked)
+        self.assertEqual(self.left(),
+                         sorted(("Scaffold.exe",) + self.OTHERS))
+
+    def test_a_checkout_has_no_executable_to_keep(self):
+        self.fill("Scaffold.exe", *self.OTHERS)
+        updates.running_file = lambda: None
+        updates._ours_only(self.unpacked)
+        self.assertEqual(self.left(),
+                         sorted(("Scaffold.exe",) + self.OTHERS))
+
+
 class ReasonTests(unittest.TestCase):
     """Every way this reports a failure has to be a string the window can show.
 

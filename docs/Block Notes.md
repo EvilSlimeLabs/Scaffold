@@ -340,6 +340,21 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   halved, with the two pixel channel between them that the rod stands in. The
   arrangement is right; whether vanilla leaves more of a gap between them is not
   knowable from here.
+- **A brewing stand's arm starts where the rod stops, at the texture's own
+  scale.** The arm reads four columns of `brewing_stand` -- the dark pixel
+  against the rod, the grey pipe, a clear column, then the brown outer leg --
+  and it is drawn four pixels long from the face of the rod outward, so a column
+  is a pixel. Stretched instead to reach its own plate, the columns came out a
+  fraction of a pixel each and the innermost of them was inside the rod, where
+  nothing shows: the dark pipe had a sliver clear of the pole rather than its two
+  whole pixels. The cost is that the two diagonal arms stop a little short of
+  their bottle rather than running all the way to it.
+- **The two faces of the arm read the tile opposite ways.** A plane's front and
+  back run their windows in opposite directions, so one window given to both puts
+  the outer leg over the plate on one side and over the rod on the other, and the
+  arm looks mirrored from one side. The bottle in the same tile has always been
+  handled correctly and is what to copy: the plain window everywhere, and the one
+  that starts at the far edge and runs back on `south`.
 - **A brewing stand's bottles are two crossed quads of an item texture.**
   `brewing_stand_slot_a_bit` and its two fellows say which of the three slots
   are full, and they are shape states, so the family has eight forms.

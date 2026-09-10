@@ -848,9 +848,14 @@ class ResultDialog(ctk.CTkToplevel):
         try:
             if sys.platform.startswith("win"):
                 if wanted and os.path.exists(wanted):
-                    ## explorer wants exactly this: no space after the comma,
-                    ## and the whole thing as one argument
-                    subprocess.Popen(["explorer", "/select,%s" % wanted])
+                    ## Passed as one command string, not an argument list:
+                    ## list2cmdline quotes an argument that has a space in it,
+                    ## and explorer will not parse a quoted "/select,<path>"
+                    ## token -- it drops the selection and opens a default
+                    ## view. Only the path is quoted here, the switch is not.
+                    ## explorer exits 1 even on success, so its code is ignored.
+                    subprocess.Popen('explorer /select,"%s"'
+                                     % os.path.normpath(wanted))
                 else:
                     os.startfile(folder)
             elif sys.platform == "darwin":
@@ -1039,8 +1044,13 @@ class AboutDialog(ctk.CTkToplevel):
         panel.grid_columnconfigure(0, weight=1)
         draw_every_pixel(panel)
 
+        ## If the launch check already found a release, say so here rather than
+        ## "up to date": the launch prompt may have been dismissed, and it is
+        ## still available.
+        opening = (app.text("update found", app.available_update)
+                   if app.available_update else app.text("update current"))
         self.update_status = ctk.CTkLabel(
-            panel, text=app.text("update current"), text_color=MUTED,
+            panel, text=opening, text_color=MUTED,
             wraplength=300, justify="left", anchor="w", font=font(size=11))
         self.update_status.grid(row=0, column=0, padx=12, pady=(10, 0), sticky="w")
 
@@ -1133,14 +1143,14 @@ class UpdateDialog(ctk.CTkToplevel):
 
         ctk.CTkLabel(self, text=app.text("update found", tag),
                      font=font(size=15, weight="bold"), text_color=TEXT).grid(
-            row=0, column=0, padx=26, pady=(20, 4))
+            row=0, column=0, padx=34, pady=(22, 4))
         self.detail = ctk.CTkLabel(self, text=app.text("update body"),
                                    text_color=MUTED, wraplength=320,
                                    justify="center")
-        self.detail.grid(row=1, column=0, padx=26, pady=(2, 10))
+        self.detail.grid(row=1, column=0, padx=34, pady=(2, 12))
 
         self.buttons = ctk.CTkFrame(self, fg_color="transparent")
-        self.buttons.grid(row=2, column=0, pady=(4, 18))
+        self.buttons.grid(row=2, column=0, pady=(4, 20))
         self.later = ctk.CTkButton(
             self.buttons, text=app.text("not now"), width=120, height=32,
             corner_radius=8, fg_color="transparent", border_width=1,
@@ -1152,6 +1162,13 @@ class UpdateDialog(ctk.CTkToplevel):
             corner_radius=8, fg_color=AMBER, hover_color=AMBER_HOVER,
             text_color=ON_AMBER, command=self.install)
         self.take.pack(side="left")
+
+        ## Hold the size the "available" state lays out at. The dialog is reused
+        ## for the download, whose text is shorter, and a window that fits its
+        ## content would shrink to a small box mid-update. A longer error string
+        ## can still grow it.
+        self.update_idletasks()
+        self.minsize(self.winfo_reqwidth(), self.winfo_reqheight())
 
         self.transient(app)
         self.after(60, self._centre)
@@ -1452,6 +1469,9 @@ class App(ctk.CTk):
         ## failure that follows is reported as a choice rather than a fault
         self.cancelled = False
         self.sticky_status = False
+        ## the newest release the launch or About check has seen, so About does
+        ## not say "up to date" after the launch prompt was dismissed
+        self.available_update = None
         self.events = queue.Queue()
         self.default_icon = paths.lookup("pack_icon.png")
         self.icon_path = self.default_icon
@@ -2191,6 +2211,9 @@ class App(ctk.CTk):
 
     def offer_update(self, tag):
         """Put the choice in front of the person: take it now, or not."""
+        ## remembered so the About dialog can say a release is out even after
+        ## this prompt has been dismissed
+        self.available_update = tag
         if getattr(self, "update_dialog", None) is not None:
             try:
                 if self.update_dialog.winfo_exists():
@@ -2574,6 +2597,11 @@ class App(ctk.CTk):
         self.building = True
         self.cancelled = False
         self.make_button.configure(state="disabled")
+        ## The settings file has been observed to come back changed after a
+        ## build -- the window reopening in the machine's language rather than
+        ## the chosen one. A build has no business touching it, so its exact
+        ## bytes are kept here and put back when the build ends.
+        self._snapshot_settings()
         job = {
             "folder": folder,
             "pack_name": name,
@@ -2679,11 +2707,13 @@ class App(ctk.CTk):
                         answer.put(again)
                 elif kind == "cancelled":
                     self.building = False
+                    self._restore_settings()
                     self.set_status(self.text("status cancelled"), warn=True,
                                     sticky=True)
                     self.revalidate()
                 elif kind == "failed":
                     self.building = False
+                    self._restore_settings()
                     self.set_status(self.text("status failed", payload), warn=True)
                     ResultDialog(self, self.text("error"), [payload], None)
                     self.revalidate()
@@ -2691,8 +2721,45 @@ class App(ctk.CTk):
             pass
         self.after(120, self._drain_events)
 
+    def _snapshot_settings(self):
+        """Keep the settings file's exact bytes for the length of a build."""
+        self._settings_snapshot = None
+        try:
+            path = settings.settings_file()
+            with open(path, "rb") as handle:
+                self._settings_snapshot = (path, handle.read())
+        except OSError:
+            ## no file yet, or unreadable; nothing to protect
+            pass
+
+    def _restore_settings(self):
+        """Put the settings file back if the build changed it, and reload.
+
+        A build does not touch settings, so any difference here is a fault
+        elsewhere writing over them. The bytes are restored verbatim and
+        settings.load() is re-run so the in-memory copy matches the disk.
+        """
+        snapshot = getattr(self, "_settings_snapshot", None)
+        self._settings_snapshot = None
+        if not snapshot:
+            return
+        path, data = snapshot
+        try:
+            current = None
+            if os.path.isfile(path):
+                with open(path, "rb") as handle:
+                    current = handle.read()
+            if current == data:
+                return
+            with open(path, "wb") as handle:
+                handle.write(data)
+        except OSError:
+            return
+        settings.load()
+
     def _build_finished(self, path, skipped, pack_name):
         self.building = False
+        self._restore_settings()
         self.set_status(self.text("status built", os.path.basename(path)),
                         good=True, sticky=True)
         lines = [os.path.abspath(path)]

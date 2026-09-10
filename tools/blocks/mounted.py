@@ -850,15 +850,19 @@ BREW_ROD = "@up"            # brewing_stand
 BREW_BASE = "@down"         # brewing_stand_base
 ROD_WIDE, ROD_TALL = 2, 13
 PLATE_WIDE, PLATE_TALL = 6, 2
-## from the top of a plate up to two pixels above the rod, and out from the
-## middle of the block as far as the bottle it holds
+## from the top of a plate up to two pixels above the rod
 ARM_TALL = ROD_TALL + 2 - PLATE_TALL
-## The arm reads four columns of the tile and the outermost of them is the brown
-## leg, so a column is a quarter of however long the arm runs. An arm reaches
-## half a column further than the bottle it holds, which puts the middle of that
-## brown column on the middle of the bottle.
+## The arm reads four columns of the tile: the dark pixel against the rod, the
+## grey pipe beside it, a clear column, then the brown outer leg.
 ARM_COLUMNS = 4
-ARM_OVER = ARM_COLUMNS / (ARM_COLUMNS - 0.5)
+## **It is drawn at the texture's own scale, one column to one pixel of block,
+## and it starts where the rod stops.** Stretched to reach its own plate the
+## columns came out a fraction of a pixel each, and running from the middle of
+## the block rather than from the rod's face buried the first of them inside the
+## rod, where nothing shows: the dark pipe the arm begins with had a sliver
+## outside the pole instead of its two whole pixels.
+ARM_REACH = ARM_COLUMNS
+ROD_FACE = ROD_WIDE / 2.0
 BOTTLE_WIDE, BOTTLE_TALL = 5, 7
 ## Both planes are centred on the same line out from the rod, so the arm's face
 ## and the bottle's face used to sit at the exact same depth and z-fought over
@@ -908,19 +912,16 @@ BREW_TURNS = (0.0, 135.0, -135.0)
 ## above the bar, which is the point the arm finishes in, and a window starting
 ## at the bar crops them off.
 ##
-## **Both faces read it the same way round, because the point has to stay over
-## the plate.** The point is the top of the outer column, at the high x end of
-## the window, and an arm is drawn running out from the rod at its high x to the
-## plate at its low x -- so the window has to start at the far edge and run
-## back, which is how Bedrock reads a picture mirrored. Giving the two faces
-## opposite windows, which is what a plane usually wants, put the point over the
-## rod on one side and over the plate on the other, and the arm looked like it
-## turned round as you walked past it.
-##
-## A window that starts at the far edge and runs back is how Bedrock reads a
-## picture mirrored.
+## **The two faces read it opposite ways, the way a plane always wants.** The
+## front and the back of a plane run their windows in opposite directions, so
+## one window given to both puts the outer leg over the plate on one side and
+## over the rod on the other -- the arm looked mirrored from one side. The
+## bottle in the same tile is handled exactly this way and has always been
+## right: the plain window everywhere, and the one that starts at the far edge
+## and runs back -- which is how Bedrock reads a picture mirrored -- on south.
 ARM_ROWS = 14
-ARM_ART = (13, 0, -ARM_COLUMNS, ARM_ROWS)
+ARM_ART = (9, 0, ARM_COLUMNS, ARM_ROWS)
+ARM_BACK = (9 + ARM_COLUMNS, 0, -ARM_COLUMNS, ARM_ROWS)
 ## the bottle vanilla draws into the same tile, five across by seven down
 BOTTLE_ART = (0, 7, BOTTLE_WIDE, BOTTLE_TALL)
 BOTTLE_BACK = (BOTTLE_WIDE, 7, -BOTTLE_WIDE, BOTTLE_TALL)
@@ -959,28 +960,21 @@ def brew_middle(at):
     return at[0] + PLATE_WIDE / 2.0, at[1] + PLATE_WIDE / 2.0
 
 
-def brew_reach(at):
-    """How far out from the rod the arm to one plate has to run.
+def brew_arm(angle):
+    """An upright quad running out from the face of the rod, four pixels long.
 
-    The three plates are not the same distance from the rod -- the solitary one
-    is four out and the pair are nearer six -- so one arm drawn and turned three
-    times reaches its own plate and stops short of the other two. Each arm is as
-    long as its own plate is far, plus the half column that carries the brown
-    leg past the middle of the bottle.
+    It starts where the rod stops rather than at the middle of the block, so the
+    two dark columns the arm begins with are two whole pixels of block standing
+    clear of the pole. Pinned at the middle instead, the innermost of them sat
+    inside the rod and only a sliver of the second one showed.
+
+    Four pixels for four columns of the tile is the texture's own scale. It
+    stands from the top of the plate to two pixels above the rod.
     """
-    middle = brew_middle(at)
-    return math.hypot(middle[0] - 8, middle[1] - 8) * ARM_OVER
-
-
-def brew_arm(angle, reach):
-    """An upright quad from the rod out to the middle of one plate.
-
-    One edge is pinned at the rod and the other at the plate, and it stands from
-    the top of the plate to two pixels above the rod.
-    """
-    return brew_turned((reach, ARM_TALL, ARM_DEEP),
-                       (8 - reach, PLATE_TALL, 8 - ARM_DEEP / 2.0),
-                       angle, BREW_ROD, {face: ARM_ART for face in FACES})
+    return brew_turned((ARM_REACH, ARM_TALL, ARM_DEEP),
+                       (8 - ROD_FACE - ARM_REACH, PLATE_TALL,
+                        8 - ARM_DEEP / 2.0),
+                       angle, BREW_ROD, two_sided(ARM_ART, ARM_BACK))
 
 
 def brew_bottle(angle, at):
@@ -1017,7 +1011,7 @@ def brewing(bottles):
     made = [brew_rod]
     for ((socket, at), angle, full) in zip(BREW_PLATES, BREW_TURNS, bottles):
         made.append(brew_plate(socket, at))
-        made.append(brew_arm(angle, brew_reach(at)))
+        made.append(brew_arm(angle))
         if full:
             made.append(brew_bottle(angle, at))
     return made
