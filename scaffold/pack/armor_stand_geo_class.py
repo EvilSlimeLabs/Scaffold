@@ -311,10 +311,19 @@ class ArmorStandGeo:
             shape_variant="default"
             if block_type == "hopper" and rot is not None and rot != 0:
                 shape_variant="side"
-            elif block_type.startswith("skull") and rot is not None and str(rot) != "1":
+            elif (block_type.startswith("skull") and rot is not None
+                  and str(rot) != "1" and not str(rot).startswith("spin")):
                 ## A head reads facing_direction, where 1 is the floor and 2 to
                 ## 5 name the wall it hangs on. The mounting is the shape as
                 ## well as the turn, and the state carries both.
+                ##
+                ## **A head on the floor arrives as `spinN`, not as 1.** Which
+                ## of sixteen ways it faces is in the block entity rather than
+                ## the states, so `core.py` hands the turn over as `spin0` to
+                ## `spin15` and the plain 1 is only what a floor head with no
+                ## entity beside it keeps. Read as a wall value, every skull
+                ## anybody had actually placed on the ground was drawn four
+                ## pixels up and four back, hanging in the air.
                 shape_variant = "wall"
             elif block_type == "door" and top:
                 ## The lower block of a door draws both of its halves, so the

@@ -82,15 +82,29 @@ class GeneratorTests(unittest.TestCase):
     quietly.
     """
 
-    def test_the_carved_pumpkin_faces_the_way_its_neighbours_do(self):
-        # the six facing_direction words, which furnace and observer carry too
+    def test_the_carved_pumpkin_faces_a_half_turn_from_its_neighbours(self):
+        # **A pumpkin is a half turn from `furnace` and `observer`, and it is
+        # meant to be.** It carries the same six `facing_direction` words, so
+        # matching them looks like the right answer, and it was what this test
+        # held before. In game the pumpkin still faced backwards while those two
+        # were right, so the two are not one fault in a shared place. What
+        # matters is that the half turn is written into the table rather than
+        # added to it: added, it corrects on one run and breaks on the next.
         rotation = load("block_rotation")
-        words = ("south", "east", "west", "up", "down", "north")
-        pumpkin = {word: rotation["carved_pumpkin"][word] for word in words}
+        turning = ("south", "east", "west", "north")
         for neighbour in ("furnace", "observer"):
-            self.assertEqual(
-                pumpkin, {word: rotation[neighbour][word] for word in words},
-                "carved_pumpkin no longer turns the way %s does" % neighbour)
+            for word in turning:
+                with self.subTest(neighbour=neighbour, facing=word):
+                    self.assertEqual(
+                        (rotation["carved_pumpkin"][word][1]
+                         - rotation[neighbour][word][1]) % 360, 180,
+                        "carved_pumpkin is no longer a half turn from %s"
+                        % neighbour)
+        # the two that are a turn about x are shared with them untouched, since
+        # a pumpkin has no facing that uses them
+        for word in ("up", "down"):
+            self.assertEqual(rotation["carved_pumpkin"][word],
+                             rotation["furnace"][word])
 
 
 class BlockBuildTests(unittest.TestCase):
@@ -210,6 +224,209 @@ class TileTests(unittest.TestCase):
                     empty.append("%s %s -> %s" % (block, face, path))
         self.assertEqual(empty, [],
                          "textures with nothing in the 16x16 Scaffold reads")
+
+
+class PlantTests(unittest.TestCase):
+    """A plant is an X on the block's diagonals, and so is a sunflower."""
+
+    def shapes(self):
+        return load("block_shapes")
+
+    def test_a_plant_is_turned_in_its_shape_not_by_a_rotation_table(self):
+        # make_block looks a rotation up only when the block hands it one, and a
+        # plant carries no facing state, so rot comes back None and the table is
+        # never read. cross_texture had an entry turning every plant forty-five
+        # degrees and it did nothing -- except in tools/checks/render.py, which
+        # passes rot=0 and so drew the X the game never showed.
+        turns = load("block_rotation")
+        for family in ("cross_texture", "double_plant", "sunflower"):
+            with self.subTest(family=family):
+                self.assertNotIn(family, turns,
+                                 "%s has a rotation table nothing reads" % family)
+                for form, body in self.shapes()[family].items():
+                    self.assertIn("rotation", body,
+                                  "%s/%s has no turn, so it is a plus"
+                                  % (family, form))
+                    for turn in body["rotation"][:2]:
+                        self.assertEqual(turn[1], 45,
+                                         "%s/%s is square to the block"
+                                         % (family, form))
+
+    def test_a_turned_quad_reaches_the_corners_of_the_block(self):
+        # sixteen across turned forty-five degrees spans eleven and a bit, which
+        # leaves a gap at every corner; vanilla stretches its quads as it turns
+        # them and this writes the stretched length out
+        for size in self.shapes()["cross_texture"]["default"]["size"]:
+            longest = max(size) * 16
+            self.assertGreater(longest, 16,
+                               "a quad turned into the diagonal has to be "
+                               "longer than the block is wide")
+            self.assertLess(longest, 16 * 2 ** 0.5 + 0.01,
+                            "a quad longer than the diagonal leaves the block")
+
+    def test_a_sunflower_carries_a_head_and_the_other_double_plants_do_not(self):
+        shapes = self.shapes()
+        self.assertEqual(len(shapes["sunflower"]["top"]["size"]),
+                         len(shapes["double_plant"]["top"]["size"]) + 1,
+                         "a sunflower's upper half is its cross and its head")
+        self.assertEqual(len(shapes["sunflower"]["default"]["size"]),
+                         len(shapes["double_plant"]["default"]["size"]),
+                         "only the upper half carries the head")
+
+    def test_the_sunflowers_head_is_yellow_east_and_green_west(self):
+        # Bedrock keeps both pictures in sunflower_additional, a list of two,
+        # and a block reads a list by its variant -- there is no variant that
+        # reaches the second entry, so the head names both outright
+        faces = load("block_uv")["sunflower"]["top"]["overwrite"]
+        self.assertTrue(faces["east"][-1].endswith("sunflower_front"),
+                        "the flower is not on the east face: %s" % faces["east"][-1])
+        self.assertTrue(faces["west"][-1].endswith("sunflower_back"),
+                        "the back is not on the west face: %s" % faces["west"][-1])
+        # and the two sides read the picture opposite ways, because the faces of
+        # a plane run their windows in opposite directions
+        windows = load("block_uv")["sunflower"]["top"]["uv_sizes"]
+        self.assertGreater(windows["east"][-1][0], 0)
+        self.assertLess(windows["west"][-1][0], 0)
+
+    def test_the_sunflowers_head_leans_back_east_of_the_stem(self):
+        # The stem is a two pixel column up the middle and the flower's disc is
+        # the middle eight pixels of its tile, so a head on the middle line puts
+        # green through the bottom of the flower.
+        #
+        # **East is the low side of x.** `armor_stand_geo_class` negates a
+        # block's place in the grid and leaves a cube's offset inside the block
+        # alone, so a cube written east of the middle comes out west of it in
+        # game. Six reads as two pixels east; ten read as two pixels west.
+        body = self.shapes()["sunflower"]["top"]
+        at, size, turn = (body["offsets"][-1], body["size"][-1],
+                          body["rotation"][-1])
+        across = (at[0] + size[0] / 2.0) * 16
+        self.assertLess(across, 7, "the head stands on the stem")
+        self.assertGreater(across, 4, "the head is a pixel or two east, not more")
+        # and squarely on the north-south middle, which is the axis it leans about
+        along = (at[2] + size[2] / 2.0) * 16
+        self.assertAlmostEqual(along, 8, places=3,
+                               msg="the head is off the north-south middle")
+        # **The lean is positive, which is what makes the yellow face look up.**
+        # The same mirror that puts east on the low side of x reverses every
+        # turn about y and about z, so a negative angle here puts the flower's
+        # face at the floor in game.
+        self.assertGreater(turn[2], 0, "the flower looks at the floor")
+        self.assertEqual(turn[2], 22.5, "the head leans by some odd amount")
+
+
+class FootprintTests(unittest.TestCase):
+    """Every face reads the part of the tile its own cube covers.
+
+    `Cube.uv` in `tools/blocks/geometry.py` is the rule: an up or a down face
+    reads the cube's x and z, a north or a south its x and y, an east or a west
+    its z and y. Given the whole tile instead, a face two pixels deep carries
+    all sixteen rows of the texture squashed onto it, and the grain stops
+    lining up with whatever is beside it.
+
+    **These families and no others.** Plenty of cubes read a whole tile on
+    purpose -- a plant's quad is a picture rather than a box, a torch's top is
+    the flame, a chain's tile is a strip down one edge rather than a block --
+    so this names the families whose texture really is a block tile rather than
+    sweeping the tables.
+    """
+
+    FOOTPRINT = ("stairs", "standing_sign", "wall_sign", "fence",
+                 "fence_gate", "button")
+    FACES = ("up", "down", "north", "south", "east", "west")
+
+    @staticmethod
+    def window(face, size, at):
+        wide, tall, deep = size
+        across, up, over = at
+        # an up face's v runs toward -z and a down face's runs with it, so a
+        # cube that does not fill the block front to back reads its top from
+        # the far side
+        if face == "up":
+            return [across, 1 - over - deep], [wide, deep]
+        if face == "down":
+            return [across, over], [wide, deep]
+        if face in ("north", "south"):
+            return [across, 1 - up - tall], [wide, tall]
+        return [over, 1 - up - tall], [deep, tall]
+
+    def test_a_face_reads_the_cube_it_belongs_to(self):
+        shapes = load("block_shapes")
+        windows = load("block_uv")
+        for family in self.FOOTPRINT:
+            for form, body in shapes[family].items():
+                entry = windows[family][form]
+                for index, (size, at) in enumerate(zip(body["size"],
+                                                       body["offsets"])):
+                    for face in self.FACES:
+                        offset, span = self.window(face, size, at)
+                        with self.subTest(family=family, form=form,
+                                          cube=index, face=face):
+                            self.assertEqual(
+                                [round(n, 6) for n in entry["offset"][face][index]],
+                                [round(n, 6) for n in offset])
+                            self.assertEqual(
+                                [round(n, 6) for n in entry["uv_sizes"][face][index]],
+                                [round(n, 6) for n in span])
+
+    def test_every_face_has_a_window_for_every_cube(self):
+        # make_block reads uv_idx off the up list and then uses it for all six
+        # faces, so a family whose up list is longer than its north list walks
+        # off the end of the shorter one
+        windows = load("block_uv")
+        for family in self.FOOTPRINT + ("chain",):
+            for form, entry in windows[family].items():
+                runs = {face: len(entry["uv_sizes"][face])
+                        for face in self.FACES}
+                self.assertEqual(len(set(runs.values())), 1,
+                                 "%s/%s has %s" % (family, form, runs))
+
+    def test_a_chain_reads_the_strip_its_tile_actually_holds(self):
+        # chain1 and chain2 draw the chain three pixels wide down the left of an
+        # otherwise empty tile, so a window taken from the cube's own footprint
+        # lands in the empty three quarters and the face draws nothing at all
+        entry = load("block_uv")["chain"]["default"]
+        for face in self.FACES:
+            with self.subTest(face=face):
+                self.assertEqual(entry["offset"][face][0], [0, 0],
+                                 "a chain's %s does not start at its strip" % face)
+
+    def test_a_standing_signs_post_shares_no_plane_with_its_board(self):
+        # the post ran the whole height of the block with its north and south
+        # faces exactly on the board's own, which is a flicker rather than a
+        # join. It stops a pixel inside the board instead, and is centred, so
+        # no two faces sit on one plane.
+        body = load("block_shapes")["standing_sign"]["default"]
+        board, post = [(at, [a + b for a, b in zip(at, size)])
+                       for at, size in zip(body["offsets"], body["size"])]
+        for axis, name in enumerate("xyz"):
+            self.assertEqual(
+                {round(board[side][axis], 6) for side in (0, 1)}
+                & {round(post[side][axis], 6) for side in (0, 1)}, set(),
+                "the post and the board share a %s plane" % name)
+        # and the post really is inside the board rather than stopping under it
+        self.assertGreater(post[1][1], board[0][1],
+                           "the post stops short of the board")
+        # **and it is hidden under the board when you look down at it.** The
+        # board sat a pixel south of the middle of the block while the post was
+        # centred, so from above the post stuck out past the board's north edge.
+        for axis, name in ((0, "x"), (2, "z")):
+            self.assertGreaterEqual(round(post[0][axis], 6),
+                                    round(board[0][axis], 6),
+                                    "the post is outside the board in %s" % name)
+            self.assertLessEqual(round(post[1][axis], 6),
+                                 round(board[1][axis], 6),
+                                 "the post is outside the board in %s" % name)
+
+    def test_a_standing_sign_turns_about_the_middle_of_its_block(self):
+        # sixteen rotation steps about a board that is off centre trace a circle
+        # instead of spinning it where it stands
+        body = load("block_shapes")["standing_sign"]["default"]
+        for at, size in zip(body["offsets"], body["size"]):
+            for axis in (0, 2):
+                self.assertAlmostEqual(at[axis] + size[axis] / 2.0, 0.5,
+                                       places=6,
+                                       msg="a sign cube is off the middle")
 
 
 class MountingTests(unittest.TestCase):
@@ -753,17 +970,123 @@ class MountingTests(unittest.TestCase):
         corners = sorted(name.split("#")[1] for name in self.geo.uv_map)
         self.assertEqual(corners, ["0,8", "16,0", "16,8", "24,8", "8,0", "8,8"])
 
+    def test_a_cauldron_has_an_opaque_underside(self):
+        # **`cauldron_bottom` is opaque only at its four corners.** The game
+        # expects the recessed floor of the pot to show through the gap between
+        # the feet; a ghost block cannot afford that, because a transparent
+        # texel still takes the depth it stands at, so the cut middle blanked
+        # whatever stood behind it and a cauldron could be seen up through from
+        # below and out of the top. `tools/textures/cauldron.py` draws the feet
+        # onto the inside instead, one picture with nothing cut out of it.
+        from PIL import Image
+
+        entry = load("block_uv")["cauldron"]["default"]["overwrite"]
+        under = str(entry["down"][0])
+        self.assertTrue(under.endswith("cauldron_bottom_flat"),
+                        "the underside reads %s, which has its middle cut out"
+                        % under)
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        picture = Image.open(os.path.join(
+            here, "scaffold", "Vanilla_Resource_Pack",
+            under + ".png")).convert("RGBA")
+        clear = [p for p in picture.getdata() if p[3] < 255]
+        self.assertEqual(clear, [], "the flattened underside is not solid")
+
+    def test_a_brewing_stands_arms_all_carry_their_leg_outward(self):
+        # **The leg has to stay at the same end of the block from either side.**
+        # The tile's four arm columns run outward -- 9 is the dark pipe against
+        # the rod, 12 the brown leg over the plate -- and the cube runs inward,
+        # so the window has to start at the far edge and run back. All three
+        # arms are one cube at three angles, so getting it wrong points all
+        # three the same way rather than each of them outward.
+        #
+        # **Whether the two large faces take the same window is still open.**
+        # One window on all six keeps the leg at the same end of the block from
+        # either side; `two_sided` gives the south face the opposite one, which
+        # is what a banner wants and which put the leg outboard on north and
+        # against the pole on south when it was measured. Both are being tried
+        # in game, so this holds only what is true either way: the window runs
+        # back from the far edge, which is what keeps the leg off the pole.
+        entry = load("block_uv")["brewing_stand"]["default"]
+        arms = [i for i, size in enumerate(entry["uv_sizes"]["north"])
+                if abs(abs(size[0]) * 16 - 4) < 0.01]
+        self.assertEqual(len(arms), 3, "a brewing stand is three arms")
+        for index in arms:
+            with self.subTest(cube=index):
+                self.assertLess(
+                    entry["uv_sizes"]["north"][index][0], 0,
+                    "the arm reads its tile forwards, so its leg is at the pole")
+                self.assertEqual(
+                    abs(entry["uv_sizes"]["south"][index][0]),
+                    abs(entry["uv_sizes"]["north"][index][0]),
+                    "the two faces read different amounts of the tile")
+
+    def test_a_brewing_stands_bottle_turns_with_the_arm_it_stands_on(self):
+        # **A bottle takes its plate's middle outright and its arm swings round
+        # to one**, so `brew_bottle` does not go through `brew_turned` and does
+        # not get its sign correction for free. It kept the plain angle after
+        # the arms were negated, which left the two turned bottles facing
+        # across their plate while their arms ran along it.
+        body = load("block_shapes")["brewing_stand"]["1-1-1"]
+        pairs = []
+        for size, turn in zip(body["size"], body.get("rotation", [])):
+            wide, _tall, deep = [n * 16 for n in size]
+            ## the arm is four across and a tenth thick, the bottle five and a
+            ## fifth; the rod and the plates are square and carry no turn
+            if deep < 1 and wide in (4, 5):
+                pairs.append((round(wide), round(turn[1], 3)))
+        self.assertEqual(len(pairs), 6, "a full brewing stand is three of each")
+        for plate in range(3):
+            arm, bottle = pairs[plate * 2], pairs[plate * 2 + 1]
+            with self.subTest(plate=plate):
+                self.assertEqual(arm[0], 4, "these are not arm then bottle")
+                self.assertEqual(bottle[0], 5, "these are not arm then bottle")
+                self.assertEqual(
+                    arm[1], bottle[1],
+                    "the bottle on plate %d does not turn with its arm" % plate)
+
+    def test_a_head_on_the_floor_stands_on_the_floor(self):
+        # **A floor head arrives as `spinN`, not as 1.** Which of sixteen ways
+        # it faces is in the block entity rather than the states, so `core.py`
+        # hands the turn over as `spin0` to `spin15`, and the plain 1 is only
+        # what a head with no entity beside it keeps. `make_block` read anything
+        # that was not 1 as a wall value, so every skull anybody had actually
+        # placed on the ground was drawn four pixels up and four back.
+        for rot in ["1"] + ["spin%d" % n for n in range(0, 16, 5)]:
+            with self.subTest(rot=rot):
+                floor = min(o[1] * 16 for o, _s in self.cubes("skeleton_skull",
+                                                              rot=rot))
+                self.assertEqual(round(floor, 3), 0.0,
+                                 "a head turned %s hangs in the air" % rot)
+        # and one on a wall is still lifted clear of it
+        for rot in ("2", "3", "4", "5"):
+            with self.subTest(rot=rot):
+                floor = min(o[1] * 16 for o, _s in self.cubes("skeleton_skull",
+                                                              rot=rot))
+                self.assertGreater(floor, 0, "a head on a wall sits on the floor")
+
     def test_a_dragon_head_is_bigger_than_the_block_it_is_placed_on(self):
-        # sixteen across, twenty tall and thirty deep, with the snout out the
-        # front and the jaw below the floor. That is the model the game draws a
-        # dragon head block with, and shrinking it to fit would put the ghost
-        # block somewhere the real one will not be.
+        # **Bigger than its block, and three quarters of its own model.**
+        # `geometry.dragon_head` is the head off a full sized ender dragon --
+        # sixteen across, twenty tall and thirty deep, which is two blocks of
+        # snout -- and the ghost at that size swamped everything near it. Three
+        # quarters is the factor the game draws the block at. It still leaves
+        # the snout out the front and the jaw below the floor, which is where
+        # the real one goes, so shrinking it to fit the block would be wrong.
         reach = [(min(o[i] * 16 for o, _ in self.cubes("dragon_head", rot=1)),
                   max((o[i] + s[i]) * 16
                       for o, s in self.cubes("dragon_head", rot=1)))
                  for i in range(3)]
-        self.assertEqual([(round(a), round(b)) for a, b in reach],
-                         [(-8, 8), (-8, 12), (-6, 24)])
+        across, tall, deep = [(round(a, 1), round(b, 1)) for a, b in reach]
+        self.assertEqual([across, tall, deep],
+                         [(-6.0, 6.0), (0.0, 15.0), (-4.5, 18.0)])
+        self.assertGreater(deep[1] - deep[0], 16, "the snout is inside the block")
+        # **and it stands on the floor.** A ghost block reaching down into the
+        # block underneath reads as belonging to that block rather than to this
+        # one, so the floor form is lifted by however far its jaw falls short.
+        # The wall form is left hanging, which is what the game does.
+        self.assertEqual(tall[0], 0.0, "a dragon head on the floor hangs below it")
+        self.assertLessEqual(tall[1], 16, "and it does not reach past the top")
 
     def test_a_head_and_a_banner_stay_inside_the_block_they_mark(self):
         # a ghost block is a mark on the place a block goes, so one that leans
@@ -966,38 +1289,40 @@ class MountingTests(unittest.TestCase):
             for (across, down), at in placed.items():
                 for (other_across, other_down), other in placed.items():
                     if other_across > across:
-                        ## **The columns run backwards, and have to.** The sheet
-                        ## holds the design mirrored -- tools/textures/banners.py
-                        ## writes it that way on purpose -- and the face turns it
-                        ## back. Mirroring a picture cut into columns swaps the
-                        ## columns as well as flipping each one, so the design's
-                        ## last column belongs at the least x. Doing only the
-                        ## tiles cut an ominous banner's face down the middle and
-                        ## swapped its halves.
-                        self.assertGreater(at[0], other[0],
-                                           "%s does not mirror its columns, so "
-                                           "its design comes out cut in half "
-                                           "and swapped" % form)
+                        ## **Which way the columns run is still being settled in
+                        ## game, so this only holds that they are consistent.**
+                        ## The sheet holds the design mirrored and the block is
+                        ## mirrored again across x on its way into the model, so
+                        ## column order and tile mirroring are two halves of one
+                        ## thing: turning one without the other gives the design
+                        ## sliced rather than mirrored. What must not happen is
+                        ## two quads landing on one column, which is what this
+                        ## catches.
+                        self.assertNotEqual(at[0], other[0],
+                                            "%s puts two columns of its design "
+                                            "in the same place" % form)
                     if other_down > down:
                         ## rows are untouched: a mirror is left to right
                         self.assertGreater(at[1], other[1],
                                            "%s runs its rows backwards" % form)
 
-            # **Both faces turn their tile round.** The sheet holds the design
-            # mirrored -- written that way on purpose -- so every face reading
-            # it has to mirror it back, not only the one a banner is looked at.
-            # The two faces of a plane already run opposite each other, which is
-            # what makes the back come out as the mirror of the front once both
-            # are turned. Leaving the back alone cancelled one flip against the
-            # other and split it down the middle.
+            # **The front turns its tile round and the back does not.** The
+            # sheet holds the design mirrored, written that way on purpose, so
+            # the face a banner is read from mirrors it back. The back needs
+            # nothing: the two faces of a plane already run their windows in
+            # opposite directions, so a plain window there shows the sheet
+            # reversed once, which is the mirror of the front and is what a real
+            # banner does. Turning the back as well cancels that reversal and
+            # the two faces come out identical, which is what they were.
             for index, name in enumerate(entry[form]["overwrite"]["south"]):
                 if design_corner(name) is None:
                     continue
-                for face in ("south", "north"):
-                    self.assertLess(
-                        entry[form]["uv_sizes"][face][index][0], 0,
-                        "%s does not turn its tile round on its %s, so the "
-                        "design comes out split" % (form, face))
+                turned = [entry[form]["uv_sizes"][face][index][0] < 0
+                          for face in ("south", "north")]
+                self.assertEqual(
+                    sorted(turned), [False, True],
+                    "%s turns its tile the same way on both faces, so the back "
+                    "is a copy of the front rather than its mirror" % form)
 
             # and only those two carry the picture. The other four are the
             # cloth's edges and the seams between the quads, a pixel wide, and

@@ -98,7 +98,15 @@ FRONT = (1, 1, 21, 41)      # the face of the cloth, which is what a design is o
 SHEET = 64                  # vanilla's own sheet, which stays where it is
 ## the design, and where it sits under the sheet. Keep these in step with
 ## `tools/blocks/banners.py`'s `DESIGN_ACROSS`, `DESIGN_DOWN` and `DESIGN_AT`.
-DESIGN = (16, 64)
+DESIGN = (64, 64)
+
+## **A pixel of the design is not square on the block.** The design covers the
+## whole cloth, and the cloth is half as wide as it is tall, so `DESIGN` across
+## lands on half the block pixels that `DESIGN` down does. A picture fitted by
+## its own proportions in sheet pixels therefore comes out squashed by whatever
+## that ratio is. Anything drawn here at its true shape has to be stretched by
+## this first.
+SQUARE_UP = (DESIGN[1] / 2.0) / DESIGN[0]
 DESIGN_AT = (0, SHEET)
 SHEET_COLOR = "gray"       # the cloth the logo is on
 
@@ -118,11 +126,17 @@ def logo_on(cloth):
     The logo is a wide picture and a banner is a tall one, so it is fitted
     across and left where a crest sits rather than stretched to the cloth: the
     rest is cloth, with the folds vanilla drew still on it.
+
+    **Its height is stretched by `SQUARE_UP` on the way in.** A pixel of the
+    design is twice as tall on the block as it is wide, so a logo fitted by its
+    own proportions in sheet pixels lands on the cloth half the height it should
+    be. Written this way it comes out the shape it was drawn.
     """
     ground = cloth.resize(DESIGN, Image.LANCZOS)
     logo = Image.open(LOGO).convert("RGBA")
     wide = DESIGN[0]
-    tall = max(1, int(round(logo.size[1] * wide / float(logo.size[0]))))
+    tall = max(1, int(round(logo.size[1] * wide / float(logo.size[0])
+                            * SQUARE_UP)))
     ground.alpha_composite(logo.resize((wide, tall), Image.LANCZOS),
                            (0, (DESIGN[1] - tall) // 2))
     return ground

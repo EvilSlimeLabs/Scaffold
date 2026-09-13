@@ -37,9 +37,11 @@ FACES = ("up", "down", "north", "south", "east", "west")
 ## names them and as Bedrock's older numbering does. The turn runs the other
 ## way round from the compass: a vault built facing west needed the model spun
 ## the way "east" is written here.
-FACING = {"0": [0, 0, 0], "1": [0, 270, 0], "2": [0, 180, 0], "3": [0, 90, 0],
-          "south": [0, 0, 0], "west": [0, 270, 0], "north": [0, 180, 0],
-          "east": [0, 90, 0]}
+## A vault's four facings, a half turn round from where they were first
+## written: a vault placed facing south drew its front northward in game.
+FACING = {"0": [0, 180, 0], "1": [0, 90, 0], "2": [0, 0, 0], "3": [0, 270, 0],
+          "south": [0, 180, 0], "west": [0, 90, 0], "north": [0, 0, 0],
+          "east": [0, 270, 0]}
 
 
 def load(path):
@@ -124,11 +126,19 @@ def main():
     ## The words are the six `facing_direction` values and match `furnace` and
     ## `observer` exactly; the numbers are the four a pumpkin's own `direction`
     ## carries, which is a different state with its own numbering.
+    ##
+    ## The half turn is in these numbers rather than applied to them, and it is
+    ## the *second* one this table has needed: written a half turn out, corrected
+    ## to match `furnace` and `observer`, and still facing backwards in game.
+    ## Those two carry their own tables and are right as they are, so this is not
+    ## a shared fault to fix in one place. `lit_pumpkin` shares the family and so
+    ## moves with it. Up and down are a turn about x and are left alone; a
+    ## pumpkin has no facing that uses them.
     lookup_writer.put(ROTATION, "carved_pumpkin", {
-        "south": [0, 180, 0], "east": [0, 90, 0], "west": [0, 270, 0],
-        "up": [270, 0, 0], "down": [90, 0, 0], "north": [0, 0, 0],
-        "0": [0, 0, 0], "1": [0, 90, 0], "2": [0, 180, 0],
-        "3": [0, 270, 0]}, tight=True)
+        "south": [0, 0, 0], "east": [0, 270, 0], "west": [0, 90, 0],
+        "up": [270, 0, 0], "down": [90, 0, 0], "north": [0, 180, 0],
+        "0": [0, 180, 0], "1": [0, 270, 0], "2": [0, 0, 0],
+        "3": [0, 90, 0]}, tight=True)
 
     ## --- vault: a cube, but one with a front ---------------------------------
     ## A rotation table is keyed by shape family, and a vault shared `cube` with

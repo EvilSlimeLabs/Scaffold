@@ -70,7 +70,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.insert(0, ROOT)
 
 from tools.blocks.geometry import Cube, FACES, on_sheet, spun
-from tools.blocks.tables import define, write
+from tools.blocks.tables import define, turns, write
 
 
 # --- hanging signs ----------------------------------------------------------
@@ -714,8 +714,31 @@ LIQUID = {"water": "textures/blocks/cauldron_water" + WATER_BLUE,
 CAULDRON_FILL = {level: POT_FLOOR + 2 * level for level in range(1, 7)}
 
 INSIDE = 16 - 2 * POT_WALL
+
+## **The floor of the pot needs its own picture on top.** `cauldron_top` is the
+## rim seen from above and is clear through the middle, which is the hole a
+## cauldron is looked into through. Given to the floor's upper face as well, an
+## empty cauldron could be seen straight through to the sky. `cauldron_inner` is
+## the one the game puts inside. The underside keeps `cauldron_bottom`, which is
+## what the block declares for `down` and is already what it reads.
+POT_INNER = "textures/blocks/cauldron_inner"
+
+## **The underside is one flattened picture, not a cut one over a plate.**
+## `cauldron_bottom` is opaque only at its four corners: the game expects the
+## recessed floor of the pot to show through the gap between the feet. A ghost
+## block cannot afford that, because a transparent texel still takes the depth
+## it stands at, so the cut middle blanked whatever stood behind it and a
+## cauldron could be seen up through from below and out of the top. Standing a
+## plate behind the gap cured that and left a cube in the middle of the block
+## for the liquid and the walls to trip over. `tools/textures/cauldron.py`
+## draws the feet onto the inside instead, and the underside then needs no
+## geometry behind it at all.
+POT_UNDER = "textures/blocks/cauldron_bottom_flat"
+POT_FLOOR_ART = dict({face: "default" for face in FACES},
+                     up=POT_INNER, down=POT_UNDER)
+
 cauldron_pot = [
-    Cube((16, POT_FLOOR, 16), (0, 0, 0)),
+    Cube((16, POT_FLOOR, 16), (0, 0, 0), texture=POT_FLOOR_ART),
     Cube((POT_WALL, 16 - POT_FLOOR, 16), (0, POT_FLOOR, 0)),
     Cube((POT_WALL, 16 - POT_FLOOR, 16), (16 - POT_WALL, POT_FLOOR, 0)),
     Cube((INSIDE, 16 - POT_FLOOR, POT_WALL), (POT_WALL, POT_FLOOR, 0)),
@@ -864,13 +887,19 @@ ARM_COLUMNS = 4
 ARM_REACH = ARM_COLUMNS
 ROD_FACE = ROD_WIDE / 2.0
 BOTTLE_WIDE, BOTTLE_TALL = 5, 7
-## Both planes are centred on the same line out from the rod, so the arm's face
-## and the bottle's face used to sit at the exact same depth and z-fought over
-## the stretch where the arm passes the plate. The bottle is thinner and nested
-## inside the arm's own thickness instead of alongside it, which keeps both
-## centred exactly where they were and leaves no shared plane to fight over.
+## **The bottle is thick enough to hold the arm inside it, with room to spare.**
+## Both planes are centred on the same line out from the rod and both run along
+## it, so over the stretch where the arm passes the plate they are the same
+## plane. The arm's tile carries a clear column between its pipe and its leg,
+## and a transparent texel still takes the depth it stands at, so an arm at the
+## same depth as the bottle cuts a stripe out of it. Nesting the arm inside the
+## bottle answers that -- the bottle's faces are nearer from either side -- but
+## only if the gap is big enough for the depth test to tell them apart. A
+## twentieth of a pixel was not: it left the two turned bottles looking cut in
+## half the moment they were squared up with their arms. A fifth of a pixel
+## each side is.
 ARM_DEEP = 0.1
-BOTTLE_DEEP = 0.2
+BOTTLE_DEEP = 0.5
 
 ## Where the three sockets are drawn on the base tile, which is the only thing
 ## in the pack that says where a plate goes, and where each plate stands once
@@ -901,6 +930,14 @@ def brew_plate(socket, at):
 ## hundred and thirty five degrees each way. The bottles are drawn the same way,
 ## as single upright planes rather than crossed pairs.
 BREW_TURNS = (0.0, 135.0, -135.0)
+## How far each arm stands off the face of the rod, in the same order. The two
+## turned ones are held half a pixel further out than the one drawn straight
+## ahead.
+ARM_GAPS = (
+    0.0,                    # arm 1
+    0.5,                    # arm 2
+    0.5,                    # arm 3
+)
 ## The whole arm is four columns of the tile: the dark pixel against the rod,
 ## the grey pipe beside it, a clear column, then the brown outer leg over the
 ## plate, with the bar that joins them across the top. It is drawn twice, once
@@ -912,16 +949,25 @@ BREW_TURNS = (0.0, 135.0, -135.0)
 ## above the bar, which is the point the arm finishes in, and a window starting
 ## at the bar crops them off.
 ##
-## **The two faces read it opposite ways, the way a plane always wants.** The
-## front and the back of a plane run their windows in opposite directions, so
-## one window given to both puts the outer leg over the plate on one side and
-## over the rod on the other -- the arm looked mirrored from one side. The
-## bottle in the same tile is handled exactly this way and has always been
-## right: the plain window everywhere, and the one that starts at the far edge
-## and runs back -- which is how Bedrock reads a picture mirrored -- on south.
+## **The red leg goes at the far end, on every arm and from either side.** The
+## four columns run outward in the tile -- 9 is the dark pipe that stands against
+## the rod and 12 is the brown leg that stands over the plate -- and the cube
+## runs inward, from its own far end at the low x to the rod's face at the high
+## one. Read straight the tile lands on it backwards, and since all three arms
+## are one cube at three angles they carry the leg against the pole together,
+## which reads as three arms pointing one way rather than three pointing out.
+##
+## **So both faces take the same window, not opposite ones.** A banner's two
+## faces want opposite windows because the design has to read the same way round
+## to somebody walking round it, and walking round turns left and right over.
+## The arm wants the opposite of that: the leg has to stay at the same end of
+## the *block* whichever side it is seen from, and the two faces run their u the
+## same way along x, so one window on all six is what keeps it there. Given the
+## banner's treatment the arm came out with the leg outboard on its north face
+## and against the pole on its south.
 ARM_ROWS = 14
-ARM_ART = (9, 0, ARM_COLUMNS, ARM_ROWS)
-ARM_BACK = (9 + ARM_COLUMNS, 0, -ARM_COLUMNS, ARM_ROWS)
+ARM_ART = (9 + ARM_COLUMNS, 0, -ARM_COLUMNS, ARM_ROWS)
+ARM_BACK = (9, 0, ARM_COLUMNS, ARM_ROWS)
 ## the bottle vanilla draws into the same tile, five across by seven down
 BOTTLE_ART = (0, 7, BOTTLE_WIDE, BOTTLE_TALL)
 BOTTLE_BACK = (BOTTLE_WIDE, 7, -BOTTLE_WIDE, BOTTLE_TALL)
@@ -941,18 +987,23 @@ def brew_turned(size, at, angle, texture, window):
     middle, so the edge stays pinned to the rod and the piece swings out to its
     own plate.
 
-    **The move and the turn take the same sign.** `spun` moves a point the way a
-    cube's own rotation moves the cube -- it negates the angle inside, which is
-    the whole reason it exists -- so turning a piece about the rod is moving its
-    middle by an angle and then turning the cube by that same angle. Opposite
-    signs put the piece beside the right plate lying across the block instead of
-    out along its own radius, which is a quarter turn wrong and only visible on
-    the two plates that are not straight ahead.
+    **The move and the turn take opposite signs, and only the game says so.**
+    `spun` is Scaffold's own arithmetic and `tools/checks/render.py` turns a cube
+    the same way, so the two agree with each other whichever sign is used and the
+    renderer draws a pinned arm either way. Bedrock turns a cube the other way
+    about. Given the same sign the piece is carried round to its plate and then
+    turned back, which leaves it beside the right plate lying across the block
+    rather than out along its own radius -- visible on the two plates that are
+    not straight ahead, and on those two only, which is what a brewing stand
+    with one right arm and two wrong ones looks like.
+
+    **So a picture from the renderer does not settle this one.** It draws what
+    `spun` says, and `spun` is one of the two things being compared.
     """
     middle = [start + span / 2.0 for start, span in zip(at, size)]
     moved = spun(middle, (8, middle[1], 8), (0, angle, 0))
     return Cube(size, [put - span / 2.0 for put, span in zip(moved, size)],
-                texture, window=window, rotation=(0, angle, 0))
+                texture, window=window, rotation=(0, -angle, 0))
 
 
 def brew_middle(at):
@@ -960,7 +1011,7 @@ def brew_middle(at):
     return at[0] + PLATE_WIDE / 2.0, at[1] + PLATE_WIDE / 2.0
 
 
-def brew_arm(angle):
+def brew_arm(angle, gap=0.0):
     """An upright quad running out from the face of the rod, four pixels long.
 
     It starts where the rod stops rather than at the middle of the block, so the
@@ -970,9 +1021,14 @@ def brew_arm(angle):
 
     Four pixels for four columns of the tile is the texture's own scale. It
     stands from the top of the plate to two pixels above the rod.
+
+    `gap` holds the arm that much further off the rod's face. The length is not
+    the thing to change for that: four pixels is four columns of the tile at one
+    apiece, and stretching it puts the columns back at a fraction of a pixel
+    each, which is what left the dark pipe a sliver.
     """
     return brew_turned((ARM_REACH, ARM_TALL, ARM_DEEP),
-                       (8 - ROD_FACE - ARM_REACH, PLATE_TALL,
+                       (8 - ROD_FACE - gap - ARM_REACH, PLATE_TALL,
                         8 - ARM_DEEP / 2.0),
                        angle, BREW_ROD, two_sided(ARM_ART, ARM_BACK))
 
@@ -985,13 +1041,17 @@ def brew_bottle(angle, at):
     middle and the turn its arm carries.
     """
     middle = brew_middle(at)
-    ## the same sign as the arm it stands on, for the same reason: a bottle
-    ## turned the other way faces across its plate instead of along it
+    ## **The same sign as the arm it stands on, which is the negative of the
+    ## angle.** Bedrock turns a cube the other way about from `spun`, so a
+    ## bottle written with the plain angle faces across its plate instead of
+    ## along it. This does not go through `brew_turned` -- its plate's middle is
+    ## given outright rather than swung round to it -- so it does not get that
+    ## correction for free, and it kept the old sign after the arms had it.
     return Cube((BOTTLE_WIDE, BOTTLE_TALL, BOTTLE_DEEP),
                 (middle[0] - BOTTLE_WIDE / 2.0, PLATE_TALL,
                  middle[1] - BOTTLE_DEEP / 2.0),
                 BREW_ROD, window=two_sided(BOTTLE_ART, BOTTLE_BACK),
-                rotation=(0, angle, 0))
+                rotation=(0, -angle, 0))
 
 
 brew_rod = Cube((ROD_WIDE, ROD_TALL, ROD_WIDE), (7, 0, 7), texture=BREW_ROD,
@@ -1009,9 +1069,10 @@ brew_rod = Cube((ROD_WIDE, ROD_TALL, ROD_WIDE), (7, 0, 7), texture=BREW_ROD,
 def brewing(bottles):
     """The rod, three plates with an arm each, and a bottle where there is one."""
     made = [brew_rod]
-    for ((socket, at), angle, full) in zip(BREW_PLATES, BREW_TURNS, bottles):
+    for ((socket, at), angle, gap, full) in zip(BREW_PLATES, BREW_TURNS,
+                                                ARM_GAPS, bottles):
         made.append(brew_plate(socket, at))
-        made.append(brew_arm(angle))
+        made.append(brew_arm(angle, gap))
         if full:
             made.append(brew_bottle(angle, at))
     return made
@@ -1154,8 +1215,94 @@ DECORATED_POTS = {"default": [
 ]}
 
 
+# --- item frames -------------------------------------------------------------
+#
+# An item frame was one flat plate twelve across and two thick, which is a tile
+# of `itemframe_background` on a slab and nothing frame shaped about it. The game
+# draws a birch surround with the canvas recessed inside it, and neither half of
+# that is in the block's own textures: `blocks.json` gives the whole block
+# `itemframe_background`, so the wood has to be named outright.
+#
+# The rotation table already turns the block onto all six faces and reads `1`,
+# facing up, as no turn at all, so this is written lying on the block's floor
+# looking up and the table carries it to a wall.
+FRAME_WOOD = "textures/blocks/planks_birch"
+FRAME_ACROSS = 12           # the surround, outer edge to outer edge
+FRAME_BAR = 1               # how wide each of the four bars is
+FRAME_THICK = 1             # and how far the whole thing stands off the wall
+FRAME_AT = (16 - FRAME_ACROSS) / 2.0
+
+## **The canvas is thinner than the surround and sits down inside it.** Level
+## with the bars it is a flat plate with a border painted on; recessed, the
+## frame reads as a frame from any angle a ghost block is looked at. It is
+## tucked under the bars rather than butted against them, and lifted off the
+## wall a shade, so that none of its faces lands on one of theirs.
+FRAME_CANVAS = FRAME_ACROSS - 2 * FRAME_BAR
+FRAME_TUCK = 0.2            # how far it reaches under each bar
+FRAME_SUNK = 0.1            # and how far off the wall, so nothing is coplanar
+FRAME_DEEP = 0.5            # the canvas is half the thickness of the surround
+
+## **The canvas reads the inside of its tile, not the whole of it.** The outer
+## ring of both `itemframe_background` and `glow_item_frame` is the dark border
+## the game draws round the picture, and the frame here is drawn as wood rather
+## than painted, so reading the whole tile put a second border inside the first.
+## Fourteen across stretched over the panel is the picture and nothing else.
+FRAME_EDGE = 1
+FRAME_PICTURE = 16 - 2 * FRAME_EDGE
+
+## **And the plain frame's picture is turned half round; the glow frame's is
+## not.** A window with both sizes negative is a half turn, the same way one
+## negative size is a mirror. That is the only difference between the two
+## families, and it is why they are two rather than one reading `@up`.
+FRAME_ART = {face: (FRAME_EDGE, FRAME_EDGE, FRAME_PICTURE, FRAME_PICTURE)
+             for face in FACES}
+FRAME_TURNED = {face: (FRAME_EDGE + FRAME_PICTURE, FRAME_EDGE + FRAME_PICTURE,
+                       -FRAME_PICTURE, -FRAME_PICTURE) for face in FACES}
+
+_bar_at = FRAME_AT
+_bar_end = FRAME_AT + FRAME_ACROSS - FRAME_BAR
+_inner = FRAME_AT + FRAME_BAR
+
+
+def item_frame(window):
+    """The birch surround, and the canvas recessed inside it."""
+    return [
+        ## the four bars of the surround, birch, running round the edge
+        Cube((FRAME_ACROSS, FRAME_THICK, FRAME_BAR),
+             (_bar_at, 0, _bar_at), FRAME_WOOD),
+        Cube((FRAME_ACROSS, FRAME_THICK, FRAME_BAR),
+             (_bar_at, 0, _bar_end), FRAME_WOOD),
+        Cube((FRAME_BAR, FRAME_THICK, FRAME_CANVAS),
+             (_bar_at, 0, _inner), FRAME_WOOD),
+        Cube((FRAME_BAR, FRAME_THICK, FRAME_CANVAS),
+             (_bar_end, 0, _inner), FRAME_WOOD),
+        ## and the canvas, which reads whatever the block declares, so that a
+        ## glow frame wears its own picture without naming it here
+        Cube((FRAME_CANVAS + 2 * FRAME_TUCK, FRAME_DEEP,
+              FRAME_CANVAS + 2 * FRAME_TUCK),
+             (_inner - FRAME_TUCK, FRAME_SUNK, _inner - FRAME_TUCK),
+             "@up", window=window),
+    ]
+
+
+FRAMES = {"default": item_frame(FRAME_TURNED)}
+GLOW_FRAMES = {"default": item_frame(FRAME_ART)}
+
+## `facing_direction`, where 1 is the wall the frame is fixed to being the floor.
+## Both families carry it: a rotation table is keyed by shape family, so
+## splitting the glow frame off left it with none and it faced whichever way it
+## was placed.
+FRAME_TURNS = {"0": [180, 0, 0], "1": [0, 0, 0], "2": [90, 0, 0],
+               "3": [270, 0, 0], "4": [0, 0, 90], "5": [0, 0, 270]}
+
+
 def main():
     print("writing the mounted forms")
+    write("frame", FRAMES)
+    turns("frame", FRAME_TURNS)
+    write("glow_frame", GLOW_FRAMES)
+    turns("glow_frame", FRAME_TURNS)
+    define(["glow_frame"], "glow_frame")
     write("hanging_sign", HANGING_SIGNS)
     write("bell", BELLS)
     ## the grindstone turns about the wheel's own height rather than the middle

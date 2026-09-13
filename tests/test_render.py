@@ -91,6 +91,147 @@ class OrientationTests(unittest.TestCase):
         self.assertEqual(len(sizes), 1, "opposite views came out different sizes")
 
 
+class AgreesWithTheGameTests(unittest.TestCase):
+    """Blocks whose look in game is settled, held against what this draws.
+
+    **The renderer is only worth having while it agrees with the game**, and
+    every one of these was wrong here at some point while being right in a
+    world. They are the cheapest thing standing between a picture from
+    `tools/checks/render.py` and a wasted build.
+    """
+
+    @staticmethod
+    def _flat_gap(one, other):
+        apart = abs(one - other) % 180
+        return min(apart, 180 - apart)
+
+    def test_a_brewing_stands_arms_and_bottles_run_along_their_radius(self):
+        # **Bedrock turns a cube about y the other way from `spun`.** The arms
+        # are placed by `spun` and turned by a cube rotation of the opposite
+        # sign, which is what the game wants; drawn with the sign as written,
+        # the two turned arms and their bottles came out square across their
+        # own plate. `render.TURN_SIGNS` is what corrects it.
+        import math
+
+        quads, _atlas = render.mesh("brewing_stand", data="1-1-1")
+        found = {}
+        for points, _uvs, _normal, face in quads:
+            if face != "north":
+                continue
+            flat = points[:, [0, 2]] * 16
+            edges = [np.hypot(*(flat[(n + 1) % 4] - flat[n])) for n in range(4)]
+            longest = round(max(edges), 1)
+            ## the arm is four across and the bottle five; the rod and the
+            ## plates are square and carry no turn
+            if longest not in (4.0, 5.0):
+                continue
+            run = flat[(int(np.argmax(edges)) + 1) % 4] - flat[int(np.argmax(edges))]
+            middle = points.mean(axis=0) * 16
+            found[(longest, round(middle[0], 2), round(middle[2], 2))] = (
+                self._flat_gap(math.degrees(math.atan2(run[1], run[0])) % 180,
+                               math.degrees(math.atan2(middle[2], middle[0])) % 180))
+        self.assertEqual(len(found), 6, "a full brewing stand is six pieces")
+        for (longest, across, over), apart in found.items():
+            with self.subTest(wide=longest, at=(across, over)):
+                self.assertLess(apart, 5,
+                                "this piece lies across its own radius, %.0f "
+                                "degrees off it" % apart)
+
+    def test_a_brewing_stands_arm_carries_its_leg_outward_from_both_sides(self):
+        # the tile's four arm columns run 9 dark against the rod to 12 the
+        # outer leg. Both large faces have to put the leg at the far end, and
+        # with the south face's u running the same way as the north's they came
+        # out one each way.
+        quads, _atlas = render.mesh("brewing_stand", data="0-0-0")
+        faces = 0
+        for points, uvs, _normal, face in quads:
+            if face not in ("north", "south"):
+                continue
+            if abs(abs(uvs[:, 0].max() - uvs[:, 0].min()) - 4) > 0.01:
+                continue
+            faces += 1
+            out = lambda p: float(np.hypot(p[0], p[2]))
+            near = out(points[uvs[:, 0].argmin()])
+            far = out(points[uvs[:, 0].argmax()])
+            with self.subTest(face=face, at=round(near * 16, 1)):
+                self.assertGreater(far, near,
+                                   "this arm face has its leg at the pole")
+        self.assertEqual(faces, 6, "three arms, two large faces each")
+
+    def test_a_designed_banners_front_is_the_design_and_its_back_the_mirror(self):
+        # **The one thing four quads across buys, and the one that keeps going
+        # wrong.** The sheet holds the design mirrored, so column order and
+        # per-tile mirroring are two halves of one thing: turn one without the
+        # other and the front comes out sliced into four with each slice
+        # mirrored where it stands, which reads as almost right.
+        from PIL import Image
+
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        sheet = Image.open(os.path.join(
+            here, "scaffold", "Vanilla_Resource_Pack", "textures", "entity",
+            "banner", "banner_designed.png")).convert("RGB")
+        art = sheet.crop((0, 64, 64, 128)).transpose(Image.FLIP_LEFT_RIGHT)
+
+        def in_slices(picture):
+            out = picture.copy()
+            wide = picture.size[0] // 4
+            for n in range(4):
+                box = (n * wide, 0, (n + 1) * wide, picture.size[1])
+                out.paste(picture.crop(box).transpose(Image.FLIP_LEFT_RIGHT),
+                          box)
+            return out
+
+        def apart(one, other):
+            a = np.asarray(one.resize((64, 64)), dtype=float)
+            b = np.asarray(other.convert("RGB").resize((64, 64)), dtype=float)
+            return float(np.abs(a - b).mean())
+
+        quads, atlas = render.mesh("standing_banner", data="designed")
+        frame = render._frame(quads)
+        mirrored = art.transpose(Image.FLIP_LEFT_RIGHT)
+        for view, wanted, named in (("south", art, "the design"),
+                                    ("north", mirrored, "its mirror")):
+            shot = render.draw(quads, atlas, view, 8, (255, 0, 255), frame)
+            grid = np.asarray(shot.convert("RGB"))
+            solid = np.any(grid != (255, 0, 255), axis=2)
+            rows, cols = np.where(solid)
+            tall = rows.max() - rows.min() + 1
+            keep = [r for r in range(rows.min(), rows.max() + 1)
+                    if solid[r].sum() > solid.sum() / tall]
+            cloth = Image.fromarray(grid).crop(
+                (cols.min(), min(keep), cols.max() + 1, max(keep) + 1))
+            close = apart(cloth, wanted)
+            for other, other_named in ((in_slices(art), "the design sliced"),
+                                       (in_slices(mirrored),
+                                        "its mirror sliced")):
+                with self.subTest(view=view, against=other_named):
+                    self.assertLess(
+                        close, apart(cloth, other),
+                        "the %s face looks more like %s than like %s"
+                        % (view, other_named, named))
+
+    def test_a_sunflowers_head_faces_east_and_tips_upward(self):
+        # the one block whose z turn is settled in game, and the reason
+        # `TURN_SIGNS` negates y alone: negating all three squares the arms up
+        # and leaves this looking at the floor
+        quads, _atlas = render.mesh("sunflower", top=True)
+        best = None
+        for points, _uvs, normal, face in quads:
+            if face not in ("east", "west") or normal[0] <= 0:
+                continue
+            edges = [np.linalg.norm(points[(n + 1) % 4] - points[n])
+                     for n in range(4)]
+            if best is None or edges[0] * edges[1] > best[0]:
+                best = (edges[0] * edges[1], points, normal)
+        self.assertIsNotNone(best, "the flower head has no east facing side")
+        _area, points, normal = best
+        self.assertGreater(points.mean(axis=0)[0] * 16, 0.5,
+                           "the head is not east of its own stem")
+        self.assertGreater(abs(normal[0]), abs(normal[2]),
+                           "the head does not face east and west")
+        self.assertGreater(normal[1], 0.05, "the flower looks at the floor")
+
+
 class RendererTests(unittest.TestCase):
     """That it draws what the pack ships rather than its own idea of it."""
 

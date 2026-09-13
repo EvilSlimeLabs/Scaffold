@@ -77,14 +77,24 @@ BASE_TALL = 8
 LID_TALL = 12
 LID_AT = 4
 
+## **The base is drawn a shade narrower than the lid.** Both are a full sixteen
+## across in the entity's own model, so over the four rows they share every one
+## of their side faces sat on the other's and the whole overlap flickered. A
+## fifth of a pixel in on each side puts the base's walls inside the lid's, and
+## the step below the lid is too small to read. The lid keeps the block's full
+## width, since it is the part that has to line up with the block beside it.
+BASE_INSET = 0.2
+
 
 def shulker(colour):
     """A base with a lid over it, each reading its own part of the sheet."""
     sheet = SHULKER % colour
     base_art, base_window = parted(sheet, BASE_BOX)
     lid_art, lid_window = parted(sheet, LID_BOX)
+    across = 16 - 2 * BASE_INSET
     return {"default": [
-        Cube((16, BASE_TALL, 16), (0, 0, 0),
+        Cube((across, BASE_TALL, across),
+             (BASE_INSET, 0, BASE_INSET),
              texture=base_art, window=base_window),
         Cube((16, LID_TALL, 16), (0, LID_AT, 0),
              texture=lid_art, window=lid_window)]}

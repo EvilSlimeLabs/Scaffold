@@ -197,7 +197,14 @@ TURTLE_EGGS["default"] = TURTLE_EGGS["one_egg"]
 # compost, and the compost ready to take out.
 COMPOST = BLOCKS % "compost"
 READY = BLOCKS % "compost_ready"
-WALLS = [Cube((16, 2, 16), (0, 0, 0)),               # the floor
+## **The floor of the box needs its own picture on top.** `composter_top` is the
+## rim seen from above and is clear through the middle, which is the opening.
+## Given to the floor's upper face as well, an empty composter could be seen
+## straight through to the sky. `composter_bottom` is what the game puts inside
+## an empty one, and is the same picture as its underside.
+FLOOR_ART = dict({face: "default" for face in FACES}, up="@down")
+
+WALLS = [Cube((16, 2, 16), (0, 0, 0), texture=FLOOR_ART),   # the floor
          Cube((16, 14, 2), (0, 2, 0)),               # and four walls
          Cube((16, 14, 2), (0, 2, 14)),
          Cube((2, 14, 12), (0, 2, 2)),

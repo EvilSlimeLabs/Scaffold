@@ -110,7 +110,15 @@ class Cube:
             return [px(across), px(down)], [px(wide), px(tall)]
         wide, tall, deep = self.size
         across, up, over = self.at
-        if face in ("up", "down"):
+        ## **An up face's v runs toward -z, and a down face's runs with it.** So
+        ## the top of a tile lands at the block's *south* edge on an up face and
+        ## at its north edge on a down one. A cube that does not fill the block
+        ## front to back therefore reads its top from the far side: measured the
+        ## same way as the underside, a cauldron's north rim wore the picture of
+        ## its south one and the two looked swapped.
+        if face == "up":
+            return [px(across), px(16 - over - deep)], [px(wide), px(deep)]
+        if face == "down":
             return [px(across), px(over)], [px(wide), px(deep)]
         if face in ("north", "south"):
             return [px(across), px(16 - up - tall)], [px(wide), px(tall)]

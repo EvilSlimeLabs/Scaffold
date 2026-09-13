@@ -96,7 +96,7 @@ def on_its_own(cube, pivot, rotation):
     return turned
 
 
-def convert(sheet, cube, lift, back):
+def convert(sheet, cube, lift, back, scale=1.0):
     """One cube of an entity's head, as a cube of a block.
 
     Bedrock unwraps a box from its UV corner as two faces in a row above four
@@ -131,7 +131,17 @@ def convert(sheet, cube, lift, back):
     for face, region in rectangles.items():
         texture[face], window[face] = on_sheet(sheet, region, measure(sheet))
 
-    ## and the box itself, turned half about the middle of the block
+    ## **and the box itself, shrunk about the pivot before it is placed.** Only
+    ## the dragon asks for that, and the pivot is the middle of the block's
+    ## floor, so a smaller head stays standing on the same spot and keeps its
+    ## proportions. The picture is untouched: a face reads the same rectangle of
+    ## the sheet whatever size the cube it lands on is.
+    if scale != 1.0:
+        ox, oz = ox * scale, oz * scale
+        oy = (oy - PIVOT_Y) * scale + PIVOT_Y
+        w, h, d = w * scale, h * scale, d * scale
+
+    ## turned half about the middle of the block
     at = (8 - ox - w, oy - PIVOT_Y + lift, 8 - oz - d - back)
     ## a turn the cube carries has to be turned along with the model: after a
     ## half turn about Y its X and Z axes both run the other way
@@ -190,25 +200,46 @@ def heads():
                          from_mobs("geometry.piglin",
                                    {"head", "leftear", "rightear"}),
                          ["piglin_head"]),
-        ## A dragon's head is bigger than the block it is placed on: sixteen
-        ## across, twenty tall and thirty deep, with the snout out the front and
-        ## the jaw hanging below the block's floor. That is the model the game
-        ## draws, so it is the model here, at that size.
+        ## A dragon's head is bigger than the block it is placed on, with the
+        ## snout out the front and the jaw hanging below the block's floor.
         "skull_dragon": ("textures/entity/dragon/dragon",
                          from_mobs("geometry.dragon_head"), ["dragon_head"]),
     }
 
 
-def head(sheet, cubes):
+## **The dragon is drawn smaller than its own model.** `geometry.dragon_head` is
+## the head off a full sized ender dragon: sixteen across, twenty tall and thirty
+## deep, which is two blocks of snout. The game does not draw the block at that
+## size, and the ghost was swamping everything near it. Three quarters is the
+## factor the game uses, and leaves the head about a block with the snout out
+## the front. Every other head is already a block or less and is left alone.
+SCALES = {"skull_dragon": 0.75}
+
+
+def head(sheet, cubes, scale=1.0):
     """A head on the floor, and the same head against a wall.
 
-    Both are the game's own model about its own pivot, at the size the game
-    draws it. A dragon's head is bigger than the block it is placed on, sixteen
-    across and thirty deep, and shrinking it to fit would put the ghost block
-    somewhere the real one will not be.
+    Both are the game's own model about its own pivot, and the pivot is the
+    middle of the block's floor, so the two mountings are the same cubes moved
+    rather than two shapes.
+
+    **A head on the floor stands on the floor.** Every mob head's model sits
+    neatly above its own pivot, but a dragon's jaw hangs below it, and a ghost
+    block reaching down into the block underneath reads as belonging to that
+    block rather than to this one. The floor form is lifted by however far its
+    lowest cube falls short, which is nothing at all for every head but the
+    dragon. The wall form is left where it is: a head on a wall is allowed to
+    hang, and the game hangs one.
     """
-    return {"default": [convert(sheet, cube, 0, 0) for cube in cubes],
-            "wall": [convert(sheet, cube, WALL_LIFT, WALL_BACK)
+    standing = [convert(sheet, cube, 0, 0, scale) for cube in cubes]
+    lowest = min(cube.at[1] for cube in standing)
+    lift = -lowest if lowest < 0 else 0
+    return {"default": [convert(sheet, cube, lift, 0, scale) for cube in cubes],
+            ## the wall form carries the same lift on top of its own, so a head
+            ## that had to be raised off the floor is raised off the wall by as
+            ## much. Without it the dragon sat six pixels lower on a wall than
+            ## on the ground, which reads as two different blocks.
+            "wall": [convert(sheet, cube, WALL_LIFT + lift, WALL_BACK, scale)
                      for cube in cubes]}
 
 
@@ -246,7 +277,7 @@ def define(blocks, family):
 def main():
     print("writing the heads")
     for family, (sheet, cubes, blocks) in heads().items():
-        forms = head(sheet, cubes)
+        forms = head(sheet, cubes, SCALES.get(family, 1.0))
         shapes, uvs = {}, {}
         for name, made in forms.items():
             shapes[name], uvs[name] = build(made)

@@ -340,6 +340,167 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   halved, with the two pixel channel between them that the rod stands in. The
   arrangement is right; whether vanilla leaves more of a gap between them is not
   knowable from here.
+- **A plant stands on the block's diagonals, not square to it.** `cross_texture`
+  and the two block tall flowers are two quads crossing, and the game puts them
+  corner to corner: from above a plant is an `X`, not a `+`. The turn is in the
+  shape, as a forty-five degree cube rotation, because a plant carries no
+  rotation state for the rotation table to be read by. A turned quad is also
+  stretched to the diagonal -- sixteen across turned forty-five degrees spans
+  eleven and a bit and leaves a gap at every corner -- so the length is written
+  out as fourteen and two fifths times root two.
+- **A sunflower has a head, and it is a family of its own.** Every other double
+  plant is its cross and nothing else. The head is a plane standing two pixels
+  east of the stem and leaning back a quarter of a right angle about the
+  north-south axis, so the yellow face looks upward as well as east; the yellow
+  `double_plant_sunflower_front` is on its east side and the green `_back` on its
+  west. It is turned about its own middle rather than about the middle of the
+  block, so the plane stays where it is written and only tilts.
+  **East is the low side of x, so the head is written at x6.** A cube's offset
+  inside its block is not mirrored and the block itself is, so a head written
+  east of the middle comes out west of it in game while its two colours stay
+  where the table put them. The same mirror reverses the lean, which is why the
+  angle is positive here and reads as leaning the wrong way in the renderer.
+  **Two things put green through the middle of the flower.** Leaning it the other
+  way makes it look at the floor and swings the bottom of the disc west into the
+  stem; and the stem is a two pixel column up the middle of the block while the
+  disc is the middle eight pixels of its own tile, so a head left on the middle
+  line crosses it whichever way it leans.
+  **The upper stem stops where the flower starts.** `double_plant_sunflower_top`
+  is empty above its eighth row — the stalk only reaches the flower's underside —
+  and the disc starts at y8. Left a full sixteen tall, the empty top half of each
+  stem quad crossed the flower plane and blanked the parts of it behind, because
+  a ghost block blends rather than alpha-tests and a transparent texel still
+  takes the depth it stands at. Cropped to eight, the stalk meets the disc
+  exactly and the two never cross.
+  Bedrock keeps both pictures in `sunflower_additional` as a list of two and a
+  block reads a list by its variant, so no variant reaches the second entry and
+  the head names both outright. It cannot live in `double_plant` because a shape
+  family varies by state and not by variant; a structure written before the block
+  ids were flattened holds `double_plant` with `double_plant_type` and keeps the
+  plain cross.
+- **Every face reads the part of the tile its own cube covers.** `Cube.uv` is the
+  rule: up and down take the cube's x and z, north and south its x and y, east
+  and west its z and y. Given the whole tile instead, a face two pixels deep
+  carries all sixteen rows of the texture squashed onto it and the grain stops
+  lining up with whatever is beside it. A stair's step had it, and so did signs,
+  fences, gates and buttons; `tests/test_block_coverage.FootprintTests` names the
+  families and holds them to it. It names families rather than sweeping the
+  tables because plenty of cubes read a whole tile on purpose — a plant's quad is
+  a picture rather than a box, a torch's top is the flame.
+  **A face with no window of its own shares the last one.** `make_block` reads
+  the cube index off the `up` list and then uses it for all six faces, so a
+  family whose `up` list is longer than its `north` list walks off the end of the
+  shorter one. Lengthen every face together.
+- **A chain's tile is a strip, not a block.** `chain1` and `chain2` draw the
+  chain three pixels wide down the left of an otherwise empty tile, so the rule
+  above does not apply to it: a window taken from the cube's own footprint lands
+  in the empty three quarters and the face draws nothing at all, which is what
+  its top and bottom did. Every face reads from the strip's own corner instead.
+  The chain is still drawn as a two by two post; the game draws it as two crossed
+  quads, the way it draws a plant, and that is the shape it really wants.
+- **A cube rotation about y or z reads backwards against the game.** The block
+  is mirrored in x on its way into the model, and a mirror reverses those two
+  turns. A rotation about x is unaffected. `tools/checks/render.py` models the
+  mirror, so a picture from it can be trusted; the numbers in
+  `block_shapes.json` cannot be read as world angles. Rotation *tables* are not
+  affected — every one of those was tuned by eye in game and has the reversal in
+  its numbers already.
+  **A symmetric pair is safe and a lone angle is not.** A campfire's logs, an
+  enchanting table's covers and a piglin skull's ears are each two cubes at plus
+  and minus the same angle, so reversing them gives the same shape back. The
+  three that are not a pair were each checked in game: `lever`, whose two states
+  lean z−40 and z+40 in two separate forms, and `copper_golem_statue` pose 2,
+  which carries one cube at y+4.6 z+3.9, both draw correctly and are left alone.
+  `brewing_stand`'s arms at y±135 are the only place the reversal has ever
+  shown.
+- **A hollow block needs a picture on the inside of its floor.** `cauldron_top`
+  and `composter_top` are the rim seen from above and are clear through the
+  middle, which is the opening. Given to the floor's upper face as well, an
+  empty cauldron and an empty composter could both be seen straight through to
+  the sky. The cauldron's floor reads `cauldron_inner`; the composter's reads
+  `composter_bottom`, which is the same picture as its own underside and is what
+  the game puts inside an empty one.
+  **`cauldron_bottom` is opaque only at its four corners**, because the game
+  expects the recessed floor of the pot to show through the gap between the
+  feet. A ghost block cannot afford that: a transparent texel still takes the
+  depth it stands at, so the cut middle blanked whatever stood behind it and a
+  cauldron could be seen up through from below and out of the top. Standing a
+  plate behind the gap cured that and left a cube in the middle of the block for
+  the liquid and the walls to trip over. `tools/textures/cauldron.py` draws the
+  feet onto the inside instead and the underside reads that one flattened
+  picture, so it needs no geometry behind it at all.
+- **An up face's v runs toward −z, and a down face's runs with it.** So the top
+  of a tile lands at the block's *south* edge on an up face and at its north
+  edge on a down one. `Cube.uv` measured both the same way, so a cube that does
+  not fill the block front to back read its top from the wrong side: a
+  cauldron's north rim wore the picture of its south one and the two looked
+  swapped. It shows on anything with a partial-depth cube whose top is visible —
+  stairs, wall signs, gates and bells all moved when it was corrected.
+- **A shulker box's base is drawn a fifth of a pixel in on each side.** The
+  entity draws the base eight tall from the floor and the lid twelve tall from
+  y4, both a full sixteen across, so over the four rows they share every one of
+  their side faces sat on the other's and the whole overlap flickered. The lid
+  keeps the block's full width, since it is the part that lines up with the
+  block beside it.
+- **A head on the floor arrives as `spinN`, not as `1`.** Which of sixteen ways
+  it faces is in the block entity rather than the states, so `core.py` hands the
+  turn over as `spin0` to `spin15`, and the plain `1` is only what a head with no
+  entity beside it keeps. `make_block` read anything that was not `1` as a wall
+  value, so every skull anybody had actually placed on the ground was drawn four
+  pixels up and four back, hanging in the air.
+- **The plain item frame and the glow item frame are two families.** They are
+  the same cubes, and the only thing between them is that the plain one's canvas
+  is turned half round. A window with both sizes negative is that half turn, the
+  same way one negative size is a mirror. A rotation table is keyed by shape
+  family, so splitting them meant writing the six `facing_direction` turns twice
+  rather than once.
+- **The canvas reads the inside of its tile, not the whole of it.** The outer
+  ring of both `itemframe_background` and `glow_item_frame` is the dark border
+  the game draws round the picture, and the frame here is wood rather than paint,
+  so reading the whole tile put a second border inside the first. Fourteen across
+  stretched over the panel is the picture and nothing else.
+- **An item frame is a birch surround with the canvas recessed inside it.** It
+  was one flat plate twelve across and two thick, which is a tile of
+  `itemframe_background` on a slab and nothing frame shaped about it. Neither
+  half of the real thing is in the block's own textures — `blocks.json` gives the
+  whole block `itemframe_background` — so the wood is named outright as
+  `planks_birch` and only the canvas reads `@up`, which is what lets one entry
+  serve the glow frame as well. The canvas is half the thickness of the surround,
+  tucked under the bars rather than butted against them and lifted a shade off
+  the wall, so none of its faces lands on one of theirs. It is written lying on
+  the block's floor looking up, because the rotation table reads `1`, facing up,
+  as no turn at all.
+- **A dragon head is drawn at three quarters of its own model.**
+  `geometry.dragon_head` is the head off a full sized ender dragon: sixteen
+  across, twenty tall and thirty deep, which is two blocks of snout, and the
+  ghost at that size swamped everything near it. Three quarters is the factor
+  the game draws the block at. It is still bigger than its block, with the snout
+  out the front and the jaw below the floor, and shrinking it to fit would put
+  the ghost somewhere the real one will not be. Every other head is already a
+  block or less and is left alone.
+- **A fence gate's rails stop inside its posts, and are narrower than them.**
+  Every one of its five cubes shared a plane with another: the rails ran the
+  whole depth of the block, so their sides sat exactly on the posts' and their
+  ends on the posts' outer faces, and the middle piece started where the lower
+  rail starts and finished where the upper one finishes. The rails are 1.6
+  across and stop a pixel inside each post; the middle is 1.2 across and reaches
+  half a pixel into each rail rather than running the whole height between them.
+  Two cubes may still share a plane if they do not overlap on the other two axes
+  — the two rails do, at different heights — since no two faces then land in the
+  same place.
+- **A standing sign's post stops a pixel inside its board, and is narrower than
+  it.** The post ran the whole height of the block at the board's own depth, so
+  their north and south faces were exactly on each other's — a flicker in game,
+  and nothing the renderer can show, since two faces on one plane come out here
+  as one steady arbitrary choice. The post is nine pixels tall, which buries its
+  top inside the board, and 1.6 across rather than 2, which keeps its sides a
+  fifth of a pixel clear of the board's on each side. Same idea as a slab being
+  drawn narrower than its block.
+  **The board is centred now too.** It sat at z8 to z10, a pixel south of the
+  middle, so a centred post stuck out from under its north edge when you looked
+  down at it — and sixteen rotation steps about a board that is off centre trace
+  a circle instead of spinning it where it stands. Both cubes are on the middle
+  of the block in x and z, and a test holds them there.
 - **A brewing stand's arm starts where the rod stops, at the texture's own
   scale.** The arm reads four columns of `brewing_stand` -- the dark pixel
   against the rod, the grey pipe, a clear column, then the brown outer leg --
@@ -349,12 +510,44 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   nothing shows: the dark pipe had a sliver clear of the pole rather than its two
   whole pixels. The cost is that the two diagonal arms stop a little short of
   their bottle rather than running all the way to it.
-- **The two faces of the arm read the tile opposite ways.** A plane's front and
-  back run their windows in opposite directions, so one window given to both puts
-  the outer leg over the plate on one side and over the rod on the other, and the
-  arm looks mirrored from one side. The bottle in the same tile has always been
-  handled correctly and is what to copy: the plain window everywhere, and the one
-  that starts at the far edge and runs back on `south`.
+- **Squaring the bottle up with its arm put the two in one plane, and the arm
+  cut the bottle in half.** They are centred on the same line out from the rod
+  and both run along it, so over the stretch where the arm passes the plate they
+  are the same plane. The arm's tile carries a clear column between its pipe and
+  its leg, and a transparent texel still takes the depth it stands at, so an arm
+  at the same depth cuts a stripe out of the bottle behind it. Nesting the arm
+  inside the bottle answers that, since the bottle's faces are then nearer from
+  either side — but only if the gap is big enough for the depth test to tell
+  them apart. A twentieth of a pixel was not. A fifth each side is, which is
+  `BOTTLE_DEEP` at 0.5 against `ARM_DEEP` at 0.1. **Before they were squared up
+  the two planes crossed at twice the plate's angle, which is why this never
+  showed.**
+- **A bottle does not go through `brew_turned`, so it does not get the sign
+  correction for free.** An arm is drawn at the rod and swung round to its
+  plate; a bottle takes its plate's middle outright and only needs the turn. So
+  when the arms were negated to match what Bedrock does with a cube rotation,
+  the bottles kept the plain angle and the two turned ones faced across their
+  plate while their arms ran along it. Both carry `-angle` now, and
+  `tests/test_block_coverage` holds the arm and the bottle on each plate to the
+  same turn.
+- **The red leg goes at the far end, on every arm and from either side.** The
+  four columns run outward in the tile — 9 is the dark pipe that stands against
+  the rod and 12 is the brown leg that stands over the plate — and the cube runs
+  inward, from its own far end at the low x to the rod's face at the high one.
+  Read straight the tile lands on it backwards, and since all three arms are one
+  cube at three angles they carry the leg against the pole together, which reads
+  as three arms pointing one way rather than three pointing out. The window
+  starts at the far edge and runs back.
+  **And both faces take the same window, which is the opposite of what a banner
+  wants.** A banner's two faces need opposite windows because the design has to
+  read the same way round to somebody walking round it, and walking round turns
+  left and right over. The arm needs the reverse: its leg has to stay at the
+  same end of the *block* whichever side it is seen from, and the two faces run
+  their u the same way along x, so one window on all six faces is what keeps it
+  there. Given the banner's treatment the arm came out with the leg outboard on
+  its north face and against the pole on its south, which is two of the three
+  arms looking wrong from any one place.
+  `tests/test_block_coverage` holds both facts; it has been wrong twice.
 - **A brewing stand's bottles are two crossed quads of an item texture.**
   `brewing_stand_slot_a_bit` and its two fellows say which of the three slots
   are full, and they are shape states, so the family has eight forms.

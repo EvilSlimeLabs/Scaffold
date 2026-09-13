@@ -120,9 +120,17 @@ CLOTH = {face: (0, 0, TILE, TILE) for face in
 POLE_TALL = 30              # nearly two blocks, which is where vanilla stops
 BAR_TALL = 2                # the bar the cloth hangs from, across the top
 CLOTH_TALL = 27
-## as wide as the bar it hangs from. Narrower left the bar sticking out a
-## pixel at each end, which vanilla does not do
-CLOTH_WIDE = 16
+## **Half as wide as it is tall, because a design has to keep its shape.** The
+## cloth carries the whole of a design across its whole width and height, so the
+## cloth's own proportions are the design's. Vanilla's is twenty by forty entity
+## units drawn at two thirds scale, which is one to two; drawn a full sixteen
+## across it is one to one point seven, and an ominous banner's mark came out
+## sixteen percent short. The bar it hangs from matches it, or the bar sticks
+## out at each end, which vanilla does not do.
+CLOTH_WIDE = CLOTH_TALL / 2.0
+## what is left of the block's width, split evenly, so the cloth hangs down the
+## middle of its own block
+CLOTH_INSET = (16 - CLOTH_WIDE) / 2.0
 CLOTH_DEEP = 1              # a banner is a pixel thick, and vanilla draws it so
 
 ## The colour is in the block entity, as `Base`, and `core.ENTITY_SHAPES` hands
@@ -161,30 +169,40 @@ BANNER_EDGE = {"illager": "black"}
 ## `tools/textures/banners.py` writes under the sheet. Keep these in step
 ## with that script's `DESIGN`, `DESIGN_AT` and `TILE`.
 ##
-## **One quad across, not two.** The cloth is exactly one tile wide, so cutting
-## it in two bought a little horizontal detail and cost a seam down the middle
-## of the banner -- and the two halves have to be swapped as well as each being
-## turned round, since the sheet holds the design mirrored and the mirror of two
-## columns side by side is the right one on the left. In game the front came out
-## split with its halves out of step, with tears along the seam. The design is
-## only ever seen at sixteen pixels across on the block, so the detail was
-## paying for a join that had nothing to hold it together.
-DESIGN_ACROSS, DESIGN_DOWN = 1, 4
+## **Four quads across, because a wordmark needs the pixels.** One quad reads
+## one tile, so one across is sixteen texels for the whole width of the cloth
+## and no logo with writing on it survives that. Four is sixty-four, which is
+## about five texels to the block pixel.
+##
+## Cutting it up failed twice before, and both times for the same reason: the
+## sheet holds the design mirrored, so the mirror of two columns side by side is
+## the right one on the left, and **the front and the back therefore need
+## different tiles rather than different windows of one tile.** With one column
+## across those are the same tile and nothing showed. `design_faces` is where
+## that is settled.
+DESIGN_ACROSS, DESIGN_DOWN = 4, 4
 DESIGN_AT = (0, 64)
 TILE = 16
-## **Both faces of a design turn their tile round, because the sheet holds it
-## the wrong way round.** `tools/textures/banners.py` writes the picture
-## mirrored on purpose, so every face reading it has to mirror it back -- not
-## just the one a banner is looked at. The two faces of a plane already run
-## their windows in opposite directions, which is what makes the back come out
-## as the mirror of the front once both are turned; leaving the back alone
-## instead cancelled one flip against the other and split the design down the
-## middle, the same way the columns did.
+## **The front turns its tile round and the back does not.**
+## `tools/textures/banners.py` writes the picture mirrored on purpose, so the
+## face a banner is read from has to mirror it back. The back needs nothing: the
+## two faces of a plane already run their windows in opposite directions, so a
+## plain window there shows the sheet reversed once, which is the mirror of the
+## front and is what a real banner does. Turning the back as well cancels that
+## reversal and the two faces come out identical, which is what they were.
 ##
 ## A cloth of flat colour has nothing to gain from any of this, so the sixteen
 ## dyed banners stay one quad apiece and read their tile as it comes.
-CLOTH_DESIGN = dict(CLOTH, south=(TILE, 0, -TILE, TILE),
-                    north=(TILE, 0, -TILE, TILE))
+CLOTH_DESIGN = dict(CLOTH, south=(TILE, 0, -TILE, TILE))
+
+## **The joins between the quads have to overlap, or they tear.** Four across by
+## four down puts nine seams across the cloth, each of them a pair of edges that
+## land on the same line and neither of which is guaranteed to cover it. Each
+## quad reaches a twentieth of a pixel past its slot so its neighbour is always
+## underneath it somewhere, and alternate rows sit a thousandth of a pixel
+## forward so the strip they share is not two faces on one plane.
+SEAM = 0.05
+SEAM_DEPTH = 0.002
 
 
 def art(sheet, corners):
@@ -212,22 +230,39 @@ def cloth(sheet, at, design=False, edge=None):
                      sheet + CLOTH_ART, window=CLOTH)]
     wide = CLOTH_WIDE / float(DESIGN_ACROSS)
     tall = CLOTH_TALL / float(DESIGN_DOWN)
-    return [Cube((wide, tall, CLOTH_DEEP),
+
+    def corner(column, row):
+        return "%s#%d,%d" % (sheet, DESIGN_AT[0] + column * TILE,
+                             DESIGN_AT[1] + row * TILE)
+
+    return [Cube((wide + SEAM, tall + SEAM, CLOTH_DEEP),
                  (at[0] + across * wide,
                   at[1] + (DESIGN_DOWN - 1 - down) * tall,
-                  at[2]),
+                  at[2] + (down % 2) * SEAM_DEPTH),
                  texture=design_faces(
                      sheet, edge=edge,
-                     tile="%s#%d,%d" % (sheet,
-                                   DESIGN_AT[0]
-                                   + (DESIGN_ACROSS - 1 - across) * TILE,
-                                   DESIGN_AT[1] + down * TILE)),
+                     ## **Both faces read the column where the quad stands, and
+                     ## only the window between them differs.** The sheet holds
+                     ## the design mirrored and the block is mirrored again
+                     ## across x on its way into the model, and those two
+                     ## cancel: the column order comes out of the sheet
+                     ## unchanged, and all that is left to tell the front from
+                     ## the back is which of them turns its own tile round.
+                     ## Reading from the far end as well reversed the columns on
+                     ## both faces, which reads as the design sliced and shown
+                     ## back to front.
+                     ##
+                     ## `design_faces` still takes a column for the back, and
+                     ## nothing passes one: the two faces have wanted different
+                     ## columns in three of the arrangements tried here, and
+                     ## with one column across it makes no difference at all.
+                     tile=corner(across, down)),
                  window=CLOTH_DESIGN)
             for down in range(DESIGN_DOWN)
             for across in range(DESIGN_ACROSS)]
 
 
-def design_faces(sheet, tile, edge=None):
+def design_faces(sheet, tile, back=None, edge=None):
     """The design on the two faces that show it, cloth on the four that do not.
 
     **Only the front and the back of a banner carry the picture.** The other
@@ -241,10 +276,19 @@ def design_faces(sheet, tile, edge=None):
     sheet's plain cloth is what vanilla dyes from, and on the ominous banner
     that is a light grey while the banner itself reads dark, so its edges came
     out pale against its own face. `BANNER_EDGE` says which sheet to borrow.
+
+    **And the two faces read different tiles once the design is cut into
+    columns.** The sheet holds the design mirrored, so the sheet's leftmost
+    column is the design's rightmost. The front un-mirrors its tile and so has
+    to take its column from the far end of the sheet; the back shows the mirror
+    and so takes the column where it stands. With one column across the two are
+    the same tile and nothing shows, which is why this went unnoticed until a
+    design was cut in two and came out with its halves swapped.
     """
     plain = (edge or sheet) + CLOTH_ART
     faces = {face: plain for face in CLOTH}
-    faces["north"] = faces["south"] = tile
+    faces["south"] = tile
+    faces["north"] = back if back is not None else tile
     return faces
 
 
@@ -273,9 +317,9 @@ def standing(sheet, design=False, edge=None):
     ## bar's own, rather than starting under it and leaving a seam
     top = hangs + BAR_TALL
     return ([Cube((2, hangs, 2), (7, 0, 7), art(sheet, POLE_ART), window=POLE),
-             Cube((16, BAR_TALL, 2), (0, hangs, 7), art(sheet, BAR_ART),
-                  window=BAR)]
-            + cloth(sheet, (0, top - CLOTH_TALL, 9), design, edge))
+             Cube((CLOTH_WIDE, BAR_TALL, 2), (CLOTH_INSET, hangs, 7),
+                  art(sheet, BAR_ART), window=BAR)]
+            + cloth(sheet, (CLOTH_INSET, top - CLOTH_TALL, 9), design, edge))
 
 
 def wall(sheet, design=False, edge=None):
@@ -286,10 +330,10 @@ def wall(sheet, design=False, edge=None):
     """
     hangs = 16 - BAR_TALL
     top = hangs + BAR_TALL
-    return ([Cube((16, BAR_TALL, 2), (0, hangs, 0), art(sheet, BAR_ART),
-                  window=BAR)]
+    return ([Cube((CLOTH_WIDE, BAR_TALL, 2), (CLOTH_INSET, hangs, 0),
+                  art(sheet, BAR_ART), window=BAR)]
             ## and out of the wall far enough to clear the bar
-            + cloth(sheet, (0, top - CLOTH_TALL, 2), design, edge))
+            + cloth(sheet, (CLOTH_INSET, top - CLOTH_TALL, 2), design, edge))
 
 
 def dyed(shape):

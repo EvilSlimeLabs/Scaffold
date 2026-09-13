@@ -34,6 +34,8 @@ STEPS = [
     ("tools.blocks.mounted", "bells, signs, doors, campfires, pots"),
     ("tools.blocks.growing", "crops, eggs, compost, coral"),
     ("tools.blocks.crossed", "fire, dripstone, sulfur spikes"),
+    ## before blocks.faces, which pins the two block tall flowers' textures
+    ("tools.blocks.plants", "the crossed plants and the sunflower"),
     ("tools.blocks.furniture", "beds, lecterns, conduits"),
     ("tools.blocks.heads", "the mob heads"),
     ("tools.blocks.containers", "the shulker boxes"),
@@ -42,6 +44,7 @@ STEPS = [
     ("tools.blocks.statues", "the copper golem's four poses"),
     ("tools.blocks.faces", "a texture per cube, per face"),
     ("tools.textures.banners", "the dyed banner sheets"),
+    ("tools.textures.cauldron", "the cauldron's flattened underside"),
     ("tools.textures.beds", "the recoloured beds"),
     ("tools.textures.string", "a string a ghost can be seen with"),
     ## after every shape family, because it reads them

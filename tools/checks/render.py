@@ -34,11 +34,31 @@ for, which is barely half of what the tables describe.
 What it does not model
 ----------------------
 - **Z-fighting.** Two faces on the same plane come out as one arbitrary but
-  steady choice here and as a flicker in game. `coplanar()` reports those
-  outright, which is more use than looking for them.
+  steady choice here and as a flicker in game, so a block can look settled here
+  and shimmer in a world. Reading the shape table is what catches those: a
+  standing sign's post ran the whole height of the block with its north and
+  south faces exactly on the board's, and only the game ever said so.
 - **Transparency over a world.** Blocks are drawn solid, because the point is
   to read the texture. `--alpha` gives a rough idea and no more.
 - Lighting, Vibrant Visuals, and the armor stand's own scaling.
+
+What it does model, and used not to
+-----------------------------------
+**The x mirror.** A block goes into the model with its x reversed, so a shape
+that is asymmetric across x is drawn in game on the side opposite the one its
+table names. `MIRROR` and `ACROSS` below carry it. Without them this drew a
+sunflower's head on the wrong side of its own stem and called it right.
+
+**The y turn.** Bedrock turns a cube about y the other way from `spun`, and
+about x and z the same way. `TURN_SIGNS` and `_turn` carry it, and only for a
+turn the shape table gave a cube.
+
+**The two faces of a plane.** They read their u in opposite directions, which is
+the south entry in `FACES` above.
+
+Everything here was settled by building the block and looking, and every one of
+them was wrong here while being right in a world. `tests/test_render.py` holds
+all three.
 
 Orientation
 -----------
@@ -99,17 +119,22 @@ TEXELS = 16.0
 ##   texture. That is what `docs/Block Notes.md` says and what every slab in the
 ##   pack is drawn from.
 ## - **u runs +x on north as well as south**, and +z on east as well as west,
-##   which is `Cube.uv`'s own default. It is also why the two faces of a plane
-##   read in opposite directions when you look at them from outside, which
-##   `tools/blocks/banners.py` relies on to get a design the right way round.
+##   which is `Cube.uv`'s own default.
+## - **The south face's u runs the other way from the north's**, which is what
+##   makes the two faces of a plane read in opposite directions when you look at
+##   them from outside, and what `tools/blocks/banners.py` relies on to get a
+##   design the right way round. Given the same direction as the north's, a
+##   marked banner's front came out with each of its four columns mirrored where
+##   it stood, and a brewing stand's arm carried its outer leg against the pole
+##   on one side and away from it on the other. Both are right in game.
 ## - **The up face's v runs toward -z**, so the bottom of the tile lands at the
 ##   block's north edge. That one is not a convention, it is an observation: the
 ##   lectern's base carries a red inlay across the bottom of `lectern_base` and
 ##   it came out at the back of the block until the window was turned over.
 ##   `tests/test_render.py` holds it there.
 FACES = {
-    "south": {"axis": (0, 0, 1), "origin": (0, 1, 1),
-              "along_u": (1, 0, 0), "along_v": (0, -1, 0)},
+    "south": {"axis": (0, 0, 1), "origin": (1, 1, 1),
+              "along_u": (-1, 0, 0), "along_v": (0, -1, 0)},
     "north": {"axis": (0, 0, -1), "origin": (0, 1, 0),
               "along_u": (1, 0, 0), "along_v": (0, -1, 0)},
     "east":  {"axis": (1, 0, 0), "origin": (1, 1, 0),
@@ -121,6 +146,31 @@ FACES = {
     "down":  {"axis": (0, -1, 0), "origin": (0, 0, 0),
               "along_u": (1, 0, 0), "along_v": (0, 0, 1)},
 }
+
+## **The world is the mirror of the model in x, so this draws the mirror.**
+## `armor_stand_geo_class` writes a cube's origin as `-1*(x + offsets[0]) +
+## xoff`: the block's place in the grid is negated, which is what turns a
+## structure's x into Bedrock's model x, and the cube's own offset inside the
+## block is added to that untouched. What comes out is a model whose x runs
+## opposite to the world's, and drawing it straight put every block that is
+## asymmetric across x on the wrong side of itself -- a sunflower's head on the
+## wrong side of its own stem, and every turn about y and about z the wrong way
+## round.
+##
+## Two things follow, and both are in the loop below.
+##
+## **The picture on a face follows the side it is seen from.** Bedrock names a
+## cube's uv faces by where they end up rather than by the model's own axes, so
+## the face built here as the model's east is painted with the table's west. The
+## other four keep their names, and their pictures come out reversed left to
+## right, which is what `tools/blocks/banners.py` is compensating for when it
+## writes a design mirrored and turns it back on the front.
+##
+## **The normal is mirrored with the points**, because `draw` culls a face by
+## it. Left alone, every face across x would be drawn from the wrong side.
+MIRROR = np.array([-1.0, 1.0, 1.0])
+ACROSS = {"east": "west", "west": "east",
+          "north": "north", "south": "south", "up": "up", "down": "down"}
 
 ## Where the camera stands for each named view, as the direction it looks *from*
 ## and the two screen axes. A flat view is named for the face of the block it
@@ -202,8 +252,65 @@ def _spin(points, degrees, pivot):
     return p + np.asarray(pivot, dtype=float)
 
 
-def mesh(block, rot=0, alpha=1.0, geo=None, **states):
+## **Bedrock turns a cube about y the other way from `spun`, and about x and z
+## the same way.** Measured against blocks whose look in game is settled: a
+## brewing stand's arms and bottles, which carry a y turn and come out along
+## their own radius only if it is negated here, and a sunflower's head, which
+## carries a z turn and looks at the floor if it is. `spun` in
+## `tools/blocks/geometry.py` and `_spin` below share one convention, so a
+## generator that places a piece with `spun` and turns it by the same sign
+## agrees with itself and disagrees with the game -- which is why `brew_turned`
+## writes its move and its turn with opposite signs.
+##
+## Nothing here has an x turn whose direction is settled in game, so x is left
+## as it is. If one ever reads backwards, this is the line.
+TURN_SIGNS = (1, -1, 1)
+
+
+## **Only a turn the cube brought with it is corrected.** `add_blocks_to_bones`
+## copies a family's group rotation onto every cube that has none of its own,
+## and those numbers were tuned by eye in game and are right as they stand --
+## negating them puts every door, stair, trapdoor, anvil and bed a quarter turn
+## out. The copying happens inside `make_block` and `geo.blocks` is keyed by
+## bone by the time it returns, so the group's own turn is gone and the two
+## cannot be told apart by it. Nor by the pivot: an anvil has a cube whose own
+## middle *is* the block's middle. What does separate them is that a family's
+## turn is the same on every cube of the block and a cube's own turn is not, so
+## a block whose rotated cubes disagree is carrying its own.
+##
+## **Its one blind spot is a family that turns every cube the same way about one
+## point**, which is `cross_texture` and `double_plant`: two quads at forty-five
+## degrees about the middle of the block. Those are left as a family turn and
+## not corrected. It does not show, because the pair is symmetric -- the X comes
+## out the same either way and only the picture on each quad mirrors.
+OWN_TURN = "_turned_by_its_shape"
+
+
+def _turn(cube):
+    """The turn a cube carries, the way Bedrock applies it."""
+    turn = cube.get("rotation")
+    if turn is None:
+        return None
+    if not cube.get(OWN_TURN):
+        return list(turn)
+    return [way * n for way, n in zip(TURN_SIGNS, turn)]
+
+
+def mesh(block, rot=0, alpha=1.0, geo=None, stack=False, low=False, **states):
     """The quads of one block, and the atlas they read.
+
+    `stack` draws the block's upper half in the block above as well, which is
+    what a two block tall plant is: a sunflower is a lower block and an upper
+    one, and drawing only the lower half shows a stem with nothing on it.
+    Whether a block has an upper half is `taller_than_one`'s question rather
+    than this one's; what gets drawn is still only what `make_block` hands back.
+
+    `low` draws what a pack built with `set_low_geometry(True)` would draw:
+    `make_block` swaps a family for its `__low` twin where one exists and leaves
+    the rest alone, so most blocks come out unchanged. Those simplified forms
+    are generated by `tools/blocks/simplify.py` and nothing else has ever drawn
+    them, which is the point of the flag -- a simple form is meant to be the
+    detailed one's outline and nothing said when it stopped being that.
 
     Everything here comes out of `make_block`, so a change to a lookup table
     shows up without this file knowing the table exists.
@@ -214,8 +321,11 @@ def mesh(block, rot=0, alpha=1.0, geo=None, **states):
     costs more in copying than a fresh one costs in reading textures.
     """
     if geo is None:
-        geo = asgc.ArmorStandGeo("render", offsets=[0, 0, 0])
+        geo = asgc.ArmorStandGeo("render", offsets=[0, 0, 0], low_geometry=low)
     geo.alpha = alpha
+    ## a geo handed in has its own answer, and the flag overrides it, so that
+    ## the tests can pass one either way round
+    geo.low_geometry = bool(low)
     geo.blocks = {}
     ## **and the bones, which `add_blocks_to_bones` appends to.** A geo handed
     ## in twice otherwise carries the last block's bones into the next one, and
@@ -224,6 +334,21 @@ def mesh(block, rot=0, alpha=1.0, geo=None, **states):
     ## nothing would have.
     geo.geometry["bones"] = [{"name": "ghost_blocks", "pivot": [-8, 0, 8]}]
     geo.make_block(0, 0, 0, block, rot=rot, **states)
+    if stack:
+        geo.make_block(0, 1, 0, block, rot=rot, **dict(states, top=True))
+    ## mark the turns that are the cube's own rather than the family's. See
+    ## `OWN_TURN` above for why, and for why it has to happen here.
+    for group in geo.blocks.values():
+        turned = [cube for cube in group.get("cubes", [])
+                  if cube.get("rotation") and any(cube["rotation"])]
+        ## rounded, because two cubes built about the same middle come out of
+        ## the arithmetic a few parts in a billion billion apart
+        apart = {(tuple(cube["rotation"]),
+                  tuple(round(n, 9) for n in cube.get("pivot") or ()))
+                 for cube in turned}
+        if len(apart) > 1:
+            for cube in turned:
+                cube[OWN_TURN] = True
     geo.add_blocks_to_bones()
 
     quads = []
@@ -232,7 +357,12 @@ def mesh(block, rot=0, alpha=1.0, geo=None, **states):
             low = np.asarray(cube["origin"], dtype=float)
             high = low + np.asarray(cube["size"], dtype=float)
             for face, how in FACES.items():
-                paint = cube["uv"][face]
+                ## The face built here from `how` lands on the other side of the
+                ## block once x is mirrored, and Bedrock names a cube's uv faces
+                ## by where they end up rather than by the model's own axes, so
+                ## the paint follows the side it is seen from.
+                shown = ACROSS[face]
+                paint = cube["uv"][shown]
                 u0, v0 = paint["uv"]
                 du, dv = paint["uv_size"]
                 corner = np.array([high[i] if how["origin"][i] else low[i]
@@ -242,18 +372,18 @@ def mesh(block, rot=0, alpha=1.0, geo=None, **states):
                 down = np.asarray(how["along_v"], dtype=float) * span
                 points = np.array([corner, corner + across,
                                    corner + across + down, corner + down])
-                points = _spin(points, cube.get("rotation"),
+                points = _spin(points, _turn(cube),
                                cube.get("pivot") or (low + high) / 2.0)
                 ## uv is in atlas units: u across the one-tile width, v down the
                 ## stack of tiles, so a texel is a sixteenth of either
                 uvs = np.array([[u0, v0], [u0 + du, v0],
                                 [u0 + du, v0 + dv], [u0, v0 + dv]]) * TEXELS
                 normal = np.asarray(how["axis"], dtype=float)
-                if cube.get("rotation") and any(cube["rotation"]):
+                if _turn(cube) and any(_turn(cube)):
                     turned = _spin(np.array([[0, 0, 0], normal]),
-                                   cube["rotation"], (0, 0, 0))
+                                   _turn(cube), (0, 0, 0))
                     normal = turned[1] - turned[0]
-                quads.append((points, uvs, normal, face))
+                quads.append((points * MIRROR, uvs, normal * MIRROR, shown))
     return quads, geo.uv_array
 
 
@@ -376,7 +506,7 @@ def _triangle(canvas, depth, atlas, rows, cols, sx, sy, sz, uvs):
 
 
 def sheet(block, rot=0, scale=8, background=(24, 24, 28), rows=None,
-          alpha=1.0, label=True, **states):
+          alpha=1.0, label=True, stack=False, low=False, **states):
     """Every view of one block, laid out in rows and named.
 
     `rows` is a run of view names per row, so a caller decides the shape of the
@@ -384,7 +514,8 @@ def sheet(block, rot=0, scale=8, background=(24, 24, 28), rows=None,
     block is the same size in every picture and the rows line up.
     """
     rows = rows or LAYOUTS["default"]
-    quads, atlas = mesh(block, rot=rot, alpha=alpha, **states)
+    quads, atlas = mesh(block, rot=rot, alpha=alpha, stack=stack, low=low,
+                        **states)
     frame = _frame(quads)
     drawn = [[(name, draw(quads, atlas, name, scale, background, frame))
               for name in row] for row in rows]
@@ -459,6 +590,25 @@ def every_form():
                  if not form.endswith(asgc.LOW_SUFFIX)]
         pairs.extend((block, form) for form in sorted(forms) or ["default"])
     return pairs
+
+
+def taller_than_one(block):
+    """Whether this block is the lower half of a two block tall one.
+
+    A sunflower, a lilac and a tall grass are each two blocks in the world, told
+    apart by `upper_block_bit`, and a shape family says so by carrying a `top`
+    form. Drawing only the lower half of one shows a stem and leaves the flower
+    out, which reads as a bug in the block rather than as half a picture.
+
+    Like `every_form`, this reads the shape table to decide *what* to draw and
+    never how it looks, which is why it is here and not inside `mesh`.
+    """
+    with io.open(paths.lookup("block_definition.json"), encoding="utf-8") as f:
+        family = json.load(f).get(block)
+    if not family:
+        return False
+    with io.open(paths.lookup("block_shapes.json"), encoding="utf-8") as f:
+        return "top" in json.load(f).get(family, {})
 
 
 def named(block, form):
@@ -558,6 +708,10 @@ def main(argv=None):
                     help="what to draw the block against: a name like 'skyblue' or a hex code like 18181c or #18181c (default 18181c)")
     ap.add_argument("--alpha", type=float, default=1.0,
                     help="how solid to draw it; 1 is opaque and is the default")
+    ap.add_argument("--low", "--low-geometry", dest="low", action="store_true",
+                    help="draw the simplified form, the way a pack built with "
+                         "low geometry does. Most blocks have none and come "
+                         "out the same either way")
     ap.add_argument("-o", "--output", default=RENDERS,
                     help="directory to write into, or a file to write; renders/ by default")
     picked = ap.add_mutually_exclusive_group()
@@ -634,9 +788,16 @@ def main(argv=None):
     except ValueError as wrong:
         ap.error(str(wrong))
     check_block(args.block, ap)
+    ## A two block tall plant is drawn whole unless a half was asked for, since
+    ## half a sunflower is a stem and reads as a broken block rather than as one
+    ## of the two blocks it really is. `--top` and `--data top` both mean a half
+    ## was asked for.
+    stack = (not args.top and states.get("data") != "top"
+             and taller_than_one(args.block))
     try:
         image = sheet(args.block, rot=args.rot, scale=args.scale,
-                      background=ground, rows=rows, alpha=args.alpha, **states)
+                      background=ground, rows=rows, alpha=args.alpha,
+                      stack=stack, low=args.low, **states)
     except Exception as trouble:
         ## a block whose family, variant or texture is missing raises from deep
         ## inside make_block; the traceback names the key and not the choice
