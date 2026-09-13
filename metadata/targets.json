@@ -2,12 +2,12 @@
  "signatures": [
   {
    "keyid": "31d230ecfb94103867de64b683e7fadc21a501fea03bda45eff0208f8fe56fd2",
-   "sig": "31e3a529cf4f4a414248a2fc7bc3585fb4e9fe3c23d50e2007f3d973a7fdba27dddcd3b00d1e4053cd78c7d88bed08f9a884dabcdb07faaf63bd6b3cf3710507"
+   "sig": "4e5375def1ef510fcff167cfb3e541e9e3c83cc1fcceef59539dc76cf90a90287453a4ae28c909efd1faab2800cc597d3df2f0ad36a062f314d2b2e31b11740f"
   }
  ],
  "signed": {
   "_type": "targets",
-  "expires": "2026-10-09T20:24:55Z",
+  "expires": "2026-10-13T01:23:09Z",
   "spec_version": "1.0.31",
   "targets": {
    "Scaffold-0.9.2.tar.gz": {
@@ -47,8 +47,34 @@
      "sha256": "37d9705faa1802631dbaedbcbbff1a56371a08f03db40eabc3d9a4e1c59bac6c"
     },
     "length": 53079048
+   },
+   "Scaffold-1.0.0.patch": {
+    "custom": {
+     "tufup": {
+      "tar_hash": "64d4d24a3abe9b21afe0141eac90def1959dff3194832a4842cc2039d0702628",
+      "tar_hash_algorithm": "sha256",
+      "tar_size": 53329920
+     },
+     "user": null
+    },
+    "hashes": {
+     "sha256": "2c551c52901f66885f534c8626bd23c7240ca3815e1f2fef0a29430a51645e9f"
+    },
+    "length": 49061112
+   },
+   "Scaffold-1.0.0.tar.gz": {
+    "custom": {
+     "tufup": {
+      "required": false
+     },
+     "user": null
+    },
+    "hashes": {
+     "sha256": "a10bf353c3f6fd1765d6fe58b29e15a2e63038f3fdf2bc1db94f9e3009bab7d3"
+    },
+    "length": 53094623
    }
   },
-  "version": 3
+  "version": 4
  }
 }
