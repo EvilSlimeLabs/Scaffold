@@ -135,6 +135,48 @@ def report_gaps(defs, comm):
         print("   " + block)
 
 
+def report_overrun(uvs):
+    """Faces whose window runs outside the tile they name.
+
+    A tile is the top left 16x16 of a texture and a face's window is a fraction
+    of one, so a window reaching past 1.0 is reading the *next* tile in the
+    atlas -- whatever texture happened to land there, which depends on the
+    order the blocks were built in. It has always been wrong; it was invisible
+    while the atlas was a single column because the neighbour was merely the
+    next texture down, and it stays wrong now the atlas is a grid.
+
+    `conduit` is the clearest: `conduit_base` is a 24x12 sheet and the north
+    face reads u 18 to 24, which no 16x16 window of that image contains.
+    """
+    found = []
+    for family, forms in uvs.items():
+        for form, body in forms.items():
+            for face in ("up", "down", "north", "south", "east", "west"):
+                offsets = (body.get("offset") or {}).get(face) or []
+                sizes = (body.get("uv_sizes") or {}).get(face) or []
+                for index, (at, span) in enumerate(zip(offsets, sizes)):
+                    for axis, name in ((0, "u"), (1, "v")):
+                        low = min(at[axis], at[axis] + span[axis])
+                        high = max(at[axis], at[axis] + span[axis])
+                        if high > 1.0001 or low < -0.0001:
+                            found.append((family, form, face, index, name,
+                                          low, high))
+    print("\n=== WINDOWS OUTSIDE THEIR OWN TILE (%d) ===" % len(found))
+    if not found:
+        print("   none")
+    seen = set()
+    for family, form, face, index, axis, low, high in found:
+        if family in seen:
+            continue
+        seen.add(family)
+        print("   %-26s %s/%s cube %d  %s %.3f..%.3f"
+              % (family, form, face, index, axis, low, high))
+    if len(seen) < len(found):
+        print("   (%d faces across %d families; first of each shown)"
+              % (len(found), len(seen)))
+    return len(found)
+
+
 def report_tables(defs, shapes, uvs):
     used = {v for v in defs.values() if v != "ignore"}
     print("=== shape families with no block_shapes entry ===")
@@ -178,9 +220,11 @@ def main():
         report_gaps(defs, comm)
         return
     if args.tables:
+        uvs = jsonc.load(os.path.join(PACKAGE, "lookups/block_uv.json"))
         report_tables(defs,
                       jsonc.load(os.path.join(PACKAGE, "lookups/block_shapes.json")),
-                      jsonc.load(os.path.join(PACKAGE, "lookups/block_uv.json")))
+                      uvs)
+        report_overrun(uvs)
         return
 
     unresolved = report_broken(

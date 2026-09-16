@@ -6833,7 +6833,7 @@
   },
   "poplar_hanging_sign": {
     "sound": "hanging_sign",
-    "textures": "poplar_planks"
+    "textures": "poplar_hanging_sign"
   },
   "poplar_log": {
     "sound": "wood",

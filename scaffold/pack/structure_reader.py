@@ -87,8 +87,16 @@ class StructureFile:
         edge: it is not part of what was captured, and a mark on the wrong cell
         is worse than no mark.
 
-        Returns a list of `{"id", "at", "yaw", "fields"}`, where `at` is the
-        cell as (x, y, z) and `yaw` is the first of `Rotation`, in degrees.
+        **The fraction is kept, not dropped.** A snow layer is two pixels
+        tall, so a cushion resting on one stands an eighth of a block above the
+        floor of the cell it is in -- the same cell the snow is in, because a
+        cell is a whole block. Rounding that away stacks the two ghosts inside
+        each other. `lift` is how far above the cell floor the entity stands,
+        in blocks, and whatever draws it puts it there.
+
+        Returns a list of `{"id", "at", "lift", "yaw", "fields"}`, where `at`
+        is the cell as (x, y, z) and `yaw` is the first of `Rotation`, in
+        degrees.
         """
         found = []
         for entity in self.NBTfile["structure"].get("entities") or ():
@@ -96,12 +104,13 @@ class StructureFile:
             place = entity.get("Pos")
             if not name or place is None or len(place) < 3:
                 continue
-            at = [int(floor(float(place[i]) - int(self.origin[i])))
-                  for i in range(3)]
+            exact = [float(place[i]) - int(self.origin[i]) for i in range(3)]
+            at = [int(floor(n)) for n in exact]
             if any(n < 0 or n >= self.size[i] for i, n in enumerate(at)):
                 continue
             spin = entity.get("Rotation") or ()
             found.append({"id": name, "at": tuple(at),
+                          "lift": exact[1] - at[1],
                           "yaw": float(spin[0]) if len(spin) else 0.0,
                           "fields": dict(entity)})
         return found

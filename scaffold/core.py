@@ -331,7 +331,13 @@ class Scaffold:
         for name in list(self.structure_files.keys()):
             file_names.append(self.structure_files[name]["file"])
         struct2make=structure_reader.CombinedStructures(file_names,exclude_list=self.exclude_list)
+        ## The combined model takes the empty name, which is also the name a
+        ## single unnamed structure already has, so this entry replaces one
+        ## that had a file. It keeps every file it was built from: the
+        ## fingerprint is what tells two packs apart, and one that forgot its
+        ## sources would be the same string however the structures changed.
         self.structure_files[""]={}
+        self.structure_files[""]["files"]=list(file_names)
         self.structure_files[""]["offsets"]=[0,0,0]
         self.structure_files[""]["offsets"][1]= 0
         layers=12
@@ -534,7 +540,8 @@ class Scaffold:
             try:
                 armorstand.make_block(x, y, z, model["block"],
                                       rot=entity_turn(entity["yaw"]),
-                                      data=form, big=export_big)
+                                      data=form, big=export_big,
+                                      lift=entity.get("lift") or 0.0)
             except Exception:
                 ## the same bargain a block gets: it lands on the skipped list
                 ## rather than ending the build
@@ -580,8 +587,13 @@ class Scaffold:
         for name in sorted(self.structure_files):
             info = self.structure_files[name]
             offsets = info.get("offsets") or [0, 0, 0]
+            ## one file for an ordinary model, and every source for the
+            ## combined one a big build makes, which has no file of its own
+            sources = info.get("files")
+            if sources is None:
+                sources = [info["file"]] if info.get("file") else []
             parts.append("model=%s|%s|%s" % (
-                name, self._digest(info["file"]),
+                name, ",".join(self._digest(one) for one in sources) or "none",
                 ",".join(str(v) for v in offsets)))
         return "\n".join(parts)
 

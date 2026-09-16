@@ -28,6 +28,7 @@ without it gives anyone downloading by hand nothing to check.
     python build.py --init-trust       create the signing keys, once
     python build.py --init-pages       set up pages/ as the gh-pages worktree
     python build.py --publish          sign a build in and push it, both branches
+    python build.py --unpublish 1.2.3  take the newest release back off the server
 
 The version comes from pyproject.toml, which is packed into the executable so
 the compiled program can read it back.
@@ -363,6 +364,29 @@ def repository():
                       keys_dir=KEYS_DIR, expiration_days=dict(EXPIRY))
 
 
+def load_repository():
+    """The repository as it stands, with nothing created and nothing asked.
+
+    **Not `initialize()`.** That calls `Keys.create()`, which walks every role
+    and asks "Overwrite key pair? [n]/y" for each private key it finds -- four
+    prompts, and a stray `y` destroys a signing key that every installed copy
+    of Scaffold trusts. It is the right call when a repository is being made,
+    which is what `--init-trust` is for; for a repository that already exists
+    it can only prompt.
+
+    `_load_keys_and_roles` imports the public keys and the metadata and creates
+    neither. It is private today and tufup's own source marks it to be made
+    public, so this is the seam to watch when tufup is upgraded.
+    """
+    repo = repository()
+    repo._load_keys_and_roles(create_keys=False)
+    if repo.roles is None:
+        sys.exit("Build stopped: no metadata in %s.\n"
+                 "  python build.py --init-trust"
+                 % os.path.join(PAGES_DIR, "metadata"))
+    return repo
+
+
 def publish_root(repo):
     """Copy the public root metadata into the package, where it ships."""
     source = os.path.join(repo.repo_dir, "metadata", ROOT_METADATA)
@@ -555,6 +579,52 @@ def init_pages():
     return 0
 
 
+def published_versions():
+    """Every version the update repository is currently offering, newest last.
+
+    Read out of the signed targets metadata rather than off the targets
+    directory, because the metadata is what a client believes: an archive
+    sitting there that nothing vouches for is not published, and one the
+    metadata names that is missing is a broken release rather than an absent
+    one.
+    """
+    where = os.path.join(PAGES_DIR, "metadata", "targets.json")
+    if not os.path.isfile(where):
+        return []
+    import json
+
+    with open(where, encoding="utf-8") as f:
+        signed = json.load(f)["signed"]["targets"]
+    found = []
+    for name in signed:
+        ## Scaffold-1.2.3.tar.gz, and the patches beside it, which are not
+        ## releases in their own right
+        if name.startswith("Scaffold-") and name.endswith(".tar.gz"):
+            found.append(name[len("Scaffold-"):-len(".tar.gz")])
+    return sorted(found, key=_version_key)
+
+
+def _version_key(text):
+    """A version, ordered the way tufup orders one.
+
+    **The same comparison tufup makes, not a similar one.** `TargetMeta.__lt__`
+    sorts on `packaging.version.Version`, and that is what decides which bundle
+    `remove_latest_bundle` takes. Anything else here could call a different
+    release the newest than the one tufup is about to remove -- which is the
+    one thing this whole check exists to prevent. Two places where a home-made
+    key would disagree: 1.10.0 is above 1.9.0 and sorts below it as text, and a
+    release candidate sorts *under* the release it leads to, not over it.
+    """
+    from packaging.version import InvalidVersion, Version
+
+    try:
+        return (0, Version(text))
+    except InvalidVersion:
+        ## unparseable last, and never treated as the newest: a name nothing
+        ## can read is not something to remove on the strength of its sort
+        return (1, text)
+
+
 def already_published(release_version):
     """Whether this version is already signed into the update repository.
 
@@ -664,6 +734,112 @@ def ready_to_publish(release_version):
     print("   %s is not published yet" % release_version)
 
 
+def ready_to_unpublish(wanted):
+    """Everything an unpublish needs, and the one thing tufup can actually do.
+
+    The same keys and the same worktree a publish wants, and then the check
+    that decides whether this is possible at all: **tufup removes the latest
+    bundle and only the latest**, so the version named has to be the one on
+    top. Taking a release out from under a newer one would leave the newer one
+    claiming a patch against something no longer there.
+    """
+    print("\n>> checking this release can be unpublished")
+    if not os.path.isdir(KEYS_DIR) or not os.listdir(KEYS_DIR):
+        sys.exit("Build stopped: no signing keys in %s.\n"
+                 "  Unpublishing re-signs the metadata, so it needs them too."
+                 % KEYS_DIR)
+    if not os.path.isdir(os.path.join(PAGES_DIR, ".git")) and \
+            not os.path.isfile(os.path.join(PAGES_DIR, ".git")):
+        sys.exit("Build stopped: %s is not the gh-pages worktree.\n"
+                 "  python build.py --init-pages"
+                 % os.path.relpath(PAGES_DIR, ROOT))
+
+    published = published_versions()
+    if not published:
+        sys.exit("Build stopped: nothing is published, so there is nothing "
+                 "to take back.")
+    latest = published[-1]
+    if wanted != latest:
+        if wanted not in published:
+            sys.exit("Build stopped: %s is not published.\n"
+                     "  Published: %s" % (wanted, ", ".join(published)))
+        sys.exit(
+            "Build stopped: %s is published, but %s is newer.\n"
+            "\n"
+            "  tufup removes the latest bundle and only the latest. Taking %s\n"
+            "  out from under %s would leave a client holding a patch against\n"
+            "  an archive that is no longer there.\n"
+            "\n"
+            "  Unpublish %s first, or publish a newer release that supersedes\n"
+            "  the one you want gone." % (wanted, latest, wanted, latest, latest))
+    check_keys()
+    print("   %s is the newest published release" % wanted)
+    return published
+
+
+def unpublish(release_version):
+    """Take the newest release back off the update server.
+
+    **This is not a recall.** Anyone whose copy already checked and installed
+    has the build on disk, and no amount of rewriting the metadata reaches
+    them; all this does is stop it being offered to anybody else. If the reason
+    is that the build is harmful rather than merely wrong, publish a newer
+    release that supersedes it instead.
+
+    **And it does not touch the GitHub release.** The executables and
+    SHA256SUMS.txt are uploaded there by hand and nothing in the update
+    repository knows about them, so the browser download still hands out the
+    build this just withdrew until that release is edited too.
+    """
+    published = ready_to_unpublish(release_version)
+
+    repo = load_repository()
+    print("\n>> removing %s from the update repository" % release_version)
+    repo.remove_latest_bundle()
+    repo.publish_changes(private_key_dirs=[KEYS_DIR])
+    publish_root(repo)
+    pages_scaffolding()
+
+    left = published_versions()
+    if release_version in left:
+        sys.exit("Build stopped: %s is still in the targets metadata after "
+                 "removing it.\n  Nothing has been pushed." % release_version)
+
+    ## master is left alone. A publish has just built everything and sweeping
+    ## the tree into a commit is what it means; an unpublish builds nothing, so
+    ## committing whatever happens to be in the working tree would be a
+    ## surprise. The root does not change unless a key was rotated, and if it
+    ## somehow did, saying so is better than quietly committing it.
+    if anything_to_commit(ROOT):
+        print("\n   note: master has uncommitted changes and is left alone.")
+        if os.path.relpath(TRUST_DIR, ROOT) in subprocess.run(
+                ["git", "status", "--porcelain"], cwd=ROOT,
+                capture_output=True, text=True).stdout.replace("\\", "/"):
+            print("   scaffold/trust/ is among them: the root metadata moved, "
+                  "and\n   that half of the release does have to be committed.")
+
+    print("\n>> gh-pages")
+    if not anything_to_commit(PAGES_DIR):
+        sys.exit("Build stopped: nothing changed in %s, so nothing was "
+                 "removed.\n  Nothing has been pushed."
+                 % os.path.relpath(PAGES_DIR, ROOT))
+    subprocess.run(["git", "status", "--short"], cwd=PAGES_DIR)
+    git(["add", "-A"], PAGES_DIR, "staging gh-pages")
+    git(["commit", "-m", "Unpublish Scaffold %s" % release_version], PAGES_DIR,
+        "committing gh-pages")
+    git(["push", "-u", "origin", "gh-pages"], PAGES_DIR, "pushing gh-pages")
+
+    print("\nUnpublished %s. Pages rebuilds in under a minute and no build "
+          "will be\noffered it again." % release_version)
+    print("Still offered: %s" % (", ".join(left) if left else "nothing"))
+    print("\nTwo things this did not do:")
+    print("  * it did not reach anyone who already installed %s"
+          % release_version)
+    print("  * it did not touch the GitHub release; delete those assets by "
+          "hand,\n    or a browser download still gets that build")
+    return 0
+
+
 def publish(exe, release_version):
     """Sign this build into the update repository, and push both branches."""
     repo = repository()
@@ -688,6 +864,11 @@ def main():
     parser.add_argument("--publish", action="store_true",
                         help="sign this build in, then commit and push both "
                              "master and gh-pages")
+    parser.add_argument("--unpublish", metavar="VERSION",
+                        help="take VERSION back off the update server and push "
+                             "gh-pages; builds nothing. The version is named "
+                             "rather than assumed, because this is a release "
+                             "going away")
     parser.add_argument("--init-trust", action="store_true",
                         help="create the signing keys and the root metadata, once")
     parser.add_argument("--init-pages", action="store_true",
@@ -705,6 +886,11 @@ def main():
 
     if args.init_trust:
         return init_trust()
+
+    ## before the tools and the tests, and instead of the build: an unpublish
+    ## compiles nothing, so everything below this line is beside the point
+    if args.unpublish:
+        return unpublish(args.unpublish)
 
     ## before the tools, the tests and a quarter of an hour of Nuitka, because
     ## every one of these fails for a reason a second could have found

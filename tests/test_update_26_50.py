@@ -6,12 +6,12 @@ form, a poplar wood set, and three that are new shapes rather than new materials
 `minecraft:corner` state and fences, panes and bars a `minecraft:connection_*`
 one, neither of which Scaffold reads.
 
-The cushion is deliberately absent. It is an entity rather than a block: a
-.mcstructure keeps it in `structure.entities` with a position, a rotation and a
-colour of its own, and nothing in `block_indices` marks the space it stands in.
-Scaffold draws blocks, so there is nothing here for it to draw, and
-`CushionTests` pins that down so the reason is written somewhere rather than
-looking like an oversight.
+The cushion is here only as far as 26.50 is concerned. It is an entity rather
+than a block -- a .mcstructure keeps it in `structure.entities` with a position,
+a rotation and a colour of its own, and nothing in `block_indices` marks the
+space it stands in -- so it reaches a pack through the entity pipeline instead.
+`tests/test_entities.py` covers that; `CushionTests` below covers the half that
+belongs to the update.
 """
 import json
 import os
@@ -380,7 +380,10 @@ class CushionTests(unittest.TestCase):
         reader = structure_reader.StructureFile(STRUCTURE)
         cushions = [e for e in reader.get_entities()
                     if e["id"] == "minecraft:cushion"]
-        self.assertEqual(len(cushions), 16)
+        forms = core.ENTITY_MODELS["minecraft:cushion"]["forms"]
+        self.assertTrue(cushions)
+        self.assertEqual(len(cushions) % len(forms), 0,
+                         "26.50 places a whole set of colours")
 
 
 if __name__ == "__main__":

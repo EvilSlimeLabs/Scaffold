@@ -22,6 +22,8 @@ The repository is public on GitHub. Releases are built locally with `python buil
 
 **The program updates itself over TUF, and a release must be signed.** `scaffold/updates.py` is a `tufup` client. It fetches signed metadata from `https://evilslimelabs.github.io/Scaffold/metadata/`, and the archives from `targets/` beside it, and will not install anything the metadata does not vouch for. `python build.py --publish` is what signs a build in; `--init-trust` creates the keys, once.
 
+**`--unpublish <version>` takes a release back off the server**, and builds nothing. It names the version rather than assuming it, because this is a release going away, and it refuses anything but the newest: tufup removes the latest bundle and only the latest, so pulling one out from under a newer one would leave a client holding a patch against an archive that is gone. **It is not a recall.** Anyone who already updated has the build on disk and nothing here reaches them; if the release is harmful rather than merely wrong, publish a newer one that supersedes it. It also leaves the GitHub release alone -- those assets are uploaded by hand and the update repository knows nothing about them, so the browser download still serves the withdrawn build until that release is edited too. Unlike `--publish` it commits only `gh-pages`, since it has built nothing that belongs on `master`.
+
 **The private keys live in `~/.scaffold-keys` and must never be committed.** Anyone holding the targets key can sign a release every copy of Scaffold in the world will install. `scaffold/trust/root.json` is the public half and *does* ship, compiled into the executable, because it is the one piece of metadata an update cannot fetch.
 
 That whole feature rests on the repository being **public**, because the metadata and the archives are fetched without credentials, and GitHub Pages on a private repository is a paid feature besides. While it is private every check comes back as "up to date", quietly, which is the same answer as no network.
@@ -405,7 +407,7 @@ Match the surrounding density: module headers carry a short orientation, non-obv
 
 ## Running, testing and building
 
-```bash python -m scaffold                                    the window python -m scaffold --structure in.mcstructure --pack_name Name    CLI python -m unittest discover -s tests -t .              tests python build.py                                        release zip in dist/ python build.py --publish                              sign it into the update repo python build.py --init-trust                           create the signing keys, once
+```bash python -m scaffold                                    the window python -m scaffold --structure in.mcstructure --pack_name Name    CLI python -m unittest discover -s tests -t .              tests python build.py                                        release zip in dist/ python build.py --publish                              sign it into the update repo python build.py --unpublish 1.2.3                      take the newest release back off python build.py --init-trust                           create the signing keys, once
 
 python -m tools.generate                               every generator, in order python -m tools.generate --list                        what that runs, and when python -m tools.generate blocks                        only the block tables
 python -m tools.blocks.names --report                  what a block list still cannot name

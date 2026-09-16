@@ -128,12 +128,15 @@ class ReaderTests(unittest.TestCase):
         cls.reader = structure_reader.StructureFile(STRUCTURE)
         cls.entities = cls.reader.get_entities()
 
-    def test_it_finds_every_entity_not_only_the_drawn_ones(self):
-        # the dropped items are read and passed over later, not filtered here:
-        # a reader's job is to say what is in the file
-        kinds = {e["id"] for e in self.entities}
-        self.assertIn("minecraft:cushion", kinds)
-        self.assertIn("minecraft:item", kinds)
+    def test_it_reads_whatever_is_there_and_filters_nothing(self):
+        # a reader's job is to say what is in the file; what Scaffold can draw
+        # is decided later, against ENTITY_MODELS
+        self.assertTrue(self.entities)
+        self.assertIn("minecraft:cushion", {e["id"] for e in self.entities})
+        for entity in self.entities:
+            self.assertIn("at", entity)
+            self.assertIn("lift", entity)
+            self.assertIn("yaw", entity)
 
     def test_every_entity_lands_inside_the_structure(self):
         size = list(self.reader.get_size())
@@ -151,12 +154,24 @@ class ReaderTests(unittest.TestCase):
             self.assertEqual(len(entity["at"]), 3)
             self.assertTrue(all(isinstance(n, int) for n in entity["at"]))
 
-    def test_the_sixteen_cushions_are_sixteen_colours_in_a_row(self):
-        cushions = [e for e in self.entities if e["id"] == "minecraft:cushion"]
-        self.assertEqual(len(cushions), 16)
+    def test_every_colour_of_cushion_is_there_and_in_equal_number(self):
+        import collections
         model = core.ENTITY_MODELS["minecraft:cushion"]
-        forms = {core.entity_form(e, model) for e in cushions}
-        self.assertEqual(forms, set(model["forms"]))
+        cushions = [e for e in self.entities if e["id"] == "minecraft:cushion"]
+        seen = collections.Counter(core.entity_form(e, model) for e in cushions)
+        self.assertEqual(set(seen), set(model["forms"]))
+        self.assertEqual(len(set(seen.values())), 1,
+                         "the colours are not in equal number: %s" % dict(seen))
+
+    def test_a_cushion_on_a_thin_block_shares_its_cell_and_stands_on_it(self):
+        # a snow layer is two pixels tall, so a cushion on one is an eighth of
+        # a block up in the *same* cell. The lift is what keeps the two ghosts
+        # out of each other; dropping it stacked them.
+        lifted = [e for e in self.entities if e.get("lift")]
+        self.assertTrue(lifted, "no entity stands part way up a cell")
+        for entity in lifted:
+            self.assertGreater(entity["lift"], 0.0)
+            self.assertLess(entity["lift"], 1.0)
 
     def test_an_entity_outside_the_box_is_left_out(self):
         # not clamped to the edge: it is not part of what was captured, and a
@@ -215,6 +230,19 @@ class DrawingTests(unittest.TestCase):
             seen.add(named)
         self.assertEqual(len(seen), 16)
 
+    def test_a_lift_raises_the_block_inside_its_own_cell(self):
+        # what keeps a cushion on top of a snow layer rather than inside it:
+        # the two share a cell, and only the lift separates them
+        flat = self.cubes("cushion", data="red")[0][0][1]
+        for lift in (0.125, 0.5, 0.875):
+            raised = self.cubes("cushion", data="red", lift=lift)[0][0][1]
+            self.assertAlmostEqual(raised - flat, lift, places=6)
+
+    def test_a_block_with_no_lift_is_where_it_always_was(self):
+        # every block goes through the same call, so the default has to leave
+        # the thousand families that never ask for one exactly where they were
+        self.assertEqual(self.cubes("stone"), self.cubes("stone", lift=0.0))
+
     def test_a_family_drawn_for_an_entity_needs_no_blocks_json_entry(self):
         # a cushion is not a block, so Mojang's pack does not declare one and
         # never will; the family names all six faces outright instead
@@ -250,10 +278,16 @@ class BuildTests(unittest.TestCase):
         shutil.rmtree(cls.work, ignore_errors=True)
 
     def test_the_entities_are_counted_with_the_blocks(self):
+        # every cushion in the file reaches the list, whatever it is standing on
+        from scaffold.pack import structure_reader as reader
+        placed = [e for e in reader.StructureFile(
+            os.path.abspath(STRUCTURE)).get_entities()
+            if e["id"] == "minecraft:cushion"]
         cushions = {k: v for k, v in self.counts.items()
                     if str(k).startswith("minecraft:cushion")}
-        self.assertEqual(len(cushions), 16)
-        self.assertEqual(sum(cushions.values()), 16)
+        self.assertEqual(len(cushions),
+                         len(core.ENTITY_MODELS["minecraft:cushion"]["forms"]))
+        self.assertEqual(sum(cushions.values()), len(placed))
 
     def test_an_entity_is_counted_under_its_own_form(self):
         # one line a colour, because sixteen cushions of one colour and one
@@ -275,9 +309,12 @@ class BuildTests(unittest.TestCase):
         grouped = dict(block_list.grouped(self.counts))
         self.assertIn("Entities", grouped)
         named = dict(grouped["Entities"])
-        self.assertEqual(named.get("White Cushion"), 1)
-        self.assertEqual(named.get("Light Gray Cushion"), 1)
-        self.assertEqual(len(named), 16)
+        self.assertEqual(len(named),
+                         len(core.ENTITY_MODELS["minecraft:cushion"]["forms"]))
+        self.assertIn("White Cushion", named)
+        self.assertIn("Light Gray Cushion", named)
+        ## one line a colour, and the same number of each
+        self.assertEqual(len(set(named.values())), 1)
 
     def test_entities_are_the_only_thing_under_that_heading(self):
         drawn = {model["block"] for model in core.ENTITY_MODELS.values()}

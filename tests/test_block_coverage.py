@@ -828,7 +828,7 @@ class MountingTests(unittest.TestCase):
             named = [n for n in self.geo.uv_map if "~" in n]
             self.assertEqual(len(named), 1, "the water does not carry a colour")
             row = self.geo.uv_map[named[0]]
-            seen[colour] = list(self.geo.uv_array[row * 16 + 4][4][:3])
+            seen[colour] = list(self.geo.tile(row)[4][4][:3])
         self.assertNotEqual(seen[0xFF3030], seen[0x3030FF],
                             "two dyes came out the same colour")
         self.assertGreater(seen[0xFF3030][0], seen[0xFF3030][2])
@@ -1406,9 +1406,9 @@ class MountingTests(unittest.TestCase):
         # backward and to the sides, the shaded interior on the one face that
         # looks into a compartment
         cube = max(cubes, key=lambda one: one["origin"][1])
-        # a face's v runs from the top of the tile it reads, so the whole part
-        # of it names the tile and the fraction is the window within it
-        tiles = {face: int(cube["uv"][face]["uv"][1])
+        # a uv corner names a tile in the sheet and the fraction is the window
+        # within it; the sheet is a grid, so both halves of the corner count
+        tiles = {face: asgc.atlas_index(*cube["uv"][face]["uv"])
                  for face in ("north", "south", "east", "west", "up", "down")}
         self.assertNotEqual(tiles["north"], tiles["south"],
                             "the back of a shelf is not its front")
@@ -1682,14 +1682,14 @@ class TurnedTileTests(unittest.TestCase):
 
         geo.uv_array = None
         geo.extend_uv_image(source, (0, 0), None, 0)
-        straight = geo.uv_array[:16, :16, :3].copy()
+        straight = geo.tile(0)[:, :, :3].copy()
 
         ## the mark is read clockwise and rot90 turns the other way
         for degrees, quarters in ((90, -1), (180, 2), (270, 1)):
             geo.uv_array = None
             geo.extend_uv_image(source, (0, 0), None, degrees)
             self.assertTrue(
-                array_equal(geo.uv_array[:16, :16, :3],
+                array_equal(geo.tile(0)[:, :, :3],
                             rot90(straight, quarters)),
                 "a %d turn is not the straight tile turned" % degrees)
 

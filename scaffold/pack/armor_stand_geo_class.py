@@ -58,6 +58,39 @@ TINT_WANTED = TINT_MARK + "tint"
 TURN_MARK = "^"
 TURNS = (0, 90, 180, 270)
 
+## **How wide the texture atlas is, in tiles.** Every texture a pack uses
+## becomes one 16x16 tile, and the atlas was a single column of them: sixteen
+## pixels wide and sixteen times as tall as the pack has textures. A structure
+## with a thousand distinct blocks in it therefore shipped a texture some
+## twenty-five thousand pixels tall, which is past what a GPU will hold -- the
+## common ceiling is 16384 on a desktop and 4096 on a phone, and a texture over
+## it is not clamped or scaled, it fails.
+##
+## Sixty-four tiles to a row makes the sheet 1024 wide and a sixty-fourth as
+## tall, so the same pack is 1024 by 400. The number is arbitrary beyond being
+## a power of two and wide enough that nothing realistic grows tall again.
+##
+## The UV a cube carries is in *tile* units -- `texture_width` and
+## `texture_height` are the tile counts, not pixels -- so a tile at index `i`
+## sits at u `i % ATLAS_COLUMNS`, v `i // ATLAS_COLUMNS`, and a face's own
+## offset and size are fractions added on top, exactly as before.
+ATLAS_COLUMNS = 64
+
+
+def atlas_place(index):
+    """Where the tile at this index sits in the sheet, in tile units."""
+    return index % ATLAS_COLUMNS, index // ATLAS_COLUMNS
+
+
+def atlas_rows(count):
+    """How many rows of tiles a sheet holding `count` textures needs."""
+    return -(-count // ATLAS_COLUMNS)
+
+
+def atlas_index(across, down):
+    """The tile index a uv corner names. The inverse of `atlas_place`."""
+    return int(down) * ATLAS_COLUMNS + int(across)
+
 
 def split_turn(texture):
     """A texture's name, and how far clockwise its tile is turned."""
@@ -163,7 +196,7 @@ class ArmorStandGeo:
         self.bones = []
         self.errors={}
         self.layers=[]
-        self.uv_array = None
+        self.uv_tiles = []
         self.pre_gen_blocks={}
         self.excluded = EXCLUDED_BLOCKS
 
@@ -171,8 +204,9 @@ class ArmorStandGeo:
         start = time.time()
         ## This exporter just packs up the armorstand json files and dumps them where it should go. as well as exports the UV file
         self.add_blocks_to_bones()
-        self.geometry["description"]["texture_height"] = len(
-            self.uv_map.keys())
+        self.geometry["description"]["texture_width"] = ATLAS_COLUMNS
+        self.geometry["description"]["texture_height"] = atlas_rows(
+            len(self.uv_map))
         self.stand["minecraft:geometry"] = [self.geometry] ## this is insuring the geometries are imported, there is an implied reference other places.
         path_to_geo = "{}/models/entity/armor_stand.ghost_blocks_{}.geo.json".format(
             pack_folder,self.name)
@@ -233,8 +267,9 @@ class ArmorStandGeo:
             geometries[layer_name] = {}
             geometries[layer_name]["description"] = {}
             geometries[layer_name]["description"]["identifier"] = "geometry.armor_stand.ghost_blocks_{}".format(i)
-            geometries[layer_name]["description"]["texture_width"] = 1
-            geometries[layer_name]["description"]["texture_height"] = len(self.uv_map.keys())
+            geometries[layer_name]["description"]["texture_width"] = ATLAS_COLUMNS
+            geometries[layer_name]["description"]["texture_height"] = atlas_rows(
+                len(self.uv_map))
             geometries[layer_name]["description"]["visible_bounds_width"] = 5120
             geometries[layer_name]["description"]["visible_bounds_height"] = 5120
             geometries[layer_name]["description"]["visible_bounds_offset"] = [0, 1.5, 0]
@@ -287,10 +322,16 @@ class ArmorStandGeo:
         self.geometry["bones"].append(
             {"name": layer_name, "parent": "ghost_blocks"})#, "pivot": [-8, 0, 8]})
 
-    def make_block(self, x, y, z, block_name, rot=None, top=False,data=0, trap_open=False, parent=None,variant="default", big = False, hinge=False, tint=None):
+    def make_block(self, x, y, z, block_name, rot=None, top=False,data=0, trap_open=False, parent=None,variant="default", big = False, hinge=False, tint=None,
+                   lift=0.0):
         # Resolves one block through the lookup tables and appends its cubes to
         # the slice bone: shape family, then variant, then rotation, then the
         # UV window each face reads from the texture sheet.
+        ##
+        ## `lift` raises the whole block inside its own cell, in blocks. A block
+        ## never needs it -- a block fills the cell it is in -- but an entity is
+        ## not on the grid and can stand part way up one: a cushion on a snow
+        ## layer is an eighth of a block above the floor of the cell they share.
         block_type = self.simplify(self.defs[block_name])
         if block_type!="ignore":
             slice_name = "slice_{}".format(y)
@@ -408,7 +449,7 @@ class ArmorStandGeo:
                     xoff = block_shapes["offsets"][i][0]
                     yoff = block_shapes["offsets"][i][1]
                     zoff = block_shapes["offsets"][i][2]
-                block["origin"] = [-1*(x + self.offsets[0]) + xoff, y + yoff + self.offsets[1], z + zoff + self.offsets[2]]
+                block["origin"] = [-1*(x + self.offsets[0]) + xoff, y + yoff + lift + self.offsets[1], z + zoff + self.offsets[2]]
                 block["size"] = block_shapes["size"][i]
 
                 if "rotation" in block_shapes.keys():
@@ -526,12 +567,46 @@ class ArmorStandGeo:
                     self.blocks[newChildGroup["name"]] = newChildGroup
             
 
+    @property
+    def uv_array(self):
+        """The whole sheet, assembled from the tiles collected so far.
+
+        Built on demand rather than grown a tile at a time: the old version
+        reallocated the entire array on every append, which is quadratic in the
+        number of textures and was a measurable part of a large pack's build.
+        """
+        if not self.uv_tiles:
+            return None
+        rows = atlas_rows(len(self.uv_tiles))
+        sheet = zeros([rows * 16, ATLAS_COLUMNS * 16, 4], uint8)
+        for index, tile in enumerate(self.uv_tiles):
+            across, down = atlas_place(index)
+            sheet[down * 16:down * 16 + 16,
+                  across * 16:across * 16 + 16, :] = tile
+        return sheet
+
+    @uv_array.setter
+    def uv_array(self, value):
+        ## only ever set to None, to empty the sheet between blocks
+        if value is not None:
+            raise ValueError("the sheet is built from uv_tiles")
+        self.uv_tiles = []
+
+    def tile(self, index):
+        """One 16x16 tile, by the index uv_map gave it.
+
+        The way to read a tile without knowing how the sheet is laid out, which
+        is what everything checking a texture wants.
+        """
+        return self.uv_tiles[index]
+
     def save_uv(self, name):
         # writes the assembled UV sheet to the given path
-        if self.uv_array is None:
+        sheet = self.uv_array
+        if sheet is None:
             print("No Blocks Were found")
         else:
-            im = Image.fromarray(self.uv_array)
+            im = Image.fromarray(sheet)
             im.save(name)
 
     def stand_init(self):
@@ -539,7 +614,7 @@ class ArmorStandGeo:
         self.stand["format_version"] = "1.16.0"
         self.geometry["description"] = {
             "identifier": "geometry.armor_stand.ghost_blocks_{}".format(self.name)}
-        self.geometry["description"]["texture_width"] = 1
+        self.geometry["description"]["texture_width"] = ATLAS_COLUMNS
         self.geometry["description"]["visible_bounds_offset"] = [
             0.0, 1.5, 0.0]
         # Changed render distance of the block geometry
@@ -600,16 +675,7 @@ class ArmorStandGeo:
             ## the count is negated. The tile is square, so it stays 16x16.
             image_array = ascontiguousarray(rot90(image_array, -turn // 90))
         image_array[:, :, 3] = image_array[:, :, 3] * self.alpha
-        if type(self.uv_array) is type(None):
-            self.uv_array = image_array
-        else:
-            startshape = list(self.uv_array.shape)
-            endshape = startshape.copy()
-            endshape[0] += image_array.shape[0]
-            temp_new = zeros(endshape, uint8)
-            temp_new[0:startshape[0], :, :] = self.uv_array
-            temp_new[startshape[0]:, :, :] = image_array
-            self.uv_array = temp_new
+        self.uv_tiles.append(image_array)
 
     def block_name_to_uv(self, block_name, variant = "",shape_variant="default",index=0,data=0,tint=None):
         
@@ -672,8 +738,8 @@ class ArmorStandGeo:
                         self.uv_map[texture_files[key]] = len(self.uv_map.keys())
                     except Exception as e:
                         raise RuntimeError("Failed to load texture {}".format(texture_files[key]))
-                temp_uv[key] = {
-                    "uv": [0, self.uv_map[texture_files[key]]], "uv_size": [1, 1]}
+                across, down = atlas_place(self.uv_map[texture_files[key]])
+                temp_uv[key] = {"uv": [across, down], "uv_size": [1, 1]}
 
         return temp_uv
 
