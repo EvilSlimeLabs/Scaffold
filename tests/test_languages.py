@@ -72,7 +72,9 @@ class SpecialLanguageTests(unittest.TestCase):
 
     ## Two proper names and the three axis letters, which stay as they are, and
     ## the key that describes the language rather than labels anything.
-    LEFT_ALONE = {"title", "techpack", "axis x", "axis y", "axis z"}
+    ## "OK" is the same word in a pirate's mouth as in anyone else's, and the
+    ## transforms are word substitutions: there is nothing in it to change
+    LEFT_ALONE = {"title", "techpack", "axis x", "axis y", "axis z", "ok"}
     LEFT_ALONE |= set(lang_parse.META)
 
     def test_each_one_says_something_different_from_english(self):
@@ -141,6 +143,48 @@ class RealLanguageTests(unittest.TestCase):
             self.assertEqual(set(table[code]), english)
             blank = [k for k, v in table[code].items() if not v]
             self.assertEqual(blank, [], "%s has untranslated rows" % code)
+
+
+class FontCoverageTests(unittest.TestCase):
+    """A translation the bundled face cannot draw comes out as boxes.
+
+    The Chinese face is a subset: `tools/app/fonts.py` cuts Noto Sans SC down
+    to the characters the .lang files actually use, which is 250 KB rather than
+    17 MB. Adding Chinese without re-running it -- with `--noto` pointing at a
+    full Noto Sans SC -- leaves the new characters out of the font, and nothing
+    else would ever say so. The window would show boxes and the test suite
+    would be perfectly happy.
+
+    This is the check that the font follows the translation. It must never be
+    answered by bending the Chinese to fit the font: the subset is generated
+    and the translation is not.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            from fontTools.ttLib import TTFont
+        except ImportError:
+            raise unittest.SkipTest("fontTools is not installed")
+        from scaffold.ui import ui_fonts
+
+        cls.covered = set(TTFont(ui_fonts.path(
+            "NotoSansSC-Scaffold.ttf")).getBestCmap())
+
+    def test_every_chinese_character_is_in_the_subset(self):
+        table = lang_parse.parse()
+        for code, strings in table.items():
+            ## only the languages the CJK face is chosen for; the rest are
+            ## drawn in Source Sans Pro
+            if lang_parse.language_of(code) != "zh":
+                continue
+            missing = sorted({c for value in strings.values()
+                              for c in value if ord(c) not in self.covered})
+            self.assertEqual(
+                missing, [],
+                "%s uses %d characters the subset font does not carry. "
+                "Re-run: python -m tools.app.fonts --noto <full NotoSansSC>"
+                % (code, len(missing)))
 
 
 class DesktopLocaleTests(unittest.TestCase):

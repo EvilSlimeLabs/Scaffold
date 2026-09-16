@@ -694,7 +694,7 @@ TRIPWIRE_HOOKS["default"] = TRIPWIRE_HOOKS["0-0"]
 # `cauldron_liquid` says water, lava or powder snow, and `fill_level` how much,
 # so the two joined name the form: `water-3`, `powder_snow-6`. Dyed water is
 # `water` with a whole RGB in the block entity rather than a liquid of its own,
-# so `core.ENTITY_TINTS` reads that colour, the form becomes `dyed`, and its
+# so `core.BLOCK_ENTITY_TINTS` reads that colour, the form becomes `dyed`, and its
 # liquid asks for a tint. Scaffold builds the pack, so the tile is multiplied
 # by the colour on its way into the atlas and every dye in a structure lands
 # there as a tile of its own.

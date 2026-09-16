@@ -22,9 +22,13 @@ def build(args):
     if args.offset:
         offset = [int(value) for value in args.offset.split(",")]
 
-    ## an explicit --output wins; otherwise the same folder the window uses, so
-    ## a pack built either way lands in the same place
-    folder = args.output or settings.output_dir()
+    ## **An explicit --output wins; otherwise the folder the command was run
+    ## in.** Not the window's output folder: a command line is expected to put
+    ## what it makes where it was invoked, the way every other build tool does,
+    ## and a script that builds a pack should not have to know where somebody's
+    ## Documents are. The window keeps its own remembered folder, which is what
+    ## somebody clicking a button expects instead.
+    folder = args.output or os.getcwd()
     os.makedirs(folder, exist_ok=True)
     target = os.path.join(folder, args.pack_name)
 

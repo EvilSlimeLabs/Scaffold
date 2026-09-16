@@ -50,6 +50,8 @@ def _words(text, table):
 # --- pirate ----------------------------------------------------------------
 
 PIRATE = {
+    "install": "stow", "installed": "stowed", "installing": "stowin'",
+    "could": "could nae", "not": "nay",
     ## the words the update notice brought in
     "check": "spy", "now": "this instant", "asking": "hailin'",
     "update": "refit", "updated": "refitted", "available": "to be had",
@@ -113,6 +115,8 @@ def pirate(text):
 # --- lolcat ----------------------------------------------------------------
 
 LOLCAT = {
+    "install": "put in", "installed": "putted in", "installing": "puttin in",
+    "could": "cud", "not": "no",
     ## the words the update notice brought in
     "check": "look", "now": "rite now", "asking": "askin",
     "update": "updaet", "updated": "updaeted", "available": "here",
@@ -173,6 +177,8 @@ def lolcat(text):
 # --- shakespearean ---------------------------------------------------------
 
 SHAKESPEARE = {
+    "install": "instate", "installed": "instated",
+    "installing": "instating", "could": "couldst", "not": "nay",
     ## the words the update notice brought in
     "check": "enquire", "now": "anon", "asking": "entreating",
     "date": "the hour",

@@ -271,7 +271,7 @@ BED_BACK = (16, 7, -16, BED_TALL)       # the same, the other way round
 
 ## A bed's colour is in the block entity, not in its states, and there is one
 ## set of tiles per colour: `tools/textures/beds.py` recolours the red
-## tiles the pack ships. `core.ENTITY_ADDS` joins the colour to the half, so a
+## tiles the pack ships. `core.BLOCK_ENTITY_ADDS` joins the colour to the half, so a
 ## variant is named `<head_piece_bit>-<colour>`.
 BED_COLOURS = ["white", "orange", "magenta", "light_blue", "yellow", "lime",
                "pink", "gray", "silver", "cyan", "purple", "blue", "brown",

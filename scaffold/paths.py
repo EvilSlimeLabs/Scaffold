@@ -140,6 +140,34 @@ def documents():
     return candidate if os.path.isdir(candidate) else home
 
 
+## Where the Bedrock launcher keeps loose resource packs, under %APPDATA%.
+## A pack dropped in here as a folder is offered in the game's pack list
+## without being imported, which is the whole point: a build can be tried
+## without leaving the program.
+##
+## **Only this one path, and only when it is there.** Minecraft Bedrock has
+## been installed half a dozen ways over the years -- the UWP package keeps its
+## own copy under LocalState, Preview keeps another -- and guessing wrongly
+## would write a pack somewhere nothing reads. The folder either exists or the
+## offer is not made.
+BEDROCK_PACKS = ("Minecraft Bedrock", "Users", "Shared", "games",
+                 "com.mojang", "resource_packs")
+
+
+def bedrock_packs():
+    """Minecraft's own resource pack folder, or None if it is not there.
+
+    Windows only: the path is an %APPDATA% one and no other platform has it.
+    """
+    if not sys.platform.startswith("win"):
+        return None
+    base = os.environ.get("APPDATA")
+    if not base:
+        return None
+    found = os.path.join(base, *BEDROCK_PACKS)
+    return found if os.path.isdir(found) else None
+
+
 def default_output_dir():
     """Where finished packs go unless the user picks somewhere else."""
     return os.path.join(documents(), "Scaffold Builds")

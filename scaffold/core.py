@@ -21,13 +21,26 @@ from scaffold import block_list
 from scaffold import version
 debug=False
 
+## **A block entity is not an entity, and the two are read from different
+## places.** Everything named BLOCK_ENTITY_* below describes a *block entity*:
+## extra NBT hanging off a block that is already in the palette, kept in
+## `structure.palette.default.block_position_data` and keyed by the cell. The
+## block was always going to be drawn; the block entity only says which way. A
+## banner's colour, a bed's dye, a copper golem's pose, a cauldron's RGB, a
+## flower pot's plant and a skull's facing all work like that, and none of them
+## ever needed a pipeline of its own because none of them was ever missing.
+##
+## ENTITY_MODELS, further down, is the other thing entirely: a whole entity in
+## `structure.entities`, with a world position of its own and nothing in
+## `block_indices` to mark it. A cushion is the only one of those so far.
+
 ## Which field of a block entity names the form its block takes. A block entity
 ## carries a great deal that has nothing to do with how a block looks, such as a
 ## chest's contents or a sign's text, so only the fields named here are read.
-ENTITY_SHAPES = {"CopperGolemStatue": "Pose", "Banner": "Base"}
+BLOCK_ENTITY_SHAPES = {"CopperGolemStatue": "Pose", "Banner": "Base"}
 
 ## Which field of a block entity names a form outright, in place of the one its
-## `ENTITY_SHAPES` field chose. An ominous banner is not a colour: it is a
+## `BLOCK_ENTITY_SHAPES` field chose. An ominous banner is not a colour: it is a
 ## banner the game draws from a sheet of its own, and `Type` is what says so. A
 ## banner carrying `Patterns` is the same case from the other end, because a
 ## ghost block cannot composite six patterns and their colours as a pack is
@@ -35,27 +48,27 @@ ENTITY_SHAPES = {"CopperGolemStatue": "Pose", "Banner": "Base"}
 ##
 ## A field mapped to a dict is read for its value; one mapped to a string only
 ## has to be there and say something. The first that answers wins.
-ENTITY_INSTEAD = {"Banner": (("Type", {"1": "illager"}),
+BLOCK_ENTITY_INSTEAD = {"Banner": (("Type", {"1": "illager"}),
                              ("Patterns", "designed"))}
 
 ## Which field of a block entity names something that goes *with* the block's
 ## own shape state rather than instead of it. A bed keeps its colour beside the
 ## block and which half it is in its states, and the shape wants both, so the
 ## two are joined the way two shape states are.
-ENTITY_ADDS = {"Bed": "color"}
+BLOCK_ENTITY_ADDS = {"Bed": "color"}
 
 ## Which field of a block entity holds a colour of its own rather than one of a
 ## list. A dyed cauldron keeps a whole RGB, which no lookup table could carry a
 ## texture for, so the colour is handed to the geometry builder and the tile is
 ## tinted as the pack is built.
-ENTITY_TINTS = {"Cauldron": "CustomColor"}
+BLOCK_ENTITY_TINTS = {"Cauldron": "CustomColor"}
 
 ## Which field of a block entity holds another whole block. A flower pot keeps
 ## whatever is planted in it beside the block rather than in its states, as a
 ## block with a name and states of its own, so the plant is drawn as a second
 ## block in the same place and by its own family. That is what makes every
 ## pottable plant work without a variant apiece.
-ENTITY_HOLDS = {"FlowerPot": "PlantBlock"}
+BLOCK_ENTITY_HOLDS = {"FlowerPot": "PlantBlock"}
 
 ## Which field turns its block, for the blocks whose states do not say. A head
 ## standing on the floor can face any of sixteen ways and keeps that in the
@@ -63,7 +76,7 @@ ENTITY_HOLDS = {"FlowerPot": "PlantBlock"}
 ## the six faces it is fixed to. The number beside the field is the facing that
 ## means "standing on the floor", because a head on a wall is turned by the wall
 ## it is on and the entity reads zero.
-ENTITY_ROTATIONS = {"Skull": ("Rotation", 1)}
+BLOCK_ENTITY_ROTATIONS = {"Skull": ("Rotation", 1)}
 
 ## a head turns in sixteen steps, the same as a sign
 SPIN_STEP = 22.5
@@ -127,6 +140,71 @@ def entity_form(entity, model):
         return model.get("fallback") or "default"
 
 PACK_SUFFIX = ".mcpack"
+
+
+class AlreadyInstalled(Exception):
+    """A pack of this exact name and content is already in Minecraft's folder.
+
+    Carries the folder, so the window can say which one rather than making the
+    user go and look.
+    """
+
+    def __init__(self, folder):
+        self.folder = folder
+        Exception.__init__(self, folder)
+
+
+def install_name(made):
+    """The folder a finished pack installs as.
+
+    `Scaffold<version>_<hash>`: the version says what built it and the hash
+    says which pack it is. The hash is the first half of the pack's own header
+    UUID, which `manifest.pack_uuids` already derives from the fingerprint --
+    so two builds of the same structures with the same settings install as the
+    same folder, and any change at all installs as a different one. Twenty-odd
+    characters, plain ASCII, no spaces: a folder name Minecraft and every
+    filesystem will take.
+    """
+    import zipfile
+
+    with zipfile.ZipFile(made) as archive:
+        header = json.loads(archive.read("manifest.json"))["header"]
+    digest = str(header["uuid"]).replace("-", "")[:12]
+    return "Scaffoldv%s_%s" % (version.read(), digest)
+
+
+def install_pack(made, into=None):
+    """Unpack a finished .mcpack into Minecraft's resource pack folder.
+
+    A .mcpack is a zip and Minecraft reads a loose pack as a folder, so this is
+    an extraction and nothing more.
+
+    **An existing folder is never written into.** The name carries the pack's
+    own hash, so a folder that is already there holds this very pack -- there
+    is nothing to update and overwriting it would only risk half-replacing a
+    pack the game may have open. It raises `AlreadyInstalled` instead, and the
+    window turns that into a message with nowhere to go but OK.
+    """
+    import zipfile
+
+    into = into or paths.bedrock_packs()
+    if not into:
+        raise OSError("Minecraft's resource pack folder is not on this machine")
+    target = os.path.join(into, install_name(made))
+    if os.path.exists(target):
+        raise AlreadyInstalled(target)
+    ## into a temporary name first, so an extraction that fails part way
+    ## through does not leave a half a pack for the game to find
+    staging = target + ".part"
+    shutil.rmtree(staging, ignore_errors=True)
+    try:
+        with zipfile.ZipFile(made) as archive:
+            archive.extractall(staging)
+        os.replace(staging, target)
+    except Exception:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
+    return target
 
 
 def pack_file(target):
@@ -430,7 +508,7 @@ class Scaffold:
         it has.
         """
         drawn = [(block, entity)]
-        held = ENTITY_HOLDS.get(str(entity.get("id","")) if entity else "")
+        held = BLOCK_ENTITY_HOLDS.get(str(entity.get("id","")) if entity else "")
         if held is not None and held in entity:
             inside = entity[held]
             name = inside.get("name") if hasattr(inside,"get") else None
@@ -704,16 +782,16 @@ class Scaffold:
         ## of the pose a statue was placed in, of a banner's colour, and of the
         ## way a head standing on the floor is turned
         if entity:
-            marker = ENTITY_SHAPES.get(str(entity.get("id","")))
+            marker = BLOCK_ENTITY_SHAPES.get(str(entity.get("id","")))
             if marker is not None and marker in entity:
                 data = _plain(entity[marker])
-            joined = ENTITY_ADDS.get(str(entity.get("id","")))
+            joined = BLOCK_ENTITY_ADDS.get(str(entity.get("id","")))
             if joined is not None and joined in entity:
                 data = "{}-{}".format(data, _plain(entity[joined]))
             ## and a field that names a form outright replaces whatever the
             ## one above chose. A banner that is ominous or carries patterns is
             ## not any of the sixteen dyes.
-            for marker, named in ENTITY_INSTEAD.get(
+            for marker, named in BLOCK_ENTITY_INSTEAD.get(
                     str(entity.get("id", "")), ()):
                 if marker not in entity:
                     continue
@@ -733,12 +811,12 @@ class Scaffold:
             ## a tint, and the colour itself is handed on: Scaffold builds the
             ## pack, so the tile is tinted on the way into the atlas and every
             ## colour in a structure lands there as a tile of its own.
-            marker = ENTITY_TINTS.get(str(entity.get("id","")))
+            marker = BLOCK_ENTITY_TINTS.get(str(entity.get("id","")))
             if marker is not None and marker in entity:
                 tint = int(entity[marker])
                 if str(data).startswith("water-"):
                     data = "dyed" + str(data)[len("water"):]
-            spin = ENTITY_ROTATIONS.get(str(entity.get("id","")))
+            spin = BLOCK_ENTITY_ROTATIONS.get(str(entity.get("id","")))
             if spin is not None and spin[0] in entity and rot == spin[1]:
                 try:
                     ## named apart from the facings, which are numbers too: a

@@ -27,7 +27,7 @@ def parse(argv=None):
     parser.add_argument("--icon", type=str, help="Icon for pack")
     parser.add_argument("--output", type=str,
                         help="Folder to write the pack into (default: the "
-                             "Scaffold Builds folder in your documents)")
+                             "folder you ran the command in)")
     parser.add_argument("--offset", type=str, help="X, Y, Z")
     parser.add_argument("--overwrite", action="store_true",
                         help="Overwrite the output file.")

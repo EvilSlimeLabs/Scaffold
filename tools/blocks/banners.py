@@ -133,7 +133,7 @@ CLOTH_WIDE = CLOTH_TALL / 2.0
 CLOTH_INSET = (16 - CLOTH_WIDE) / 2.0
 CLOTH_DEEP = 1              # a banner is a pixel thick, and vanilla draws it so
 
-## The colour is in the block entity, as `Base`, and `core.ENTITY_SHAPES` hands
+## The colour is in the block entity, as `Base`, and `core.BLOCK_ENTITY_SHAPES` hands
 ## it over as the form to draw. Each form names the sheet
 ## `tools/textures/banners.py` dyed for that colour, because the game tints
 ## one white sheet at run time and a ghost block cannot tint.
@@ -149,7 +149,7 @@ BANNER_COLOURS = ["white", "orange", "magenta", "light_blue", "yellow", "lime",
 ## The two banners that are not a dye at all. An ominous banner has a sheet of
 ## its own in the vanilla pack and a banner carrying patterns gets a stand-in,
 ## since a ghost block cannot composite six patterns and their colours as a pack
-## is built. `core.ENTITY_INSTEAD` is what names these forms.
+## is built. `core.BLOCK_ENTITY_INSTEAD` is what names these forms.
 BANNER_MARKED = ("illager", "designed")
 
 ## **Which sheet a marked banner takes its edges from.** An edge is plain cloth

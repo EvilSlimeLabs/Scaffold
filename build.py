@@ -35,6 +35,7 @@ the compiled program can read it back.
 """
 import argparse
 import hashlib
+import io
 import os
 import re
 import shutil
@@ -840,12 +841,65 @@ def unpublish(release_version):
     return 0
 
 
+CHANGELOG = os.path.join(ROOT, "CHANGELOG.md")
+
+## how much of a section is worth putting in a dialog. A release note is a
+## paragraph, not a document; anything longer is a sign it belongs on the
+## release page, and the dialog would have to scroll.
+NOTES_LIMIT = 700
+
+
+def release_notes(release_version, path=CHANGELOG):
+    """What CHANGELOG.md says about this version, or an empty string.
+
+    The file is read for a heading that names the version -- `## 1.2.3`, with
+    or without a date after it -- and everything up to the next heading is the
+    note. Missing file, missing section and empty section all answer the same
+    way, because a release with nothing to say is not a reason to stop a
+    publish.
+    """
+    if not os.path.isfile(path):
+        return ""
+    wanted = re.compile(r"^#{1,6}\s*v?" + re.escape(release_version) + r"\b")
+    heading = re.compile(r"^#{1,6}\s")
+    lines, taking = [], False
+    with io.open(path, encoding="utf-8") as handle:
+        for line in handle:
+            if taking and heading.match(line):
+                break
+            if wanted.match(line):
+                taking = True
+                continue
+            if taking:
+                lines.append(line.rstrip())
+    note = "\n".join(lines).strip()
+    if len(note) > NOTES_LIMIT:
+        note = note[:NOTES_LIMIT].rsplit(" ", 1)[0] + "..."
+    return note
+
+
 def publish(exe, release_version):
-    """Sign this build into the update repository, and push both branches."""
-    repo = repository()
-    repo.initialize()
+    """Sign this build into the update repository, and push both branches.
+
+    **Not `initialize()`**, for the reason `load_repository` gives: it offers
+    to overwrite each signing key, four prompts deep, every single release.
+    `ready_to_publish` has already refused if the keys or the metadata are
+    missing, so there was never anything here for it to create -- only four
+    chances to destroy a key that every installed copy of Scaffold trusts.
+    Making a repository is what `--init-trust` is for.
+    """
+    repo = load_repository()
     print("\n>> signing %s into the update repository" % release_version)
-    repo.add_bundle(new_bundle_dir=bundle(exe), new_version=release_version)
+    ## **The notes are signed with the release, not published beside it.** A
+    ## dialog that says what an update contains is a dialog somebody decides
+    ## from, so the words have to be as trustworthy as the archive. Signed into
+    ## the targets metadata they are covered by the same keys as everything
+    ## else; fetched from anywhere else they would be whatever the server said.
+    notes = release_notes(release_version)
+    print("   release notes: %s" % ("%d characters" % len(notes) if notes
+                                    else "none in CHANGELOG.md"))
+    repo.add_bundle(new_bundle_dir=bundle(exe), new_version=release_version,
+                    custom_metadata={"notes": notes} if notes else None)
     repo.publish_changes(private_key_dirs=[KEYS_DIR])
     publish_root(repo)
     pages_scaffolding()

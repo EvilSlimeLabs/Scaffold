@@ -180,14 +180,14 @@ one palette entry for all of them, and the pose is in
 (x outermost).
 
 `structure_reader.get_block_entity(x, y, z)` reads it and
-`scaffold.core.ENTITY_SHAPES` says which field of which block entity names the
+`scaffold.core.BLOCK_ENTITY_SHAPES` says which field of which block entity names the
 shape. Add to that mapping to support another one. A block entity carries a
 great deal that has nothing to do with how a block looks, so only the named
 fields are read.
 
 **A block entity may hold another whole block.** What is planted in a flower pot
 is kept beside the block as `PlantBlock`, a compound with a name and states of
-its own, and nothing about it is in the pot's states. `core.ENTITY_HOLDS` names
+its own, and nothing about it is in the pot's states. `core.BLOCK_ENTITY_HOLDS` names
 that field, and `core.Scaffold._drawn_at` turns one position into the pot plus
 the plant, so the plant is drawn where the pot is and by whatever family it
 belongs to. That is what makes every pottable plant work without a variant
@@ -264,7 +264,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   plant's back and should never be used.
 - **A bed is drawn in its colour, and the colour is a second set of tiles.**
   It is in the block entity, as `color`, and which half the block is is in its
-  states, so `core.ENTITY_ADDS` joins the two and a variant is named
+  states, so `core.BLOCK_ENTITY_ADDS` joins the two and a variant is named
   `<head_piece_bit>-<colour>`. That is the one field of a block entity that goes
   *with* a shape state rather than instead of it. The game holds a model per
   colour rather than tinting anything, so `tools/textures/beds.py` recolours
@@ -293,7 +293,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   block a banner reads as half a banner, which is what it did.
 - **A head standing on the floor turns with its block entity.** The states say
   only which of the six faces it is fixed to; the sixteen steps round are the
-  `Rotation` field, which `core.ENTITY_ROTATIONS` reads and hands over as
+  `Rotation` field, which `core.BLOCK_ENTITY_ROTATIONS` reads and hands over as
   `spinN`, named apart from the facings because those are numbers too.
   **That numbering starts half a turn from the block convention.** A block at
   rest faces south and a skull whose `Rotation` is zero faces north, so
@@ -697,7 +697,7 @@ tile fits, which is what `make_block_forms.on_sheet` does and what
 dye is an RGB in its block entity, not one of a list, so no lookup table could
 name a texture for it and a ghost block cannot tint as it draws. Scaffold is a
 build step, though: a texture written `<name>~tint` in a table has the block's
-own colour put in its place, `core.ENTITY_TINTS` says which field of which block
+own colour put in its place, `core.BLOCK_ENTITY_TINTS` says which field of which block
 entity carries one, and `extend_uv_image` multiplies the tile by it on the way
 into the atlas. The atlas is keyed by the whole name, so every distinct dye in a
 structure lands there once. A block that asks for a tint and has none reads the
@@ -857,11 +857,23 @@ all the machinery that was already there.
 
 Four things are worth knowing.
 
-**A position is a float, and a cell is what is left of it.**
+**A position is a float, and the fraction is kept.**
 `structure_reader.get_entities` subtracts `structure_world_origin` from `Pos`
-and drops the fraction. An entity standing outside the recorded box is left out
-rather than clamped to the edge, because it was not part of what was captured
-and a mark on the wrong cell is worse than no mark.
+for the cell, and hands back what is left over as `lift`. That matters more
+than it sounds: a snow layer is two pixels tall, so a cushion resting on one
+stands an eighth of a block above the floor of *the cell the snow is in*, and
+rounding that away draws the two ghosts inside each other. `make_block` takes
+a `lift` that raises a block within its own cell -- a block never needs one,
+because a block fills the cell it is in. An entity standing outside the
+recorded box is left out rather than clamped to the edge, because it was not
+part of what was captured and a mark on the wrong cell is worse than no mark.
+
+**A big build carries them too.** `CombinedStructures` embeds each structure at
+its own corner and then flips the whole grid along x and along z, so an entity
+has to travel exactly that path or it lands somewhere its own building is not;
+`_combined_cell` is the one place that knows. The yaw is deliberately *not*
+turned with it, because a block's rotation state is not either, and an entity
+turned where a block is not would face the wrong way in the same model.
 
 **A yaw is a float too.** An entity is not placed on a grid of facings the way a
 block is; it carries a `Rotation` that can be anything. `core.entity_turn`

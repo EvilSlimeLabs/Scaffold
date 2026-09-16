@@ -200,13 +200,34 @@ def available():
     does not want to hear that an update check timed out, and the check runs on
     every launch.
     """
+    found = offered()
+    return found[0] if found else None
+
+
+def offered():
+    """The newer release as `(version, notes)`, or None.
+
+    The notes are whatever `build.py --publish` read out of CHANGELOG.md and
+    signed into the target's custom metadata, so they are covered by the same
+    keys as the archive itself. A release published without any is an empty
+    string, not a missing one: the dialog then says only that a newer version
+    is out, which is what it always said.
+    """
     if not ready():
         return None
     try:
         found = client().check_for_updates(pre=channel())
     except Exception:
         return None
-    return str(found.version) if found else None
+    if not found:
+        return None
+    try:
+        notes = str((found.custom or {}).get("notes") or "")
+    except Exception:
+        ## a target whose custom metadata is not a mapping says nothing rather
+        ## than stopping an update that is otherwise perfectly good
+        notes = ""
+    return str(found.version), notes
 
 
 def install_latest(restart=True, report=None):

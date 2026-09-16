@@ -193,6 +193,8 @@ class CombinedStructures:
             self.structs[file]["blocks"] = self.structs[file]["blocks"]+len(self.palette)
             self.structs[file]["blocks"][self.structs[file]["blocks"]==index_of_air+len(self.palette)]=0
             
+            self.structs[file]["entities"] = (
+                self.structs[file]["nbt"]["structure"].get("entities") or [])
             self.palette += self.structs[file]["palette"]
         self.size = self.maxs-self.mins
         self.blocks = zeros(self.size, int)
@@ -200,6 +202,61 @@ class CombinedStructures:
             embed(self.structs[file]["blocks"],self.blocks,self.structs[file]["mins"]-self.mins)
         self.blocks = flip(self.blocks,0)
         self.blocks = flip(self.blocks,2)
+    def get_entities(self):
+        """Every entity in every structure, in the combined grid's own cells.
+
+        **The same move the blocks make.** Each structure is embedded at its
+        own corner and then the whole grid is flipped along x and along z, so
+        an entity has to travel exactly that path or it lands somewhere its
+        own building is not. The flip is applied here rather than reasoned
+        about: `_combined_cell` is the one place that knows, and the blocks and
+        the entities both go through it.
+
+        **The yaw is not touched.** Flipping both x and z is a half turn about
+        y, so it is tempting to turn every entity with it -- but a block's
+        rotation state is handed to `make_block` unchanged in a big build too,
+        and whatever the flip is compensating for it compensates for both. An
+        entity turned here and a block not turned would face different ways in
+        the same model, which is the one thing that must not happen.
+
+        A big build had no entities at all before this, the way it still has no
+        block entities.
+        """
+        found = []
+        for file in self.structs:
+            info = self.structs[file]
+            corner = info["mins"] - self.mins
+            for entity in info["entities"]:
+                name = str(entity.get("identifier", ""))
+                place = entity.get("Pos")
+                if not name or place is None or len(place) < 3:
+                    continue
+                exact = [float(place[i]) - int(info["mins"][i]) + int(corner[i])
+                         for i in range(3)]
+                at, lift = self._combined_cell(exact)
+                if at is None:
+                    continue
+                spin = entity.get("Rotation") or ()
+                yaw = float(spin[0]) if len(spin) else 0.0
+                found.append({"id": name, "at": at, "lift": lift,
+                              "yaw": yaw, "fields": dict(entity)})
+        return found
+
+    def _combined_cell(self, exact):
+        """A position in the assembled grid, as the cell and the lift.
+
+        `exact` is already offset to the assembled grid but not yet flipped.
+        Returns (None, 0.0) for anything outside it.
+        """
+        at = [int(floor(n)) for n in exact]
+        if any(n < 0 or n >= int(self.size[i]) for i, n in enumerate(at)):
+            return None, 0.0
+        lift = exact[1] - at[1]
+        ## the two flips the blocks get, so a cushion lands on its own building
+        at[0] = int(self.size[0]) - 1 - at[0]
+        at[2] = int(self.size[2]) - 1 - at[2]
+        return tuple(at), lift
+
     def get_layer_blocks(self,y):
         lb=self.blocks[:,y,:]
         return argwhere(lb > 0)

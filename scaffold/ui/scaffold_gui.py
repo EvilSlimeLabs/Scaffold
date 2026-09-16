@@ -638,7 +638,8 @@ class Field(ctk.CTkFrame):
 
         self.entry = ctk.CTkEntry(self, textvariable=textvariable,
                                   border_width=0, fg_color="transparent",
-                                  text_color=TEXT, height=height - 4)
+                                  font=font(), text_color=TEXT,
+                                  height=height - 4)
         ## Stretched to the row rather than centred in it. A CTkEntry paints the
         ## colour it finds behind it across its whole rectangle, and centring one
         ## that is shorter than the row splits the leftover unevenly, leaving a
@@ -785,12 +786,15 @@ class StructureRow(ctk.CTkFrame):
 class ResultDialog(ctk.CTkToplevel):
     """What happened, once the pack is written."""
 
-    def __init__(self, app, title, lines, folder, reveal=None):
+    def __init__(self, app, title, lines, folder, reveal=None, pack=None):
         super().__init__(app)
         self.app = app
         self.folder = folder
         ## the file to point at once the folder opens, if there is one
         self.reveal = reveal
+        ## the finished .mcpack, if this dialog is reporting one. Only a build
+        ## that produced a pack can offer to put it in the game.
+        self.pack = pack
         self.title(title)
         self.resizable(False, False)
         self.configure(fg_color=SURFACE)
@@ -802,20 +806,34 @@ class ResultDialog(ctk.CTkToplevel):
                                            padx=20, pady=(18, 4))
         for i, line in enumerate(lines, start=1):
             ctk.CTkLabel(self, text=line, text_color=MUTED, justify="left",
-                         anchor="w", wraplength=420).grid(
+                         font=font(), anchor="w", wraplength=420).grid(
                 row=i, column=0, sticky="ew", padx=20, pady=1)
 
         buttons = ctk.CTkFrame(self, fg_color="transparent")
         buttons.grid(row=len(lines) + 1, column=0, sticky="e", padx=16, pady=(14, 16))
+        ## **Offered here rather than decided beforehand.** Whether a pack
+        ## belongs in the game is a thing to decide once it exists and you can
+        ## see what it says it built. Windows only, and only when Minecraft's
+        ## own folder is really there; `paths.bedrock_packs` answers None
+        ## anywhere else.
+        if pack and sys.platform.startswith("win") and paths.bedrock_packs():
+            self.install_button = ctk.CTkButton(
+                buttons, text=app.text("install"), width=150, height=32,
+                corner_radius=8, font=font(), fg_color="transparent",
+                border_width=1, border_color=BORDER, text_color=TEXT,
+                hover_color=BORDER, command=self.install)
+            self.install_button.pack(side="left", padx=(0, 8))
         if folder:
             ctk.CTkButton(buttons, text=app.text("open folder"), width=130,
-                          height=32, corner_radius=8, fg_color="transparent",
+                          height=32, corner_radius=8, font=font(),
+                          fg_color="transparent",
                           border_width=1, border_color=BORDER, text_color=TEXT,
                           hover_color=BORDER, command=self.open_folder
                           ).pack(side="left", padx=(0, 8))
         ctk.CTkButton(buttons, text=app.text("close"), width=110, height=32,
-                      corner_radius=8, fg_color=AMBER, hover_color=AMBER_HOVER,
-                      text_color=ON_AMBER, command=self.destroy).pack(side="left")
+                      corner_radius=8, font=font(), fg_color=AMBER,
+                      hover_color=AMBER_HOVER, text_color=ON_AMBER,
+                      command=self.destroy).pack(side="left")
 
         ## transient ties the dialog to the window, so it can never end up
         ## behind it. A plain toplevel can.
@@ -830,6 +848,32 @@ class ResultDialog(ctk.CTkToplevel):
         self.attributes("-topmost", True)
         self.after(400, lambda: self.attributes("-topmost", False))
         self.focus_force()
+
+    def install(self):
+        """Put the pack in Minecraft's folder, and leave if it worked.
+
+        **The dialog closes on success and stays on failure.** A pack that is
+        now in the game has said everything it had to say, and leaving a modal
+        in front of somebody is one more thing for them to dismiss. A failure
+        is the opposite: the notice that explains it appears over this dialog,
+        and closing underneath it would take away the thing the notice is
+        about.
+        """
+        try:
+            where = core.install_pack(self.pack)
+        except core.AlreadyInstalled as exc:
+            NoticeDialog(self.app, self.app.text("install failed title"),
+                         os.linesep.join([self.app.text("install exists"),
+                                          exc.folder]))
+            return
+        except Exception as exc:
+            NoticeDialog(self.app, self.app.text("install failed title"),
+                         self.app.text("install error", exc))
+            return
+        self.app.set_status(
+            self.app.text("status installed", os.path.basename(where)),
+            sticky=True)
+        self.destroy()
 
     def open_folder(self):
         """Open the folder with the pack picked out in it, and stand down.
@@ -903,7 +947,7 @@ class QuestionDialog(ctk.CTkToplevel):
 
     def line(self, text, colour=MUTED):
         ctk.CTkLabel(self, text=text, text_color=colour, justify="left",
-                     anchor="w", wraplength=420).grid(
+                     font=font(), anchor="w", wraplength=420).grid(
             row=self.row, column=0, sticky="ew", padx=20, pady=1)
         self.row += 1
 
@@ -917,6 +961,7 @@ class QuestionDialog(ctk.CTkToplevel):
             last = index == len(choices) - 1
             ctk.CTkButton(
                 frame, text=label, width=120, height=32, corner_radius=8,
+                font=font(),
                 fg_color=AMBER if last else "transparent",
                 hover_color=AMBER_HOVER if last else BORDER,
                 text_color=ON_AMBER if last else TEXT,
@@ -995,6 +1040,24 @@ class OverwriteDialog(QuestionDialog):
         self.bind("<Return>", lambda _e: self.settle("rename"))
 
 
+class NoticeDialog(QuestionDialog):
+    """Something that went wrong and has only one way out.
+
+    A question with one answer: there is nothing here to decide, only to
+    acknowledge. `install_pack` refusing a folder that is already there is the
+    one that needs it -- the folder carries the pack's own hash, so it holds
+    this very pack, and there is nothing to overwrite it with.
+    """
+
+    def __init__(self, app, title, body):
+        super().__init__(app, title)
+        for line in str(body).splitlines() or [""]:
+            self.line(line)
+        self.buttons([(app.text("ok"), self.destroy)])
+        self.show()
+        self.bind("<Return>", lambda _e: self.destroy())
+
+
 class RetryDialog(QuestionDialog):
     """A file the build could not write. Answers True to try it again."""
 
@@ -1030,7 +1093,7 @@ class AboutDialog(ctk.CTkToplevel):
                      font=font(size=18, weight="bold"),
                      text_color=TEXT).grid(row=1, column=0, pady=(4, 0))
         ctk.CTkLabel(self, text=app.text("about body"), text_color=MUTED,
-                     wraplength=340, justify="center").grid(
+                     font=font(), wraplength=340, justify="center").grid(
             row=2, column=0, padx=22, pady=(6, 2))
         ctk.CTkLabel(self, text="%s: DrAv0011, FondUnicycle, RavinMaddHatter"
                                 % app.text("original authors"),
@@ -1074,12 +1137,14 @@ class AboutDialog(ctk.CTkToplevel):
         buttons = ctk.CTkFrame(self, fg_color="transparent")
         buttons.grid(row=5, column=0, pady=(8, 18))
         ctk.CTkButton(buttons, text=app.text("website"), width=120, height=32,
-                      corner_radius=8, fg_color="transparent", border_width=1,
+                      corner_radius=8, font=font(), fg_color="transparent",
+                      border_width=1,
                       border_color=BORDER, text_color=TEXT, hover_color=BORDER,
                       command=lambda: open_link(WEBSITE)).pack(side="left", padx=(0, 8))
         ctk.CTkButton(buttons, text=app.text("close"), width=110, height=32,
-                      corner_radius=8, fg_color=AMBER, hover_color=AMBER_HOVER,
-                      text_color=ON_AMBER, command=self.destroy).pack(side="left")
+                      corner_radius=8, font=font(), fg_color=AMBER,
+                      hover_color=AMBER_HOVER, text_color=ON_AMBER,
+                      command=self.destroy).pack(side="left")
 
         ## transient ties the dialog to the window, so it can never end up
         ## behind it. A plain toplevel can.
@@ -1100,7 +1165,7 @@ class AboutDialog(ctk.CTkToplevel):
         def ask():
             found = None
             try:
-                found = updates.available()
+                found = updates.offered()
             except Exception:
                 ## a check that fails is not a thing to interrupt anybody over
                 found = None
@@ -1108,13 +1173,16 @@ class AboutDialog(ctk.CTkToplevel):
 
         threading.Thread(target=ask, daemon=True).start()
 
-    def answered(self, tag):
+    def answered(self, found):
         if not self.winfo_exists():
             return
         self.update_button.configure(state="normal")
+        ## `offered` hands back the version and whatever the release says about
+        ## itself; a check that failed hands back nothing at all
+        tag, notes = found if found else (None, "")
         if tag:
             self.update_status.configure(text=self.app.text("update found", tag))
-            self.app.offer_update(tag)
+            self.app.offer_update(tag, notes)
         else:
             ## a build from a checkout lands here too, and is told the same
             ## thing: whether a newer version is out is all anyone asked
@@ -1131,7 +1199,7 @@ class AboutDialog(ctk.CTkToplevel):
 class UpdateDialog(ctk.CTkToplevel):
     """A newer build is out. Take it now, or not."""
 
-    def __init__(self, app, tag):
+    def __init__(self, app, tag, notes=""):
         super().__init__(app)
         self.app = app
         self.tag = tag
@@ -1144,23 +1212,31 @@ class UpdateDialog(ctk.CTkToplevel):
         ctk.CTkLabel(self, text=app.text("update found", tag),
                      font=font(size=15, weight="bold"), text_color=TEXT).grid(
             row=0, column=0, padx=34, pady=(22, 4))
-        self.detail = ctk.CTkLabel(self, text=app.text("update body"),
-                                   text_color=MUTED, wraplength=320,
-                                   justify="center")
+        ## **What the release says about itself, when it says anything.** The
+        ## notes are signed into the update metadata with the archive, so they
+        ## are as trustworthy as the download they describe. A release
+        ## published without any falls back to the general sentence, which is
+        ## all this dialog ever said before.
+        self.detail = ctk.CTkLabel(
+            self, text=notes or app.text("update body"), text_color=MUTED,
+            font=font(), wraplength=340,
+            justify="left" if notes else "center")
         self.detail.grid(row=1, column=0, padx=34, pady=(2, 12))
 
         self.buttons = ctk.CTkFrame(self, fg_color="transparent")
         self.buttons.grid(row=2, column=0, pady=(4, 20))
         self.later = ctk.CTkButton(
             self.buttons, text=app.text("not now"), width=120, height=32,
-            corner_radius=8, fg_color="transparent", border_width=1,
+            corner_radius=8, font=font(), fg_color="transparent",
+            border_width=1,
             border_color=BORDER, text_color=TEXT, hover_color=BORDER,
             command=self.destroy)
         self.later.pack(side="left", padx=(0, 8))
         self.take = ctk.CTkButton(
             self.buttons, text=app.text("update now"), width=120, height=32,
-            corner_radius=8, fg_color=AMBER, hover_color=AMBER_HOVER,
-            text_color=ON_AMBER, command=self.install)
+            corner_radius=8, font=font(), fg_color=AMBER,
+            hover_color=AMBER_HOVER, text_color=ON_AMBER,
+            command=self.install)
         self.take.pack(side="left")
 
         ## Hold the size the "available" state lays out at. The dialog is reused
@@ -1857,6 +1933,10 @@ class App(ctk.CTk):
         switches.grid(row=r, column=0, sticky="ew", padx=16, pady=(16, 0)); r += 1
         switches.grid_columnconfigure(0, weight=1)
 
+        ## **Offered only when Minecraft's own folder is on this machine.** The
+        ## path is a Windows one and belongs to one of the several ways Bedrock
+        ## has been installed over the years, so rather than guess, the switch
+        ## is simply not built when the folder is not there.
         self.switches = [
             self._switch(switches, 0, "bigbuild", self.big_build, self.on_big_build),
             self._switch(switches, 1, "lists", self.block_lists, None),
@@ -2201,15 +2281,15 @@ class App(ctk.CTk):
         """
         def ask():
             try:
-                found = updates.available()
+                found = updates.offered()
             except Exception:
                 found = None
             if found:
-                self.after(0, lambda: self.offer_update(found))
+                self.after(0, lambda: self.offer_update(*found))
 
         threading.Thread(target=ask, daemon=True).start()
 
-    def offer_update(self, tag):
+    def offer_update(self, tag, notes=""):
         """Put the choice in front of the person: take it now, or not."""
         ## remembered so the About dialog can say a release is out even after
         ## this prompt has been dismissed
@@ -2221,7 +2301,7 @@ class App(ctk.CTk):
                     return
             except Exception:
                 pass
-        self.update_dialog = UpdateDialog(self, tag)
+        self.update_dialog = UpdateDialog(self, tag, notes)
 
     def clear_all_structures(self):
         """Empty the list in one go rather than a row at a time."""
@@ -2768,7 +2848,7 @@ class App(ctk.CTk):
             lines.append(self.text("status skipped", count))
         ResultDialog(self, self.text("pack built"), lines,
                      os.path.dirname(os.path.abspath(path)) or ".",
-                     reveal=os.path.abspath(path))
+                     reveal=os.path.abspath(path), pack=path)
         self.revalidate()
 
 
