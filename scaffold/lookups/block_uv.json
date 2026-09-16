@@ -24716,5 +24716,909 @@
 				]
 			}
 		}
+	},
+	"shelf_mushroom": {
+		"0": {
+			"uv_sizes": {
+				"up": [[ 0.625, 0.4375 ], [ 0.375, 0.25 ]],
+				"down": [[ 0.625, 0.4375 ], [ 0.375, 0.25 ]],
+				"north": [[ 0.625, 0.125 ], [ 0.375, 0.0625 ]],
+				"south": [[ 0.625, 0.125 ], [ 0.375, 0.0625 ]],
+				"east": [[ 0.4375, 0.125 ], [ 0.25, 0.0625 ]],
+				"west": [[ 0.4375, 0.125 ], [ 0.25, 0.0625 ]]
+			},
+			"offset": {
+				"up": [[ 0.375, 0.5625 ], [ 0.625, 0.75 ]],
+				"down": [[ 0.375, 0.5625 ], [ 0.625, 0.625 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/shelf_mushroom_small#0,0^180",
+					"textures/blocks/shelf_mushroom_small#0,14^180"
+				],
+				"down": [
+					"textures/blocks/shelf_mushroom_small#0,7^180",
+					"textures/blocks/shelf_mushroom_small#0,16^180"
+				],
+				"north": [
+					"textures/blocks/shelf_mushroom_small#10,6",
+					"textures/blocks/shelf_mushroom_small#10,11"
+				],
+				"south": [
+					"textures/blocks/shelf_mushroom_small#10,4",
+					"textures/blocks/shelf_mushroom_small#10,10"
+				],
+				"east": [
+					"textures/blocks/shelf_mushroom_small#10,2",
+					"textures/blocks/shelf_mushroom_small#10,9"
+				],
+				"west": [
+					"textures/blocks/shelf_mushroom_small#10,0",
+					"textures/blocks/shelf_mushroom_small#10,8"
+				]
+			}
+		},
+		"1": {
+			"uv_sizes": {
+				"up": [[ 0.875, 0.625 ], [ 0.5, 0.375 ]],
+				"down": [[ 0.875, 0.625 ], [ 0.5, 0.375 ]],
+				"north": [[ 0.875, 0.1875 ], [ 0.5, 0.125 ]],
+				"south": [[ 0.875, 0.1875 ], [ 0.5, 0.125 ]],
+				"east": [[ 0.625, 0.1875 ], [ 0.375, 0.125 ]],
+				"west": [[ 0.625, 0.1875 ], [ 0.375, 0.125 ]]
+			},
+			"offset": {
+				"up": [[ 0.125, 0.375 ], [ 0.5, 0.375 ]],
+				"down": [[ 0.125, 0.375 ], [ 0.5, 0.0 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.0, 0.625 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.0, 0.5 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.0, 0.375 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/shelf_mushroom_large#0,0^180",
+					"textures/blocks/shelf_mushroom_large#0,16^180"
+				],
+				"down": [
+					"textures/blocks/shelf_mushroom_large#0,10^180",
+					"textures/blocks/shelf_mushroom_large#0,16^180"
+				],
+				"north": [
+					"textures/blocks/shelf_mushroom_large#14,9",
+					"textures/blocks/shelf_mushroom_large#8,16"
+				],
+				"south": [
+					"textures/blocks/shelf_mushroom_large#14,6",
+					"textures/blocks/shelf_mushroom_large#8,16"
+				],
+				"east": [
+					"textures/blocks/shelf_mushroom_large#14,3",
+					"textures/blocks/shelf_mushroom_large#8,16"
+				],
+				"west": [
+					"textures/blocks/shelf_mushroom_large#14,0",
+					"textures/blocks/shelf_mushroom_large#8,16"
+				]
+			}
+		},
+		"default": {
+			"uv_sizes": {
+				"up": [[ 0.625, 0.4375 ], [ 0.375, 0.25 ]],
+				"down": [[ 0.625, 0.4375 ], [ 0.375, 0.25 ]],
+				"north": [[ 0.625, 0.125 ], [ 0.375, 0.0625 ]],
+				"south": [[ 0.625, 0.125 ], [ 0.375, 0.0625 ]],
+				"east": [[ 0.4375, 0.125 ], [ 0.25, 0.0625 ]],
+				"west": [[ 0.4375, 0.125 ], [ 0.25, 0.0625 ]]
+			},
+			"offset": {
+				"up": [[ 0.375, 0.5625 ], [ 0.625, 0.75 ]],
+				"down": [[ 0.375, 0.5625 ], [ 0.625, 0.625 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/shelf_mushroom_small#0,0^180",
+					"textures/blocks/shelf_mushroom_small#0,14^180"
+				],
+				"down": [
+					"textures/blocks/shelf_mushroom_small#0,7^180",
+					"textures/blocks/shelf_mushroom_small#0,16^180"
+				],
+				"north": [
+					"textures/blocks/shelf_mushroom_small#10,6",
+					"textures/blocks/shelf_mushroom_small#10,11"
+				],
+				"south": [
+					"textures/blocks/shelf_mushroom_small#10,4",
+					"textures/blocks/shelf_mushroom_small#10,10"
+				],
+				"east": [
+					"textures/blocks/shelf_mushroom_small#10,2",
+					"textures/blocks/shelf_mushroom_small#10,9"
+				],
+				"west": [
+					"textures/blocks/shelf_mushroom_small#10,0",
+					"textures/blocks/shelf_mushroom_small#10,8"
+				]
+			}
+		}
+	},
+	"straw_bed": {
+		"0": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/straw_bed#16,25^270"
+				],
+				"down": [
+					"textures/blocks/straw_bed#32,25^270"
+				],
+				"north": [
+					"textures/blocks/straw_bed#0,41"
+				],
+				"south": [
+					"textures/blocks/straw_bed#32,41"
+				],
+				"east": [
+					"textures/blocks/straw_bed#16,41"
+				],
+				"west": [
+					"textures/blocks/straw_bed#16,41"
+				]
+			}
+		},
+		"1": {
+			"uv_sizes": {
+				"up": [[ 0.5, 1.0 ], [ 0.5, 1.0 ]],
+				"down": [[ 0.5, 1.0 ], [ 0.5, 1.0 ]],
+				"north": [[ 0.5, 0.25 ], [ 0.5, 0.3125 ]],
+				"south": [[ 0.5, 0.25 ], [ 0.5, 0.3125 ]],
+				"east": [[ 1.0, 0.25 ], [ 1.0, 0.3125 ]],
+				"west": [[ 1.0, 0.25 ], [ 1.0, 0.3125 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/straw_bed#8,13^270",
+					"textures/blocks/straw_bed#8,0^270"
+				],
+				"down": [
+					"textures/blocks/straw_bed#24,13^270",
+					"textures/blocks/straw_bed#24,0^270"
+				],
+				"north": [
+					"textures/blocks/straw_bed#0,21",
+					"textures/blocks/straw_bed#0,8"
+				],
+				"south": [
+					"textures/blocks/straw_bed#24,21",
+					"textures/blocks/straw_bed#24,8"
+				],
+				"east": [
+					"textures/blocks/straw_bed#16,41",
+					"textures/blocks/straw_bed#32,8"
+				],
+				"west": [
+					"textures/blocks/straw_bed#16,41",
+					"textures/blocks/straw_bed#8,8"
+				]
+			}
+		},
+		"default": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/straw_bed#16,25^270"
+				],
+				"down": [
+					"textures/blocks/straw_bed#32,25^270"
+				],
+				"north": [
+					"textures/blocks/straw_bed#0,41"
+				],
+				"south": [
+					"textures/blocks/straw_bed#32,41"
+				],
+				"east": [
+					"textures/blocks/straw_bed#16,41"
+				],
+				"west": [
+					"textures/blocks/straw_bed#16,41"
+				]
+			}
+		}
+	},
+	"cushion": {
+		"black": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/black_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/black_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/black_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/black_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/black_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/black_cushion#0,16"
+				]
+			}
+		},
+		"red": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/red_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/red_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/red_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/red_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/red_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/red_cushion#0,16"
+				]
+			}
+		},
+		"green": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/green_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/green_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/green_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/green_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/green_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/green_cushion#0,16"
+				]
+			}
+		},
+		"brown": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/brown_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/brown_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/brown_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/brown_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/brown_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/brown_cushion#0,16"
+				]
+			}
+		},
+		"blue": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/blue_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/blue_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/blue_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/blue_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/blue_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/blue_cushion#0,16"
+				]
+			}
+		},
+		"purple": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/purple_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/purple_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/purple_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/purple_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/purple_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/purple_cushion#0,16"
+				]
+			}
+		},
+		"cyan": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/cyan_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/cyan_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/cyan_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/cyan_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/cyan_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/cyan_cushion#0,16"
+				]
+			}
+		},
+		"light_gray": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/light_gray_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/light_gray_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/light_gray_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/light_gray_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/light_gray_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/light_gray_cushion#0,16"
+				]
+			}
+		},
+		"gray": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/gray_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/gray_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/gray_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/gray_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/gray_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/gray_cushion#0,16"
+				]
+			}
+		},
+		"pink": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/pink_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/pink_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/pink_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/pink_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/pink_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/pink_cushion#0,16"
+				]
+			}
+		},
+		"lime": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/lime_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/lime_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/lime_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/lime_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/lime_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/lime_cushion#0,16"
+				]
+			}
+		},
+		"yellow": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/yellow_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/yellow_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/yellow_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/yellow_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/yellow_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/yellow_cushion#0,16"
+				]
+			}
+		},
+		"light_blue": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/light_blue_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/light_blue_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/light_blue_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/light_blue_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/light_blue_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/light_blue_cushion#0,16"
+				]
+			}
+		},
+		"magenta": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/magenta_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/magenta_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/magenta_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/magenta_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/magenta_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/magenta_cushion#0,16"
+				]
+			}
+		},
+		"orange": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/orange_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/orange_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/orange_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/orange_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/orange_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/orange_cushion#0,16"
+				]
+			}
+		},
+		"white": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/white_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/white_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/white_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/white_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/white_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/white_cushion#0,16"
+				]
+			}
+		},
+		"default": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ]],
+				"north": [[ 1.0, 0.25 ]],
+				"south": [[ 1.0, 0.25 ]],
+				"east": [[ 1.0, 0.25 ]],
+				"west": [[ 1.0, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/entity/cushion/white_cushion#16,0"
+				],
+				"down": [
+					"textures/entity/cushion/white_cushion#32,0"
+				],
+				"north": [
+					"textures/entity/cushion/white_cushion#48,16"
+				],
+				"south": [
+					"textures/entity/cushion/white_cushion#16,16"
+				],
+				"east": [
+					"textures/entity/cushion/white_cushion#32,16"
+				],
+				"west": [
+					"textures/entity/cushion/white_cushion#0,16"
+				]
+			}
+		}
 	}
 }

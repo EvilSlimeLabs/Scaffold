@@ -2,7 +2,7 @@
 	"metadata": {
 		"version": "1.0.0",
 		"description": "Block names for Scaffold",
-		"MCVersion": "26.45"
+		"MCVersion": "26.50"
 	},
 	"names": {
 		"minecraft:raw_iron_block": {
@@ -1029,7 +1029,8 @@
 			"light_blue": "Light Blue Carpet",
 			"magenta": "Magenta Carpet",
 			"orange": "Orange Carpet",
-			"white": "White Carpet"
+			"white": "White Carpet",
+			"default": "Carpet"
 		},
 		"minecraft:black_wool": {
 			"default": "Black Wool"
@@ -1146,7 +1147,8 @@
 			"light_blue": "Blue Concrete Powder",
 			"magenta": "Magenta Concrete Powder",
 			"orange": "Orange Concrete Powder",
-			"white": "White Concrete Powder"
+			"white": "White Concrete Powder",
+			"default": "Concrete Powder"
 		},
 		"minecraft:black_concrete_powder": {
 			"default": "Black Concrete Powder"
@@ -1215,7 +1217,8 @@
 			"light_blue": "Light Blue Terracotta",
 			"magenta": "Magenta Terracotta",
 			"orange": "Orange Terracotta",
-			"white": "White Terracotta"
+			"white": "White Terracotta",
+			"default": "Terracotta"
 		},
 		"minecraft:black_terracotta": {
 			"default": "Black Terracotta"
@@ -1974,7 +1977,8 @@
 			"tulip_orange": "Orange Tulip",
 			"tulip_white": "White Tulip",
 			"tulip_pink": "Pink Tulip",
-			"oxeye": "Oxeye Daisy"
+			"oxeye": "Oxeye Daisy",
+			"default": "Flower"
 		},
 		"minecraft:bamboo_sapling": {
 			"default": "Bamboo"
@@ -1999,7 +2003,8 @@
 			"red_sandstone": "Red Sandstone Slab",
 			"mossy_cobblestone": "Mossy Cobblestone Slab",
 			"red_nether_brick": "Red Nether Brick Slab",
-			"purpur": "Purpur Slab"
+			"purpur": "Purpur Slab",
+			"default": "Stone Block Slab2"
 		},
 		"minecraft:cactus": {
 			"default": "Cactus"
@@ -2012,7 +2017,8 @@
 			"red_sandstone": "Red Sandstone",
 			"mossy_cobblestone": "Mossy Cobblestone",
 			"red_nether_brick": "Red Nether Brick",
-			"purpur": "Purpur"
+			"purpur": "Purpur",
+			"default": "Double Stone Block Slab2"
 		},
 		"minecraft:nether_wart": {
 			"default": "Nether Wart"
@@ -2046,14 +2052,16 @@
 			"granite": "Granite Slab",
 			"diorite": "Diorite Slab",
 			"andesite": "Andesite Slab",
-			"end_stone_brick": "End Stone Brick Slab"
+			"end_stone_brick": "End Stone Brick Slab",
+			"default": "Stone Block Slab3"
 		},
 		"minecraft:stone_block_slab4": {
 			"smooth_quartz": "Smooth Quartz Slab",
 			"cut_sandstone": "Cut Sandstone Slab",
 			"cut_red_sandstone": "Cut Red Sandstone Slab",
 			"stone": "Stone Slab",
-			"mossy_stone_brick": "Mossy Stone Brick Slab"
+			"mossy_stone_brick": "Mossy Stone Brick Slab",
+			"default": "Stone Block Slab4"
 		},
 		"minecraft:bubble_column": {
 			"default": "Water"
@@ -2066,7 +2074,8 @@
 			"granite": "Granite",
 			"diorite": "Diorite",
 			"andesite": "Andesite",
-			"end_stone_brick": "End Stone Brick"
+			"end_stone_brick": "End Stone Brick",
+			"default": "Double Stone Block Slab3"
 		},
 		"minecraft:dark_prismarine_stairs": {
 			"default": "Dark Prismarine Stairs"
@@ -2088,7 +2097,8 @@
 			"cut_sandstone": "Cut Sandstone",
 			"cut_red_sandstone": "Cut Red Sandstone",
 			"stone": "Stone",
-			"mossy_stone_brick": "Mossy Stone Bricks"
+			"mossy_stone_brick": "Mossy Stone Bricks",
+			"default": "Double Stone Block Slab4"
 		},
 		"minecraft:waxed_double_cut_copper_slab": {
 			"default": "Waxed Cut Copper"
@@ -2115,7 +2125,8 @@
 			"stone_brick": "Stonebrick Slab",
 			"brick": "Brick Slab",
 			"nether_brick": "Nether Brick Slab",
-			"smooth_stone": "Smooth Stone Slab"
+			"smooth_stone": "Smooth Stone Slab",
+			"default": "Stone Block Slab"
 		},
 		"minecraft:mycelium": {
 			"default": "Mycelium"
@@ -2139,7 +2150,8 @@
 			"stone_brick": "Stone Brick",
 			"brick": "Brick",
 			"nether_brick": "Nether Brick",
-			"smooth_stone": "Smooth Stone Double Slab"
+			"smooth_stone": "Smooth Stone Double Slab",
+			"default": "Double Stone Block Slab"
 		},
 		"minecraft:podzol": {
 			"default": "Podzol"
@@ -2561,7 +2573,8 @@
 			"red_nether_brick": "Red Nether Brick Wall",
 			"end_brick": "End Brick Wall",
 			"prismarine": "Prismarine Wall",
-			"mossy_stone_brick": "Mossy Stone Brick"
+			"mossy_stone_brick": "Mossy Stone Brick",
+			"default": "Cobblestone Wall"
 		},
 		"minecraft:blackstone_wall": {
 			"default": "Blackstone Wall"
@@ -3236,6 +3249,1512 @@
 			"acacia": "Acacia Log",
 			"dark_oak": "Dark Oak Log",
 			"default": "Acacia Log"
+		},
+		"minecraft:poplar_planks": {
+			"default": "Poplar Planks"
+		},
+		"minecraft:poplar_stairs": {
+			"default": "Poplar Stairs"
+		},
+		"minecraft:poplar_slab": {
+			"default": "Poplar Slab"
+		},
+		"minecraft:poplar_double_slab": {
+			"default": "Poplar Double Slab"
+		},
+		"minecraft:poplar_fence": {
+			"default": "Poplar Fence"
+		},
+		"minecraft:poplar_fence_gate": {
+			"default": "Poplar Fence Gate"
+		},
+		"minecraft:poplar_door": {
+			"default": "Poplar Door"
+		},
+		"minecraft:poplar_trapdoor": {
+			"default": "Poplar Trapdoor"
+		},
+		"minecraft:poplar_button": {
+			"default": "Poplar Button"
+		},
+		"minecraft:poplar_pressure_plate": {
+			"default": "Poplar Pressure Plate"
+		},
+		"minecraft:poplar_standing_sign": {
+			"default": "Poplar Sign"
+		},
+		"minecraft:poplar_wall_sign": {
+			"default": "Poplar Sign"
+		},
+		"minecraft:poplar_hanging_sign": {
+			"default": "Poplar Hanging Sign"
+		},
+		"minecraft:poplar_shelf": {
+			"default": "Poplar Shelf"
+		},
+		"minecraft:poplar_log": {
+			"default": "Poplar Log"
+		},
+		"minecraft:poplar_wood": {
+			"default": "Poplar Wood"
+		},
+		"minecraft:poplar_sapling": {
+			"default": "Poplar Sapling"
+		},
+		"minecraft:stripped_poplar_log": {
+			"default": "Stripped Poplar Log"
+		},
+		"minecraft:stripped_poplar_wood": {
+			"default": "Stripped Poplar Wood"
+		},
+		"minecraft:orange_poplar_leaves": {
+			"default": "Orange Poplar Leaves"
+		},
+		"minecraft:red_poplar_leaves": {
+			"default": "Red Poplar Leaves"
+		},
+		"minecraft:yellow_poplar_leaves": {
+			"default": "Yellow Poplar Leaves"
+		},
+		"minecraft:black_wool_slab": {
+			"default": "Black Wool Slab"
+		},
+		"minecraft:black_wool_double_slab": {
+			"default": "Black Wool Double Slab"
+		},
+		"minecraft:black_wool_stairs": {
+			"default": "Black Wool Stairs"
+		},
+		"minecraft:black_concrete_slab": {
+			"default": "Black Concrete Slab"
+		},
+		"minecraft:black_concrete_double_slab": {
+			"default": "Black Concrete Double Slab"
+		},
+		"minecraft:black_concrete_stairs": {
+			"default": "Black Concrete Stairs"
+		},
+		"minecraft:blue_wool_slab": {
+			"default": "Blue Wool Slab"
+		},
+		"minecraft:blue_wool_double_slab": {
+			"default": "Blue Wool Double Slab"
+		},
+		"minecraft:blue_wool_stairs": {
+			"default": "Blue Wool Stairs"
+		},
+		"minecraft:blue_concrete_slab": {
+			"default": "Blue Concrete Slab"
+		},
+		"minecraft:blue_concrete_double_slab": {
+			"default": "Blue Concrete Double Slab"
+		},
+		"minecraft:blue_concrete_stairs": {
+			"default": "Blue Concrete Stairs"
+		},
+		"minecraft:brown_wool_slab": {
+			"default": "Brown Wool Slab"
+		},
+		"minecraft:brown_wool_double_slab": {
+			"default": "Brown Wool Double Slab"
+		},
+		"minecraft:brown_wool_stairs": {
+			"default": "Brown Wool Stairs"
+		},
+		"minecraft:brown_concrete_slab": {
+			"default": "Brown Concrete Slab"
+		},
+		"minecraft:brown_concrete_double_slab": {
+			"default": "Brown Concrete Double Slab"
+		},
+		"minecraft:brown_concrete_stairs": {
+			"default": "Brown Concrete Stairs"
+		},
+		"minecraft:cyan_wool_slab": {
+			"default": "Cyan Wool Slab"
+		},
+		"minecraft:cyan_wool_double_slab": {
+			"default": "Cyan Wool Double Slab"
+		},
+		"minecraft:cyan_wool_stairs": {
+			"default": "Cyan Wool Stairs"
+		},
+		"minecraft:cyan_concrete_slab": {
+			"default": "Cyan Concrete Slab"
+		},
+		"minecraft:cyan_concrete_double_slab": {
+			"default": "Cyan Concrete Double Slab"
+		},
+		"minecraft:cyan_concrete_stairs": {
+			"default": "Cyan Concrete Stairs"
+		},
+		"minecraft:gray_wool_slab": {
+			"default": "Gray Wool Slab"
+		},
+		"minecraft:gray_wool_double_slab": {
+			"default": "Gray Wool Double Slab"
+		},
+		"minecraft:gray_wool_stairs": {
+			"default": "Gray Wool Stairs"
+		},
+		"minecraft:gray_concrete_slab": {
+			"default": "Gray Concrete Slab"
+		},
+		"minecraft:gray_concrete_double_slab": {
+			"default": "Gray Concrete Double Slab"
+		},
+		"minecraft:gray_concrete_stairs": {
+			"default": "Gray Concrete Stairs"
+		},
+		"minecraft:green_wool_slab": {
+			"default": "Green Wool Slab"
+		},
+		"minecraft:green_wool_double_slab": {
+			"default": "Green Wool Double Slab"
+		},
+		"minecraft:green_wool_stairs": {
+			"default": "Green Wool Stairs"
+		},
+		"minecraft:green_concrete_slab": {
+			"default": "Green Concrete Slab"
+		},
+		"minecraft:green_concrete_double_slab": {
+			"default": "Green Concrete Double Slab"
+		},
+		"minecraft:green_concrete_stairs": {
+			"default": "Green Concrete Stairs"
+		},
+		"minecraft:light_blue_wool_slab": {
+			"default": "Light Blue Wool Slab"
+		},
+		"minecraft:light_blue_wool_double_slab": {
+			"default": "Light Blue Wool Double Slab"
+		},
+		"minecraft:light_blue_wool_stairs": {
+			"default": "Light Blue Wool Stairs"
+		},
+		"minecraft:light_blue_concrete_slab": {
+			"default": "Light Blue Concrete Slab"
+		},
+		"minecraft:light_blue_concrete_double_slab": {
+			"default": "Light Blue Concrete Double Slab"
+		},
+		"minecraft:light_blue_concrete_stairs": {
+			"default": "Light Blue Concrete Stairs"
+		},
+		"minecraft:light_gray_wool_slab": {
+			"default": "Light Gray Wool Slab"
+		},
+		"minecraft:light_gray_wool_double_slab": {
+			"default": "Light Gray Wool Double Slab"
+		},
+		"minecraft:light_gray_wool_stairs": {
+			"default": "Light Gray Wool Stairs"
+		},
+		"minecraft:light_gray_concrete_slab": {
+			"default": "Light Gray Concrete Slab"
+		},
+		"minecraft:light_gray_concrete_double_slab": {
+			"default": "Light Gray Concrete Double Slab"
+		},
+		"minecraft:light_gray_concrete_stairs": {
+			"default": "Light Gray Concrete Stairs"
+		},
+		"minecraft:lime_wool_slab": {
+			"default": "Lime Wool Slab"
+		},
+		"minecraft:lime_wool_double_slab": {
+			"default": "Lime Wool Double Slab"
+		},
+		"minecraft:lime_wool_stairs": {
+			"default": "Lime Wool Stairs"
+		},
+		"minecraft:lime_concrete_slab": {
+			"default": "Lime Concrete Slab"
+		},
+		"minecraft:lime_concrete_double_slab": {
+			"default": "Lime Concrete Double Slab"
+		},
+		"minecraft:lime_concrete_stairs": {
+			"default": "Lime Concrete Stairs"
+		},
+		"minecraft:magenta_wool_slab": {
+			"default": "Magenta Wool Slab"
+		},
+		"minecraft:magenta_wool_double_slab": {
+			"default": "Magenta Wool Double Slab"
+		},
+		"minecraft:magenta_wool_stairs": {
+			"default": "Magenta Wool Stairs"
+		},
+		"minecraft:magenta_concrete_slab": {
+			"default": "Magenta Concrete Slab"
+		},
+		"minecraft:magenta_concrete_double_slab": {
+			"default": "Magenta Concrete Double Slab"
+		},
+		"minecraft:magenta_concrete_stairs": {
+			"default": "Magenta Concrete Stairs"
+		},
+		"minecraft:orange_wool_slab": {
+			"default": "Orange Wool Slab"
+		},
+		"minecraft:orange_wool_double_slab": {
+			"default": "Orange Wool Double Slab"
+		},
+		"minecraft:orange_wool_stairs": {
+			"default": "Orange Wool Stairs"
+		},
+		"minecraft:orange_concrete_slab": {
+			"default": "Orange Concrete Slab"
+		},
+		"minecraft:orange_concrete_double_slab": {
+			"default": "Orange Concrete Double Slab"
+		},
+		"minecraft:orange_concrete_stairs": {
+			"default": "Orange Concrete Stairs"
+		},
+		"minecraft:pink_wool_slab": {
+			"default": "Pink Wool Slab"
+		},
+		"minecraft:pink_wool_double_slab": {
+			"default": "Pink Wool Double Slab"
+		},
+		"minecraft:pink_wool_stairs": {
+			"default": "Pink Wool Stairs"
+		},
+		"minecraft:pink_concrete_slab": {
+			"default": "Pink Concrete Slab"
+		},
+		"minecraft:pink_concrete_double_slab": {
+			"default": "Pink Concrete Double Slab"
+		},
+		"minecraft:pink_concrete_stairs": {
+			"default": "Pink Concrete Stairs"
+		},
+		"minecraft:purple_wool_slab": {
+			"default": "Purple Wool Slab"
+		},
+		"minecraft:purple_wool_double_slab": {
+			"default": "Purple Wool Double Slab"
+		},
+		"minecraft:purple_wool_stairs": {
+			"default": "Purple Wool Stairs"
+		},
+		"minecraft:purple_concrete_slab": {
+			"default": "Purple Concrete Slab"
+		},
+		"minecraft:purple_concrete_double_slab": {
+			"default": "Purple Concrete Double Slab"
+		},
+		"minecraft:purple_concrete_stairs": {
+			"default": "Purple Concrete Stairs"
+		},
+		"minecraft:red_wool_slab": {
+			"default": "Red Wool Slab"
+		},
+		"minecraft:red_wool_double_slab": {
+			"default": "Red Wool Double Slab"
+		},
+		"minecraft:red_wool_stairs": {
+			"default": "Red Wool Stairs"
+		},
+		"minecraft:red_concrete_slab": {
+			"default": "Red Concrete Slab"
+		},
+		"minecraft:red_concrete_double_slab": {
+			"default": "Red Concrete Double Slab"
+		},
+		"minecraft:red_concrete_stairs": {
+			"default": "Red Concrete Stairs"
+		},
+		"minecraft:white_wool_slab": {
+			"default": "White Wool Slab"
+		},
+		"minecraft:white_wool_double_slab": {
+			"default": "White Wool Double Slab"
+		},
+		"minecraft:white_wool_stairs": {
+			"default": "White Wool Stairs"
+		},
+		"minecraft:white_concrete_slab": {
+			"default": "White Concrete Slab"
+		},
+		"minecraft:white_concrete_double_slab": {
+			"default": "White Concrete Double Slab"
+		},
+		"minecraft:white_concrete_stairs": {
+			"default": "White Concrete Stairs"
+		},
+		"minecraft:yellow_wool_slab": {
+			"default": "Yellow Wool Slab"
+		},
+		"minecraft:yellow_wool_double_slab": {
+			"default": "Yellow Wool Double Slab"
+		},
+		"minecraft:yellow_wool_stairs": {
+			"default": "Yellow Wool Stairs"
+		},
+		"minecraft:yellow_concrete_slab": {
+			"default": "Yellow Concrete Slab"
+		},
+		"minecraft:yellow_concrete_double_slab": {
+			"default": "Yellow Concrete Double Slab"
+		},
+		"minecraft:yellow_concrete_stairs": {
+			"default": "Yellow Concrete Stairs"
+		},
+		"minecraft:straw_bed": {
+			"default": "Straw Bed"
+		},
+		"minecraft:shelf_mushroom": {
+			"default": "Shelf Mushroom"
+		},
+		"minecraft:red_shrub": {
+			"default": "Red Shrub"
+		},
+		"minecraft:acacia_shelf": {
+			"default": "Acacia Shelf"
+		},
+		"minecraft:andesite_wall": {
+			"default": "Andesite Wall"
+		},
+		"minecraft:bamboo_mosaic_double_slab": {
+			"default": "Bamboo Mosaic Double Slab"
+		},
+		"minecraft:bamboo_mosaic_slab": {
+			"default": "Bamboo Mosaic Slab"
+		},
+		"minecraft:bamboo_shelf": {
+			"default": "Bamboo Shelf"
+		},
+		"minecraft:birch_shelf": {
+			"default": "Birch Shelf"
+		},
+		"minecraft:black_candle_cake": {
+			"default": "Cake with Black Candle"
+		},
+		"minecraft:blackstone_stairs": {
+			"default": "Blackstone Stairs"
+		},
+		"minecraft:blue_candle": {
+			"default": "Blue Candle"
+		},
+		"minecraft:blue_candle_cake": {
+			"default": "Cake with Blue Candle"
+		},
+		"minecraft:border_block": {
+			"default": "Border"
+		},
+		"minecraft:brick_wall": {
+			"default": "Brick Wall"
+		},
+		"minecraft:brown_candle_cake": {
+			"default": "Cake with Brown Candle"
+		},
+		"minecraft:bush": {
+			"default": "Bush"
+		},
+		"minecraft:cactus_flower": {
+			"default": "Cactus Flower"
+		},
+		"minecraft:candle_cake": {
+			"default": "Cake with Candle"
+		},
+		"minecraft:cave_vines_body_with_berries": {
+			"default": "Cave Vines"
+		},
+		"minecraft:chemical_heat": {
+			"default": "Chemical Heat"
+		},
+		"minecraft:chemistry_table": {
+			"default": "Chemistry Table"
+		},
+		"minecraft:cherry_shelf": {
+			"default": "Cherry Shelf"
+		},
+		"minecraft:chiseled_cinnabar": {
+			"default": "Chiseled Cinnabar"
+		},
+		"minecraft:chiseled_copper": {
+			"default": "Chiseled Copper"
+		},
+		"minecraft:chiseled_stone_bricks": {
+			"default": "Chiseled Stone Bricks"
+		},
+		"minecraft:chiseled_sulfur": {
+			"default": "Chiseled Sulfur"
+		},
+		"minecraft:cinnabar": {
+			"default": "Cinnabar"
+		},
+		"minecraft:cinnabar_brick_double_slab": {
+			"default": "Cinnabar Brick Double Slab"
+		},
+		"minecraft:cinnabar_brick_slab": {
+			"default": "Cinnabar Brick Slab"
+		},
+		"minecraft:cinnabar_brick_stairs": {
+			"default": "Cinnabar Brick Stairs"
+		},
+		"minecraft:cinnabar_brick_wall": {
+			"default": "Cinnabar Brick Wall"
+		},
+		"minecraft:cinnabar_bricks": {
+			"default": "Cinnabar Bricks"
+		},
+		"minecraft:cinnabar_double_slab": {
+			"default": "Cinnabar Double Slab"
+		},
+		"minecraft:cinnabar_slab": {
+			"default": "Cinnabar Slab"
+		},
+		"minecraft:cinnabar_stairs": {
+			"default": "Cinnabar Stairs"
+		},
+		"minecraft:cinnabar_wall": {
+			"default": "Cinnabar Wall"
+		},
+		"minecraft:clay": {
+			"default": "Clay"
+		},
+		"minecraft:closed_eyeblossom": {
+			"default": "Closed Eyeblossom"
+		},
+		"minecraft:colored_torch_bp": {
+			"default": "Colored Torch Bp"
+		},
+		"minecraft:colored_torch_rg": {
+			"default": "Colored Torch Rg"
+		},
+		"minecraft:concrete": {
+			"black": "Black Concrete",
+			"red": "Red Concrete",
+			"green": "Green Concrete",
+			"brown": "Brown Concrete",
+			"blue": "Blue Concrete",
+			"purple": "Purple Concrete",
+			"cyan": "Cyan Concrete",
+			"silver": "Light Gray Concrete",
+			"gray": "Gray Concrete",
+			"pink": "Pink Concrete",
+			"lime": "Lime Concrete",
+			"yellow": "Yellow Concrete",
+			"lightBlue": "Light Blue Concrete",
+			"magenta": "Magenta Concrete",
+			"orange": "Orange Concrete",
+			"white": "White Concrete",
+			"default": "Concrete"
+		},
+		"minecraft:concretePowder": {
+			"black": "Black Concrete Powder",
+			"red": "Red Concrete Powder",
+			"green": "Green Concrete Powder",
+			"brown": "Brown Concrete Powder",
+			"blue": "Blue Concrete Powder",
+			"purple": "Purple Concrete Powder",
+			"cyan": "Cyan Concrete Powder",
+			"silver": "Light Gray Concrete Powder",
+			"gray": "Gray Concrete Powder",
+			"pink": "Pink Concrete Powder",
+			"lime": "Lime Concrete Powder",
+			"yellow": "Yellow Concrete Powder",
+			"lightBlue": "Light Blue Concrete Powder",
+			"magenta": "Magenta Concrete Powder",
+			"orange": "Orange Concrete Powder",
+			"white": "White Concrete Powder",
+			"default": "Concrete Powder"
+		},
+		"minecraft:copper_bars": {
+			"default": "Copper Bars"
+		},
+		"minecraft:copper_chain": {
+			"default": "Copper Chain"
+		},
+		"minecraft:copper_chest": {
+			"default": "Copper Chest"
+		},
+		"minecraft:copper_golem_statue": {
+			"default": "Copper Golem Statue"
+		},
+		"minecraft:copper_lantern": {
+			"default": "Copper Lantern"
+		},
+		"minecraft:copper_torch": {
+			"default": "Copper Torch"
+		},
+		"minecraft:coral_fan_pink_dead": {
+			"default": "Coral Fan Pink Dead"
+		},
+		"minecraft:coral_pink_dead": {
+			"default": "Coral Pink Dead"
+		},
+		"minecraft:cracked_polished_blackstone_bricks": {
+			"default": "Cracked Polished Blackstone Bricks"
+		},
+		"minecraft:cracked_stone_bricks": {
+			"default": "Cracked Stone Bricks"
+		},
+		"minecraft:creaking_heart": {
+			"default": "Creaking Heart"
+		},
+		"minecraft:creeper_head": {
+			"default": "Creeper Head"
+		},
+		"minecraft:crimson_shelf": {
+			"default": "Crimson Shelf"
+		},
+		"minecraft:cushion": {
+			"default": "Cushion",
+			"black": "Black Cushion",
+			"red": "Red Cushion",
+			"green": "Green Cushion",
+			"brown": "Brown Cushion",
+			"blue": "Blue Cushion",
+			"purple": "Purple Cushion",
+			"cyan": "Cyan Cushion",
+			"light_gray": "Light Gray Cushion",
+			"gray": "Gray Cushion",
+			"pink": "Pink Cushion",
+			"lime": "Lime Cushion",
+			"yellow": "Yellow Cushion",
+			"light_blue": "Light Blue Cushion",
+			"magenta": "Magenta Cushion",
+			"orange": "Orange Cushion",
+			"white": "White Cushion"
+		},
+		"minecraft:cyan_candle_cake": {
+			"default": "Cake with Cyan Candle"
+		},
+		"minecraft:dark_oak_shelf": {
+			"default": "Dark Oak Shelf"
+		},
+		"minecraft:darkoak_standing_sign": {
+			"default": "Dark Oak Sign"
+		},
+		"minecraft:deepslate": {
+			"default": "Deepslate"
+		},
+		"minecraft:deprecated_anvil": {
+			"default": "Deprecated Anvil"
+		},
+		"minecraft:deprecated_purpur_block_1": {
+			"default": "Deprecated Purpur Block 1"
+		},
+		"minecraft:deprecated_purpur_block_2": {
+			"default": "Deprecated Purpur Block 2"
+		},
+		"minecraft:diorite_wall": {
+			"default": "Diorite Wall"
+		},
+		"minecraft:double_stone_slab": {
+			"default": "Stone Slab"
+		},
+		"minecraft:double_stone_slab2": {
+			"red_sandstone": "Red Sandstone Slab",
+			"purpur": "Purpur Double Slab",
+			"prismarine.rough": "Prismarine DoubleSlab",
+			"prismarine.dark": "Dark Prismarine Double Slab",
+			"prismarine.bricks": "Prismarine Brick Double Slab",
+			"mossy_cobblestone": "Mossy Cobblestone Double Slab",
+			"red_nether_brick": "Red Nether Brick Double Slab",
+			"sandstone.smooth": "Smooth Sandstone Double Slab",
+			"default": "Double Stone Slab2"
+		},
+		"minecraft:double_stone_slab3": {
+			"end_brick": "End Stone Brick Double Slab",
+			"red_sandstone.smooth": "Smooth Red Sandstone Double Slab",
+			"andesite.smooth": "Polished Andesite Double Slab",
+			"andesite": "Andesite Double Slab",
+			"diorite": "Diorite Double Slab",
+			"diorite.smooth": "Polished Diorite Double Slab",
+			"granite": "Granite Double Slab",
+			"granite.smooth": "Polished Granite Double Slab",
+			"default": "Double Stone Slab3"
+		},
+		"minecraft:double_stone_slab4": {
+			"mossy_stone_brick": "Mossy Stone Brick Double Slab",
+			"smooth_quartz": "Smooth Quartz Double Slab",
+			"stone": "Stone Double Slab",
+			"cut_sandstone": "Cut Sandstone Double Slab",
+			"cut_red_sandstone": "Cut Red Sandstone Double Slab",
+			"default": "Double Stone Slab4"
+		},
+		"minecraft:dragon_head": {
+			"default": "Dragon Head"
+		},
+		"minecraft:dried_ghast": {
+			"default": "Dried Ghast"
+		},
+		"minecraft:element_0": {
+			"default": "Element 0"
+		},
+		"minecraft:element_1": {
+			"default": "Element 1"
+		},
+		"minecraft:element_10": {
+			"default": "Element 10"
+		},
+		"minecraft:element_100": {
+			"default": "Element 100"
+		},
+		"minecraft:element_101": {
+			"default": "Element 101"
+		},
+		"minecraft:element_102": {
+			"default": "Element 102"
+		},
+		"minecraft:element_103": {
+			"default": "Element 103"
+		},
+		"minecraft:element_104": {
+			"default": "Element 104"
+		},
+		"minecraft:element_105": {
+			"default": "Element 105"
+		},
+		"minecraft:element_106": {
+			"default": "Element 106"
+		},
+		"minecraft:element_107": {
+			"default": "Element 107"
+		},
+		"minecraft:element_108": {
+			"default": "Element 108"
+		},
+		"minecraft:element_109": {
+			"default": "Element 109"
+		},
+		"minecraft:element_11": {
+			"default": "Element 11"
+		},
+		"minecraft:element_110": {
+			"default": "Element 110"
+		},
+		"minecraft:element_111": {
+			"default": "Element 111"
+		},
+		"minecraft:element_112": {
+			"default": "Element 112"
+		},
+		"minecraft:element_113": {
+			"default": "Element 113"
+		},
+		"minecraft:element_114": {
+			"default": "Element 114"
+		},
+		"minecraft:element_115": {
+			"default": "Element 115"
+		},
+		"minecraft:element_116": {
+			"default": "Element 116"
+		},
+		"minecraft:element_117": {
+			"default": "Element 117"
+		},
+		"minecraft:element_118": {
+			"default": "Element 118"
+		},
+		"minecraft:element_12": {
+			"default": "Element 12"
+		},
+		"minecraft:element_13": {
+			"default": "Element 13"
+		},
+		"minecraft:element_14": {
+			"default": "Element 14"
+		},
+		"minecraft:element_15": {
+			"default": "Element 15"
+		},
+		"minecraft:element_16": {
+			"default": "Element 16"
+		},
+		"minecraft:element_17": {
+			"default": "Element 17"
+		},
+		"minecraft:element_18": {
+			"default": "Element 18"
+		},
+		"minecraft:element_19": {
+			"default": "Element 19"
+		},
+		"minecraft:element_2": {
+			"default": "Element 2"
+		},
+		"minecraft:element_20": {
+			"default": "Element 20"
+		},
+		"minecraft:element_21": {
+			"default": "Element 21"
+		},
+		"minecraft:element_22": {
+			"default": "Element 22"
+		},
+		"minecraft:element_23": {
+			"default": "Element 23"
+		},
+		"minecraft:element_24": {
+			"default": "Element 24"
+		},
+		"minecraft:element_25": {
+			"default": "Element 25"
+		},
+		"minecraft:element_26": {
+			"default": "Element 26"
+		},
+		"minecraft:element_27": {
+			"default": "Element 27"
+		},
+		"minecraft:element_28": {
+			"default": "Element 28"
+		},
+		"minecraft:element_29": {
+			"default": "Element 29"
+		},
+		"minecraft:element_3": {
+			"default": "Element 3"
+		},
+		"minecraft:element_30": {
+			"default": "Element 30"
+		},
+		"minecraft:element_31": {
+			"default": "Element 31"
+		},
+		"minecraft:element_32": {
+			"default": "Element 32"
+		},
+		"minecraft:element_33": {
+			"default": "Element 33"
+		},
+		"minecraft:element_34": {
+			"default": "Element 34"
+		},
+		"minecraft:element_35": {
+			"default": "Element 35"
+		},
+		"minecraft:element_36": {
+			"default": "Element 36"
+		},
+		"minecraft:element_37": {
+			"default": "Element 37"
+		},
+		"minecraft:element_38": {
+			"default": "Element 38"
+		},
+		"minecraft:element_39": {
+			"default": "Element 39"
+		},
+		"minecraft:element_4": {
+			"default": "Element 4"
+		},
+		"minecraft:element_40": {
+			"default": "Element 40"
+		},
+		"minecraft:element_41": {
+			"default": "Element 41"
+		},
+		"minecraft:element_42": {
+			"default": "Element 42"
+		},
+		"minecraft:element_43": {
+			"default": "Element 43"
+		},
+		"minecraft:element_44": {
+			"default": "Element 44"
+		},
+		"minecraft:element_45": {
+			"default": "Element 45"
+		},
+		"minecraft:element_46": {
+			"default": "Element 46"
+		},
+		"minecraft:element_47": {
+			"default": "Element 47"
+		},
+		"minecraft:element_48": {
+			"default": "Element 48"
+		},
+		"minecraft:element_49": {
+			"default": "Element 49"
+		},
+		"minecraft:element_5": {
+			"default": "Element 5"
+		},
+		"minecraft:element_50": {
+			"default": "Element 50"
+		},
+		"minecraft:element_51": {
+			"default": "Element 51"
+		},
+		"minecraft:element_52": {
+			"default": "Element 52"
+		},
+		"minecraft:element_53": {
+			"default": "Element 53"
+		},
+		"minecraft:element_54": {
+			"default": "Element 54"
+		},
+		"minecraft:element_55": {
+			"default": "Element 55"
+		},
+		"minecraft:element_56": {
+			"default": "Element 56"
+		},
+		"minecraft:element_57": {
+			"default": "Element 57"
+		},
+		"minecraft:element_58": {
+			"default": "Element 58"
+		},
+		"minecraft:element_59": {
+			"default": "Element 59"
+		},
+		"minecraft:element_6": {
+			"default": "Element 6"
+		},
+		"minecraft:element_60": {
+			"default": "Element 60"
+		},
+		"minecraft:element_61": {
+			"default": "Element 61"
+		},
+		"minecraft:element_62": {
+			"default": "Element 62"
+		},
+		"minecraft:element_63": {
+			"default": "Element 63"
+		},
+		"minecraft:element_64": {
+			"default": "Element 64"
+		},
+		"minecraft:element_65": {
+			"default": "Element 65"
+		},
+		"minecraft:element_66": {
+			"default": "Element 66"
+		},
+		"minecraft:element_67": {
+			"default": "Element 67"
+		},
+		"minecraft:element_68": {
+			"default": "Element 68"
+		},
+		"minecraft:element_69": {
+			"default": "Element 69"
+		},
+		"minecraft:element_7": {
+			"default": "Element 7"
+		},
+		"minecraft:element_70": {
+			"default": "Element 70"
+		},
+		"minecraft:element_71": {
+			"default": "Element 71"
+		},
+		"minecraft:element_72": {
+			"default": "Element 72"
+		},
+		"minecraft:element_73": {
+			"default": "Element 73"
+		},
+		"minecraft:element_74": {
+			"default": "Element 74"
+		},
+		"minecraft:element_75": {
+			"default": "Element 75"
+		},
+		"minecraft:element_76": {
+			"default": "Element 76"
+		},
+		"minecraft:element_77": {
+			"default": "Element 77"
+		},
+		"minecraft:element_78": {
+			"default": "Element 78"
+		},
+		"minecraft:element_79": {
+			"default": "Element 79"
+		},
+		"minecraft:element_8": {
+			"default": "Element 8"
+		},
+		"minecraft:element_80": {
+			"default": "Element 80"
+		},
+		"minecraft:element_81": {
+			"default": "Element 81"
+		},
+		"minecraft:element_82": {
+			"default": "Element 82"
+		},
+		"minecraft:element_83": {
+			"default": "Element 83"
+		},
+		"minecraft:element_84": {
+			"default": "Element 84"
+		},
+		"minecraft:element_85": {
+			"default": "Element 85"
+		},
+		"minecraft:element_86": {
+			"default": "Element 86"
+		},
+		"minecraft:element_87": {
+			"default": "Element 87"
+		},
+		"minecraft:element_88": {
+			"default": "Element 88"
+		},
+		"minecraft:element_89": {
+			"default": "Element 89"
+		},
+		"minecraft:element_9": {
+			"default": "Element 9"
+		},
+		"minecraft:element_90": {
+			"default": "Element 90"
+		},
+		"minecraft:element_91": {
+			"default": "Element 91"
+		},
+		"minecraft:element_92": {
+			"default": "Element 92"
+		},
+		"minecraft:element_93": {
+			"default": "Element 93"
+		},
+		"minecraft:element_94": {
+			"default": "Element 94"
+		},
+		"minecraft:element_95": {
+			"default": "Element 95"
+		},
+		"minecraft:element_96": {
+			"default": "Element 96"
+		},
+		"minecraft:element_97": {
+			"default": "Element 97"
+		},
+		"minecraft:element_98": {
+			"default": "Element 98"
+		},
+		"minecraft:element_99": {
+			"default": "Element 99"
+		},
+		"minecraft:end_gateway": {
+			"default": "End Gateway"
+		},
+		"minecraft:end_portal": {
+			"default": "End Portal"
+		},
+		"minecraft:end_stone_brick_wall": {
+			"default": "End Stone Brick Wall"
+		},
+		"minecraft:exposed_chiseled_copper": {
+			"default": "Exposed Chiseled Copper"
+		},
+		"minecraft:exposed_copper_bars": {
+			"default": "Exposed Copper Bars"
+		},
+		"minecraft:exposed_copper_chain": {
+			"default": "Exposed Copper Chain"
+		},
+		"minecraft:exposed_copper_chest": {
+			"default": "Exposed Copper Chest"
+		},
+		"minecraft:exposed_copper_golem_statue": {
+			"default": "Exposed Copper Golem Statue"
+		},
+		"minecraft:exposed_copper_lantern": {
+			"default": "Exposed Copper Lantern"
+		},
+		"minecraft:exposed_lightning_rod": {
+			"default": "Exposed Lightning Rod"
+		},
+		"minecraft:firefly_bush": {
+			"default": "Firefly Bush"
+		},
+		"minecraft:flowing_lava": {
+			"default": "Lava"
+		},
+		"minecraft:flowing_water": {
+			"default": "Water"
+		},
+		"minecraft:frog_spawn": {
+			"default": "Frogspawn"
+		},
+		"minecraft:frosted_ice": {
+			"default": "Frosted Ice"
+		},
+		"minecraft:glowingobsidian": {
+			"default": "Glowing Obsidian"
+		},
+		"minecraft:golden_dandelion": {
+			"default": "Golden Dandelion"
+		},
+		"minecraft:granite_wall": {
+			"default": "Granite Wall"
+		},
+		"minecraft:gray_candle_cake": {
+			"default": "Cake with Gray Candle"
+		},
+		"minecraft:gray_carpet": {
+			"default": "Gray Carpet"
+		},
+		"minecraft:green_candle_cake": {
+			"default": "Cake with Green Candle"
+		},
+		"minecraft:grindstone": {
+			"default": "Grindstone"
+		},
+		"minecraft:hanging_sign": {
+			"default": "Hanging Sign"
+		},
+		"minecraft:hard_glass": {
+			"default": "Hard Glass"
+		},
+		"minecraft:hard_glass_pane": {
+			"default": "Hard Glass Pane"
+		},
+		"minecraft:hard_stained_glass": {
+			"default": "Hard Stained Glass"
+		},
+		"minecraft:hard_stained_glass_pane": {
+			"default": "Hard Stained Glass Pane"
+		},
+		"minecraft:hardened_clay": {
+			"default": "Terracotta"
+		},
+		"minecraft:heavy_core": {
+			"default": "Heavy Core"
+		},
+		"minecraft:info_update": {
+			"default": "Info Update"
+		},
+		"minecraft:info_update2": {
+			"default": "Info Update2"
+		},
+		"minecraft:iron_chain": {
+			"default": "Iron Chain"
+		},
+		"minecraft:jungle_shelf": {
+			"default": "Jungle Shelf"
+		},
+		"minecraft:lava_cauldron": {
+			"default": "Lava Cauldron"
+		},
+		"minecraft:leaf_litter": {
+			"default": "Leaf Litter"
+		},
+		"minecraft:light_blue_candle_cake": {
+			"default": "Cake with Light Blue Candle"
+		},
+		"minecraft:light_gray_candle_cake": {
+			"default": "Cake with Light Gray Candle"
+		},
+		"minecraft:lily_of_the_valley": {
+			"default": "Lily of the Valley"
+		},
+		"minecraft:lime_candle_cake": {
+			"default": "Cake with Lime Candle"
+		},
+		"minecraft:lit_blast_furnace": {
+			"default": "Lit Blast Furnace"
+		},
+		"minecraft:lit_deepslate_redstone_ore": {
+			"default": "Lit Deepslate Redstone Ore"
+		},
+		"minecraft:lit_furnace": {
+			"default": "Lit Furnace"
+		},
+		"minecraft:lit_redstone_ore": {
+			"default": "Lit Redstone Ore"
+		},
+		"minecraft:magenta_candle_cake": {
+			"default": "Cake with Magenta Candle"
+		},
+		"minecraft:mangrove_shelf": {
+			"default": "Mangrove Shelf"
+		},
+		"minecraft:mossy_cobblestone_wall": {
+			"default": "Mossy Cobblestone Wall"
+		},
+		"minecraft:mossy_stone_brick_wall": {
+			"default": "Mossy Stone Brick Wall"
+		},
+		"minecraft:movingBlock": {
+			"default": "Moving Block"
+		},
+		"minecraft:mushroom_stem": {
+			"default": "Mushroom Stem"
+		},
+		"minecraft:nether_brick_wall": {
+			"default": "Nether Brick Wall"
+		},
+		"minecraft:netherreactor": {
+			"default": "Nether Reactor Core"
+		},
+		"minecraft:oak_shelf": {
+			"default": "Oak Shelf"
+		},
+		"minecraft:open_eyeblossom": {
+			"default": "Open Eyeblossom"
+		},
+		"minecraft:orange_candle_cake": {
+			"default": "Cake with Orange Candle"
+		},
+		"minecraft:oxidized_chiseled_copper": {
+			"default": "Oxidized Chiseled Copper"
+		},
+		"minecraft:oxidized_copper_bars": {
+			"default": "Oxidized Copper Bars"
+		},
+		"minecraft:oxidized_copper_chain": {
+			"default": "Oxidized Copper Chain"
+		},
+		"minecraft:oxidized_copper_chest": {
+			"default": "Oxidized Copper Chest"
+		},
+		"minecraft:oxidized_copper_golem_statue": {
+			"default": "Oxidized Copper Golem Statue"
+		},
+		"minecraft:oxidized_copper_lantern": {
+			"default": "Oxidized Copper Lantern"
+		},
+		"minecraft:oxidized_lightning_rod": {
+			"default": "Oxidized Lightning Rod"
+		},
+		"minecraft:pale_hanging_moss": {
+			"default": "Pale Hanging Moss"
+		},
+		"minecraft:pale_moss_block": {
+			"default": "Pale Moss Block"
+		},
+		"minecraft:pale_oak_door": {
+			"default": "Pale Oak Door"
+		},
+		"minecraft:pale_oak_double_slab": {
+			"default": "Pale Oak Double Slab"
+		},
+		"minecraft:pale_oak_sapling": {
+			"default": "Pale Oak Sapling"
+		},
+		"minecraft:pale_oak_shelf": {
+			"default": "Pale Oak Shelf"
+		},
+		"minecraft:petrified_oak_double_slab": {
+			"default": "Petrified Oak Double Slab"
+		},
+		"minecraft:petrified_oak_slab": {
+			"default": "Petrified Oak Slab"
+		},
+		"minecraft:piglin_head": {
+			"default": "Piglin Head"
+		},
+		"minecraft:pink_candle_cake": {
+			"default": "Cake with Pink Candle"
+		},
+		"minecraft:pistonArmCollision": {
+			"default": "Piston Arm Collision"
+		},
+		"minecraft:player_head": {
+			"default": "Player Head"
+		},
+		"minecraft:polished_cinnabar": {
+			"default": "Polished Cinnabar"
+		},
+		"minecraft:polished_cinnabar_double_slab": {
+			"default": "Polished Cinnabar Double Slab"
+		},
+		"minecraft:polished_cinnabar_slab": {
+			"default": "Polished Cinnabar Slab"
+		},
+		"minecraft:polished_cinnabar_stairs": {
+			"default": "Polished Cinnabar Stairs"
+		},
+		"minecraft:polished_cinnabar_wall": {
+			"default": "Polished Cinnabar Wall"
+		},
+		"minecraft:polished_sulfur": {
+			"default": "Polished Sulfur"
+		},
+		"minecraft:polished_sulfur_double_slab": {
+			"default": "Polished Sulfur Double Slab"
+		},
+		"minecraft:polished_sulfur_slab": {
+			"default": "Polished Sulfur Slab"
+		},
+		"minecraft:polished_sulfur_stairs": {
+			"default": "Polished Sulfur Stairs"
+		},
+		"minecraft:polished_sulfur_wall": {
+			"default": "Polished Sulfur Wall"
+		},
+		"minecraft:portal": {
+			"default": "Portal"
+		},
+		"minecraft:potent_sulfur": {
+			"default": "Potent Sulfur"
+		},
+		"minecraft:prismarine_wall": {
+			"default": "Prismarine Wall"
+		},
+		"minecraft:purple_candle_cake": {
+			"default": "Cake with Purple Candle"
+		},
+		"minecraft:purpur_pillar": {
+			"default": "Purpur Pillar"
+		},
+		"minecraft:quartz_pillar": {
+			"default": "Quartz Pillar"
+		},
+		"minecraft:red_candle_cake": {
+			"default": "Cake with Red Candle"
+		},
+		"minecraft:red_nether_brick_wall": {
+			"default": "Red Nether Brick Wall"
+		},
+		"minecraft:red_sandstone_wall": {
+			"default": "Red Sandstone Wall"
+		},
+		"minecraft:reserved6": {
+			"default": "Reserved6"
+		},
+		"minecraft:resin_brick_slab": {
+			"default": "Resin Brick Slab"
+		},
+		"minecraft:resin_clump": {
+			"default": "Resin Clump"
+		},
+		"minecraft:sandstone_wall": {
+			"default": "Sandstone Wall"
+		},
+		"minecraft:seaLantern": {
+			"default": "Sea Lantern"
+		},
+		"minecraft:short_dry_grass": {
+			"default": "Short Dry Grass"
+		},
+		"minecraft:skeleton_skull": {
+			"default": "Skeleton Skull"
+		},
+		"minecraft:spruce_shelf": {
+			"default": "Spruce Shelf"
+		},
+		"minecraft:stone_brick_wall": {
+			"default": "Stone Brick Wall"
+		},
+		"minecraft:stone_slab": {
+			"default": "Stone Slab"
+		},
+		"minecraft:stone_slab2": {
+			"red_sandstone": "Red Sandstone Slab",
+			"purpur": "Purpur Slab",
+			"prismarine.rough": "Prismarine Slab",
+			"prismarine.dark": "Dark Prismarine Slab",
+			"prismarine.bricks": "Prismarine Brick Slab",
+			"mossy_cobblestone": "Mossy Cobblestone Slab",
+			"red_nether_brick": "Red Nether Brick Slab",
+			"sandstone.smooth": "Smooth Sandstone Slab",
+			"default": "Stone Slab2"
+		},
+		"minecraft:stone_slab3": {
+			"end_brick": "End Stone Brick Slab",
+			"red_sandstone.smooth": "Smooth Red Sandstone Slab",
+			"andesite.smooth": "Polished Andesite Slab",
+			"andesite": "Andesite Slab",
+			"diorite": "Diorite Slab",
+			"diorite.smooth": "Polished Diorite Slab",
+			"granite": "Granite Slab",
+			"granite.smooth": "Polished Granite Slab",
+			"default": "Stone Slab3"
+		},
+		"minecraft:stone_slab4": {
+			"mossy_stone_brick": "Mossy Stone Brick Slab",
+			"smooth_quartz": "Smooth Quartz Slab",
+			"stone": "Stone Slab",
+			"cut_sandstone": "Cut Sandstone Slab",
+			"cut_red_sandstone": "Cut Red Sandstone Slab",
+			"default": "Stone Slab4"
+		},
+		"minecraft:stonecutter": {
+			"default": "Stonecutter"
+		},
+		"minecraft:sulfur": {
+			"default": "Sulfur"
+		},
+		"minecraft:sulfur_brick_double_slab": {
+			"default": "Sulfur Brick Double Slab"
+		},
+		"minecraft:sulfur_brick_slab": {
+			"default": "Sulfur Brick Slab"
+		},
+		"minecraft:sulfur_brick_stairs": {
+			"default": "Sulfur Brick Stairs"
+		},
+		"minecraft:sulfur_brick_wall": {
+			"default": "Sulfur Brick Wall"
+		},
+		"minecraft:sulfur_bricks": {
+			"default": "Sulfur Bricks"
+		},
+		"minecraft:sulfur_double_slab": {
+			"default": "Sulfur Double Slab"
+		},
+		"minecraft:sulfur_slab": {
+			"default": "Sulfur Slab"
+		},
+		"minecraft:sulfur_spike": {
+			"default": "Sulfur Spike"
+		},
+		"minecraft:sulfur_stairs": {
+			"default": "Sulfur Stairs"
+		},
+		"minecraft:sulfur_wall": {
+			"default": "Sulfur Wall"
+		},
+		"minecraft:tall_dry_grass": {
+			"default": "Tall Dry Grass"
+		},
+		"minecraft:underwater_torch": {
+			"default": "Underwater Torch"
+		},
+		"minecraft:vault": {
+			"default": "Vault"
+		},
+		"minecraft:warped_shelf": {
+			"default": "Warped Shelf"
+		},
+		"minecraft:waxed_chiseled_copper": {
+			"default": "Waxed Chiseled Copper"
+		},
+		"minecraft:waxed_copper_bars": {
+			"default": "Waxed Copper Bars"
+		},
+		"minecraft:waxed_copper_chain": {
+			"default": "Waxed Copper Chain"
+		},
+		"minecraft:waxed_copper_chest": {
+			"default": "Waxed Copper Chest"
+		},
+		"minecraft:waxed_copper_golem_statue": {
+			"default": "Waxed Copper Golem Statue"
+		},
+		"minecraft:waxed_copper_lantern": {
+			"default": "Waxed Copper Lantern"
+		},
+		"minecraft:waxed_exposed_chiseled_copper": {
+			"default": "Waxed Exposed Chiseled Copper"
+		},
+		"minecraft:waxed_exposed_copper_bars": {
+			"default": "Waxed Exposed Copper Bars"
+		},
+		"minecraft:waxed_exposed_copper_chain": {
+			"default": "Waxed Exposed Copper Chain"
+		},
+		"minecraft:waxed_exposed_copper_chest": {
+			"default": "Waxed Exposed Copper Chest"
+		},
+		"minecraft:waxed_exposed_copper_golem_statue": {
+			"default": "Waxed Exposed Copper Golem Statue"
+		},
+		"minecraft:waxed_exposed_copper_lantern": {
+			"default": "Waxed Exposed Copper Lantern"
+		},
+		"minecraft:waxed_exposed_lightning_rod": {
+			"default": "Waxed Exposed Lightning Rod"
+		},
+		"minecraft:waxed_lightning_rod": {
+			"default": "Waxed Lightning Rod"
+		},
+		"minecraft:waxed_oxidized_chiseled_copper": {
+			"default": "Waxed Oxidized Chiseled Copper"
+		},
+		"minecraft:waxed_oxidized_copper_bars": {
+			"default": "Waxed Oxidized Copper Bars"
+		},
+		"minecraft:waxed_oxidized_copper_chain": {
+			"default": "Waxed Oxidized Copper Chain"
+		},
+		"minecraft:waxed_oxidized_copper_chest": {
+			"default": "Waxed Oxidized Copper Chest"
+		},
+		"minecraft:waxed_oxidized_copper_golem_statue": {
+			"default": "Waxed Oxidized Copper Golem Statue"
+		},
+		"minecraft:waxed_oxidized_copper_lantern": {
+			"default": "Waxed Oxidized Copper Lantern"
+		},
+		"minecraft:waxed_oxidized_lightning_rod": {
+			"default": "Waxed Oxidized Lightning Rod"
+		},
+		"minecraft:waxed_weathered_chiseled_copper": {
+			"default": "Waxed Weathered Chiseled Copper"
+		},
+		"minecraft:waxed_weathered_copper_bars": {
+			"default": "Waxed Weathered Copper Bars"
+		},
+		"minecraft:waxed_weathered_copper_chain": {
+			"default": "Waxed Weathered Copper Chain"
+		},
+		"minecraft:waxed_weathered_copper_chest": {
+			"default": "Waxed Weathered Copper Chest"
+		},
+		"minecraft:waxed_weathered_copper_golem_statue": {
+			"default": "Waxed Weathered Copper Golem Statue"
+		},
+		"minecraft:waxed_weathered_copper_lantern": {
+			"default": "Waxed Weathered Copper Lantern"
+		},
+		"minecraft:waxed_weathered_lightning_rod": {
+			"default": "Waxed Weathered Lightning Rod"
+		},
+		"minecraft:weathered_chiseled_copper": {
+			"default": "Weathered Chiseled Copper"
+		},
+		"minecraft:weathered_copper_bars": {
+			"default": "Weathered Copper Bars"
+		},
+		"minecraft:weathered_copper_chain": {
+			"default": "Weathered Copper Chain"
+		},
+		"minecraft:weathered_copper_chest": {
+			"default": "Weathered Copper Chest"
+		},
+		"minecraft:weathered_copper_golem_statue": {
+			"default": "Weathered Copper Golem Statue"
+		},
+		"minecraft:weathered_copper_lantern": {
+			"default": "Weathered Copper Lantern"
+		},
+		"minecraft:weathered_lightning_rod": {
+			"default": "Weathered Lightning Rod"
+		},
+		"minecraft:wet_sponge": {
+			"default": "Wet Sponge"
+		},
+		"minecraft:white_candle_cake": {
+			"default": "Cake with White Candle"
+		},
+		"minecraft:wildflowers": {
+			"default": "Wildflowers"
+		},
+		"minecraft:wither_skeleton_skull": {
+			"default": "Wither Skeleton Skull"
+		},
+		"minecraft:wool": {
+			"default": "Wool"
+		},
+		"minecraft:yellow_candle_cake": {
+			"default": "Cake with Yellow Candle"
+		},
+		"minecraft:yellow_shulker_box": {
+			"default": "Yellow Shulker Box"
+		},
+		"minecraft:zombie_head": {
+			"default": "Zombie Head"
 		}
 	}
 }

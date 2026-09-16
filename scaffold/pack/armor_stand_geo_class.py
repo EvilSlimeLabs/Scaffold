@@ -687,7 +687,16 @@ class ArmorStandGeo:
 
     def get_block_texture_paths(self, blockName, variant = ""):
         # helper function for getting the texture locations from the vanilla files.
-        texture_layout = self.blocks_def[blockName]["textures"]
+        ## **A drawn thing that is not a block has no declaration to read.** An
+        ## entity is not in blocks.json and never will be, so a family drawn for
+        ## one names every face outright in its `overwrite` and wants nothing
+        ## from here. Answering with nothing rather than raising is what lets it
+        ## through; a real block missing its declaration has no overwrite
+        ## either, so it still fails and is still reported as unsupported.
+        declared = self.blocks_def.get(blockName)
+        if not declared or "textures" not in declared:
+            return {}
+        texture_layout = declared["textures"]
         texturedata = self.terrain_texture["texture_data"]
         textures = {}
 

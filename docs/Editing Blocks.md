@@ -31,6 +31,13 @@ tables.
 
 `"ignore"` draws nothing, for blocks that should not appear at all.
 
+**An id here need not be a block.** An entity is drawn as one, under a pseudo id
+that `scaffold.core.ENTITY_MODELS` names -- `cushion` is the first. It is an
+ordinary entry in every table, and the only thing that marks it out is that no
+vanilla `blocks.json` declares it, so its family names all six faces outright in
+`overwrite` rather than leaning on the block's own declared textures. See
+[Block Notes](Block%20Notes.md) for how one reaches the tables at all.
+
 ---
 
 ## block_rotation.json

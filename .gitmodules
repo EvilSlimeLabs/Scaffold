@@ -4,3 +4,6 @@
 [submodule "be_tech_pack"]
 	path = be_tech_pack
 	url = git@github.com:EvilSlimeLabs/Bedrock-Technical-Resource-Pack.git
+[submodule "bedrock-samples"]
+	path = bedrock-samples
+	url = https://github.com/Mojang/bedrock-samples.git

@@ -4,6 +4,13 @@
     python -m tools.vendor.vanilla_pack --apply            take the stale textures
     python -m tools.vendor.vanilla_pack --add-block oak_shelf stone_slab
     python -m tools.vendor.vanilla_pack --add-block ... --apply
+    python -m tools.vendor.vanilla_pack --source mojang --add-block poplar_planks
+
+`--source` picks which submodule --add-block reads from. The community pack is
+the default, and is the one the stale-texture report compares against, because
+it is the pack this one was hand-merged out of. It lags a Minecraft release by
+weeks, so a block from the update that just shipped is only in bedrock-samples,
+which is Mojang's own and carries the behaviour pack beside it.
 
 Vanilla_Resource_Pack/ is a trimmed vanilla pack that has been hand-merged for
 years, and some of its textures are deliberately not vanilla any more. Copying
@@ -38,6 +45,8 @@ from scaffold import jsonc
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OURS = os.path.join(ROOT, "scaffold", "Vanilla_Resource_Pack")
 COMM = os.path.join(ROOT, "CommunityVanillaResourcePack")
+MOJANG = os.path.join(ROOT, "bedrock-samples", "resource_pack")
+SOURCES = {"community": COMM, "mojang": MOJANG}
 OUR_BLOCKS = os.path.join(OURS, "textures", "blocks")
 COMM_BLOCKS = os.path.join(COMM, "textures", "blocks")
 
@@ -156,10 +165,10 @@ def texture_names(blocks, block):
     return []
 
 
-def plan_blocks(names):
+def plan_blocks(names, source=COMM):
     """What it would take to support `names`: entries and files to copy in."""
-    comm_blocks = jsonc.load(os.path.join(COMM, "blocks.json"))
-    comm_terrain = jsonc.load(os.path.join(COMM, "textures/terrain_texture.json"))["texture_data"]
+    comm_blocks = jsonc.load(os.path.join(source, "blocks.json"))
+    comm_terrain = jsonc.load(os.path.join(source, "textures/terrain_texture.json"))["texture_data"]
     our_blocks = jsonc.load(os.path.join(OURS, "blocks.json"))
     our_terrain = jsonc.load(os.path.join(OURS, "textures/terrain_texture.json"))["texture_data"]
     our_files = set()
@@ -189,7 +198,7 @@ def plan_blocks(names):
     return plan
 
 
-def apply_blocks(plan):
+def apply_blocks(plan, source=COMM):
     import json
     added = []
     if plan["blocks"]:
@@ -209,11 +218,11 @@ def apply_blocks(plan):
     copied = 0
     for rel in plan["files"]:
         for ext in (".png", ".tga", ".jpg"):
-            source = os.path.join(COMM, rel + ext)
-            if os.path.isfile(source):
+            found = os.path.join(source, rel + ext)
+            if os.path.isfile(found):
                 target = os.path.join(OURS, rel + ext)
                 os.makedirs(os.path.dirname(target), exist_ok=True)
-                shutil.copyfile(source, target)
+                shutil.copyfile(found, target)
                 copied += 1
                 break
         else:
@@ -242,9 +251,16 @@ def main():
     parser.add_argument("--add-block", nargs="+", metavar="BLOCK", default=[],
                         help="also pull in the blocks.json, terrain_texture and texture "
                              "files for these block ids")
+    parser.add_argument("--source", choices=sorted(SOURCES), default="community",
+                        help="which submodule --add-block reads from "
+                             "(default: community)")
     parser.add_argument("--quiet-keep", action="store_true",
                         help="summarise the kept textures instead of listing them")
     args = parser.parse_args()
+    source = SOURCES[args.source]
+    if args.add_block and not os.path.isdir(source):
+        sys.exit("the %s pack is not checked out; git submodule update --init %s"
+                 % (args.source, os.path.relpath(source, ROOT)))
 
     if not os.path.isdir(COMM_BLOCKS):
         sys.exit("CommunityVanillaResourcePack is not checked out.\n"
@@ -264,8 +280,8 @@ def main():
 
     plan = None
     if args.add_block:
-        plan = plan_blocks(args.add_block)
-        print("\n=== ADD BLOCKS ===")
+        plan = plan_blocks(args.add_block, source)
+        print("\n=== ADD BLOCKS (from the %s pack) ===" % args.source)
         print("   blocks.json entries:     %d" % len(plan["blocks"]))
         print("   terrain_texture entries: %d" % len(plan["terrain"]))
         print("   texture files:           %d" % len(plan["files"]))
@@ -282,7 +298,7 @@ def main():
         shutil.copyfile(theirs[rel], ours[rel])
     print("\ncopied %d stale textures" % len(stale))
     if plan:
-        for line in apply_blocks(plan):
+        for line in apply_blocks(plan, source):
             print("added %s" % line)
     print("\nRun tools/checks/blocks.py next to confirm everything still resolves.")
 

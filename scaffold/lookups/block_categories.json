@@ -1,9 +1,9 @@
 {
-    "metadata": {
-        "version": "1.0.0",
-        "description": "Block categories for Scaffold",
-        "MCVersion": "26.45"
-    },
+	"metadata": {
+		"version": "1.0.0",
+		"description": "Block categories for Scaffold",
+		"MCVersion": "26.50"
+	},
 	"categories": [
 		{
 			"name": "Flowers and Plants",
@@ -76,7 +76,8 @@
 				"turtle_egg",
 				"frog_spawn",
 				"*_bush",
-				"rose_bush"
+				"rose_bush",
+				"red_shrub"
 			]
 		},
 		{
@@ -243,6 +244,15 @@
 				"*_cherry*",
 				"*cherry*",
 				"*/cherry"
+			]
+		},
+		{
+			"name": "Poplar",
+			"match": [
+				"poplar*",
+				"*_poplar*",
+				"*poplar*",
+				"*/poplar"
 			]
 		},
 		{
@@ -605,7 +615,8 @@
 				"wool",
 				"*_wool",
 				"carpet",
-				"*_carpet"
+				"*_carpet",
+				"*_wool_*"
 			]
 		},
 		{
@@ -714,6 +725,12 @@
 				"lectern",
 				"bookshelf",
 				"*bookshelf"
+			]
+		},
+		{
+			"name": "Entities",
+			"match": [
+				"cushion"
 			]
 		}
 	]

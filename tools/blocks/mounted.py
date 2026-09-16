@@ -1296,6 +1296,100 @@ FRAME_TURNS = {"0": [180, 0, 0], "1": [0, 0, 0], "2": [90, 0, 0],
                "3": [270, 0, 0], "4": [0, 0, 90], "5": [0, 0, 270]}
 
 
+# --- shelf mushrooms --------------------------------------------------------
+#
+# 26.50's wall foliage, and the first block here drawn from a block model rather
+# than from a voxel shape or a terrain tile. `shelf_mushroom_small.geo.json` and
+# `shelf_mushroom_large.geo.json` in bedrock-samples give it two boxes: a cap,
+# and a thinner underside tucked beneath it and further out from the wall.
+#
+# **Its UV space is sixteen units across a thirty-two pixel sheet**, so a unit
+# of Mojang's UV is two texture pixels and every rectangle below is already
+# doubled. A down face is written there with a negative height, which is the
+# same rectangle measured upward from its own bottom edge; these are the
+# rectangles themselves, so the four of them stack down the sheet without
+# overlapping, which is the check that the doubling is right.
+#
+# **Mojang's model faces north and this table's default faces south**, the way
+# every other wall mounting here does, so both boxes and their north and south
+# and east and west rectangles are carried round half a turn by `wall_turn`.
+# The block's own `minecraft:transformation` permutations turn the other three
+# facings from north, and MOUNTED_TURNS says the same thing from south.
+MUSHROOM_SHEET = 32
+
+## (size, where it sits with the wall at z16, the rectangle each face reads)
+MUSHROOM_FORMS = {
+    ## growth 0, the small one, on shelf_mushroom_small
+    "0": ("textures/blocks/shelf_mushroom_small", [
+        ((10, 2, 7), (3, 9, 9),
+         {"north": (10, 4, 10, 2), "south": (10, 6, 10, 2),
+          "east": (10, 0, 7, 2), "west": (10, 2, 7, 2),
+          "up": (0, 0, 10, 7), "down": (0, 7, 10, 7)}),
+        ((6, 1, 4), (5, 8, 12),
+         {"north": (10, 10, 6, 1), "south": (10, 11, 6, 1),
+          "east": (10, 8, 4, 1), "west": (10, 9, 4, 1),
+          "up": (0, 14, 6, 4), "down": (0, 18, 6, 4)}),
+    ]),
+    ## growth 1, the large one, on a sheet of its own
+    "1": ("textures/blocks/shelf_mushroom_large", [
+        ((14, 3, 10), (1, 8, 6),
+         {"north": (14, 6, 14, 3), "south": (14, 9, 14, 3),
+          "east": (14, 0, 10, 3), "west": (14, 3, 10, 3),
+          "up": (0, 0, 14, 10), "down": (0, 10, 14, 10)}),
+        ((8, 2, 6), (4, 6, 10),
+         {"north": (8, 24, 8, 2), "south": (8, 26, 8, 2),
+          "east": (8, 20, 6, 2), "west": (8, 22, 6, 2),
+          "up": (0, 20, 8, 6), "down": (0, 26, 8, 6)}),
+    ]),
+}
+
+## a half turn about y swaps the face a rectangle belongs to, front for back and
+## side for side; up and down keep theirs
+MUSHROOM_OPPOSITE = {"north": "south", "south": "north",
+                     "east": "west", "west": "east",
+                     "up": "up", "down": "down"}
+
+
+def wall_turn(size, at, faces, sheet):
+    """Mojang's north facing box, carried half a turn round to face south.
+
+    The four side faces trade places in pairs, which is all a half turn does to
+    them. The top and the bottom keep theirs and turn within it, so the window
+    is turned inside its own tile and the tile is turned on the way into the
+    atlas -- without that the cap's pale front lip ends up against the wall,
+    which the up view shows plainly.
+    """
+    wide, _, deep = size
+    across, up, over = at
+    texture, window = {}, {}
+    for face in FACES:
+        region = faces[MUSHROOM_OPPOSITE[face]]
+        texture[face], window[face] = on_sheet(sheet, region, MUSHROOM_SHEET)
+        if face in ("up", "down"):
+            x, y, w, h = window[face]
+            window[face] = (16 - x - w, 16 - y - h, w, h, 180)
+    return Cube(size, (16 - across - wide, up, 16 - over - deep),
+                texture=texture, window=window)
+
+
+def shelf_mushrooms():
+    forms = {}
+    for growth, (sheet, boxes) in MUSHROOM_FORMS.items():
+        forms[growth] = [wall_turn(size, at, faces, sheet)
+                         for size, at, faces in boxes]
+    ## a mushroom with no growth state is the small one, which is what a block
+    ## placed by a command with no states comes up as
+    forms["default"] = forms["0"]
+    return forms
+
+
+SHELF_MUSHROOMS = shelf_mushrooms()
+
+## the four facings, the same way a shelf reads them
+MOUNTED_TURNS = {"south": [0, 0, 0], "west": [0, 90, 0],
+                 "north": [0, 180, 0], "east": [0, 270, 0]}
+
+
 def main():
     print("writing the mounted forms")
     write("frame", FRAMES)
@@ -1325,6 +1419,9 @@ def main():
     ## a shrieker was drawn from the plain cube family, so it needs pointing at
     ## the one written here; `tripwire` already has both of its block ids
     define(["sculk_shrieker"], "sculk_shrieker")
+    write("shelf_mushroom", SHELF_MUSHROOMS)
+    turns("shelf_mushroom", MOUNTED_TURNS)
+    define(["shelf_mushroom"], "shelf_mushroom")
 
 
 if __name__ == "__main__":

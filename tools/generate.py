@@ -43,6 +43,9 @@ STEPS = [
     ("tools.blocks.bookshelf", "the bookshelf's sixty-four states"),
     ("tools.blocks.statues", "the copper golem's four poses"),
     ("tools.blocks.faces", "a texture per cube, per face"),
+    ("tools.blocks.entities", "the entities drawn as blocks"),
+    ## after every family, because it names whatever the others left unnamed
+    ("tools.blocks.names", "the block and entity list names"),
     ("tools.textures.banners", "the dyed banner sheets"),
     ("tools.textures.cauldron", "the cauldron's flattened underside"),
     ("tools.textures.beds", "the recoloured beds"),

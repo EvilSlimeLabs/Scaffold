@@ -54,7 +54,19 @@ class Pack:
             return sorted({v for v in layout.values() if isinstance(v, str)})
         return []
 
-    def problems(self, block):
+    def problems(self, block, overwrite=()):
+        """What stops this block resolving to files, or nothing.
+
+        `overwrite` is every texture the block's own UV entry names outright.
+        A block drawn entirely from those needs no blocks.json entry at all,
+        which is how an entity resolves: a cushion is not a block, so Mojang's
+        pack does not declare one and never will, and its sixteen sheets are
+        named face by face in `block_uv.json` instead.
+        """
+        literal = [name for name in overwrite if name.startswith("textures/")]
+        if literal:
+            missing = [name for name in literal if name not in self.files]
+            return ["no file for '%s'" % name for name in sorted(set(missing))]
         try:
             names = self.texture_names(block)
         except KeyError as exc:
@@ -72,12 +84,28 @@ class Pack:
         return found
 
 
-def report_broken(defs, ours, comm):
+def literal_textures(uvs, shape):
+    """Every texture a shape family names outright, window and turn stripped.
+
+    An `@` reference is the block's own declared face and resolves through
+    blocks.json like any other; only a literal path stands on its own.
+    """
+    found = set()
+    for form in (uvs.get(shape) or {}).values():
+        for faces in (form.get("overwrite") or {}).values():
+            for name in faces:
+                if isinstance(name, str) and name.startswith("textures/"):
+                    found.add(name.split("#")[0].split("^")[0].split("~")[0])
+    return found
+
+
+def report_broken(defs, ours, comm, uvs=None):
     broken = {}
     for block, shape in defs.items():
         if shape == "ignore":
             continue
-        problems = ours.problems(block)
+        problems = ours.problems(
+            block, literal_textures(uvs or {}, shape))
         if problems:
             broken[block] = (shape, problems)
 
@@ -155,7 +183,9 @@ def main():
                       jsonc.load(os.path.join(PACKAGE, "lookups/block_uv.json")))
         return
 
-    unresolved = report_broken(defs, ours, comm)
+    unresolved = report_broken(
+        defs, ours, comm,
+        jsonc.load(os.path.join(PACKAGE, "lookups/block_uv.json")))
     sys.exit(1 if unresolved else 0)
 
 

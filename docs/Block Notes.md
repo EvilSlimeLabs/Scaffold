@@ -766,6 +766,133 @@ any test structure.
 
 ---
 
+## Drawing a block from Mojang's own model
+
+Some blocks are neither a terrain tile on a box nor a voxel shape. A data-driven
+block names a **geometry** instead, and the model for it sits in
+`bedrock-samples/resource_pack/models/blocks/`. 26.50's shelf mushroom and straw
+bed are both drawn from one, and so is anything else whose `blocks.json` entry
+has no `textures` key at all: its art is named in
+`minecraft:material_instances`, in the behaviour pack, which is why
+`tools/vendor/vanilla_pack.py --add-block` walks straight past it and those
+three had their textures fetched by hand.
+
+Three things have to be converted, and getting any of them wrong is invisible in
+the tables and obvious in a render.
+
+**The UV space is not the texture size.** A model declares `texture_width` and
+`texture_height` in its description and its UV numbers are in *those* units, not
+in texture pixels. Both of 26.50's models declare sixteen while their sheets are
+32x32 and 64x64, so a UV unit is two texture pixels on one and four on the
+other. Multiply every rectangle before it goes anywhere near `on_sheet`. The
+check that the factor is right: the rectangles of a box's six faces should tile
+the sheet without overlapping, and each should come out the size of the face it
+belongs to.
+
+**A negative `uv_size` is not a negative rectangle.** Mojang writes a down face
+with a negative height, which means the same rectangle measured upward from its
+own bottom edge. Convert it to the rectangle itself -- `v` runs from
+`uv[1] - height` to `uv[1]` -- rather than passing the negative through.
+
+**The model faces somewhere and this project's default faces somewhere else.**
+Every wall mounting here is written facing south, and Mojang's shelf mushroom
+model faces north, so its boxes and its four side rectangles are carried half a
+turn round: `x` and `z` mirror, north trades with south and east with west. A
+bed is a quarter turn rather than a half, because Mojang's lies along `z` and
+this project's along `x` so the two can share `BED_FACING`.
+
+**The top and the bottom turn too, and they cannot say so in the numbers.**
+Bedrock's UV is a corner and a size with no angle in it, so a face cannot read
+its picture a quarter round. The tile is turned on the way into the atlas
+instead and the angle rides on the texture's name as `^90`, `^180` or `^270`
+-- and because the turn happens first, the window is measured on the *turned*
+tile. A half turn sends a window at `(x, y, w, h)` to `(16-x-w, 16-y-h, w, h)`
+and a quarter turn swaps its width and height. Leave it out and the shape is
+right while the picture is a quarter round from it: the shelf mushroom's pale
+front lip ends up against the wall, and the straw bed's straw runs across the
+mattress instead of along it.
+
+**Leave the fringe off.** A model may carry pieces that exist only to soften an
+edge -- the straw bed hangs ten zero-thickness planes of straw off its sides,
+each leaning by a fraction of a degree. Every one would be another cube in a
+block meant to cost two, and a transparent texel still takes the depth it stands
+at, so a fringe of crossing planes cuts holes in the mattress it stands on
+rather than feathering it. The boxes are the block.
+
+**Check it by rendering it, not by reading it.** `tools/checks/render.py` models
+the x mirror and the y turn, so what it draws is what the game draws, and the
+fastest way to settle an orientation is to draw the new block beside one whose
+look is already settled: the straw bed against the dyed bed, the shelf mushroom
+against the shelf. Crop the rectangles the model names out of the sheet and look
+at those too -- a shelf mushroom's outward rim is pale and its wall side is dark
+brown, which says immediately which way round the two belong.
+
+---
+
+## Drawing something that is not a block
+
+A structure keeps its entities apart from its blocks. `structure.entities` is a
+list of whole entity records with world positions of their own, so nothing in
+`block_indices` marks the cell one stands in and reading the palette will never
+find one however hard it looks. Until 26.50 that did not matter; then the
+cushion arrived as an entity rather than as a block, and a room full of them
+built as an empty room.
+
+**An entity is drawn as a block, because in every way a builder cares about it
+is one.** It goes in a cell, it comes in sixteen colours, and it is a thing to
+gather. `core.ENTITY_MODELS` is the whole of the bridge:
+
+```python
+"minecraft:cushion": {"block": "cushion", "variant": "Variant",
+                      "forms": [...], "fallback": "white"}
+```
+
+`block` is the pseudo block id its shape family is keyed by -- it is an ordinary
+entry in `block_definition.json` and an ordinary family in `block_shapes.json`
+-- `variant` is the entity field that picks the form, and `forms` says what each
+value of that field means. Adding another entity is an entry here and a family
+in `tools/blocks/entities.py`. Nothing else changes: the shape, the textures,
+the rotation table, the simplified form, the block list line and the heading are
+all the machinery that was already there.
+
+Four things are worth knowing.
+
+**A position is a float, and a cell is what is left of it.**
+`structure_reader.get_entities` subtracts `structure_world_origin` from `Pos`
+and drops the fraction. An entity standing outside the recorded box is left out
+rather than clamped to the edge, because it was not part of what was captured
+and a mark on the wrong cell is worse than no mark.
+
+**A yaw is a float too.** An entity is not placed on a grid of facings the way a
+block is; it carries a `Rotation` that can be anything. `core.entity_turn`
+rounds it to the nearest quarter, which is as fine as something drawn in a cell
+can be turned, and the four numbers it produces are the keys the family's
+rotation table is written with.
+
+**The colour order is the render controller's, not the wool order.**
+`controller.render.cushion` indexes `Array.skins` by `query.variant`, and that
+array runs black first and white last -- the dye order, the same way a banner's
+`Base` counts. Read as wool, every cushion comes out the colour across the wheel
+from its own.
+
+**A family drawn for an entity has no `blocks.json` entry and never will.** An
+entity is not a block, so Mojang's pack does not declare one. The family names
+all six faces outright in its `overwrite` instead, `get_block_texture_paths`
+answers with nothing rather than raising when a block has no declaration, and
+`tools/checks/blocks.py` resolves a family with literal textures through the
+files themselves.
+
+**An entity nothing names is passed over in silence.** It is not reported as
+skipped. The structure this was written against carries a hundred and four
+dropped items, and listing those as things Scaffold could not draw would bury
+the ones that matter.
+
+**A big build has no entities.** `CombinedStructures` merges several files into
+one grid and carries neither entities nor block entities, the same way it has
+never carried a copper golem's pose or a banner's design.
+
+---
+
 ## Adding a block
 
 1. Put the id in `block_definition.json` against a shape family.
@@ -778,6 +905,8 @@ any test structure.
 6. If it now carries three or more cubes, re-run `tools/blocks/simplify.py`.
 7. Run `tools/checks/coverage.py` and `tools/checks/blocks.py`. Both should
    report nothing.
+8. Re-record `tools/checks/render.py --manifest --update`, and commit the
+   manifest in the same change that moved the blocks.
 
 Keep the tables compact. `json.dumps` explodes short numeric arrays across a
 line each, which turns a one-value change into an unreviewable diff;

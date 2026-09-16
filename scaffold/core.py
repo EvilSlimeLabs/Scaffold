@@ -68,6 +68,64 @@ ENTITY_ROTATIONS = {"Skull": ("Rotation", 1)}
 ## a head turns in sixteen steps, the same as a sign
 SPIN_STEP = 22.5
 
+## **What Scaffold draws that is not a block.** An entity is kept apart from the
+## blocks entirely: a structure records it in `structure.entities` as a whole
+## entity with a world position of its own, so nothing in `block_indices` marks
+## the cell it stands in and no lookup table could reach it. A cushion is the
+## first of them, and is a block in every way a builder cares about -- it is
+## placed in a cell, it is one of sixteen colours, and it is a thing to gather.
+##
+## So it is drawn as one. `block` is the pseudo block id its shape family is
+## keyed by, `variant` is the entity field that picks the form, and `forms` is
+## what each value of that field means. From there it goes through `make_block`
+## like anything else, which is what gives it a shape, a texture, a rotation
+## table, a simplified form and a line on the block list without any of those
+## having to learn what an entity is.
+##
+## `forms` is here rather than in the generator because both sides need it and a
+## list written twice is a list that can disagree with itself; `tools/blocks/
+## entities.py` imports it.
+ENTITY_MODELS = {
+    "minecraft:cushion": {
+        "block": "cushion",
+        "variant": "Variant",
+        ## `Array.skins` in `controller.render.cushion`, indexed by
+        ## `query.variant`. That is the dye order rather than the wool order --
+        ## black first, white last -- so reading it as wool would give every
+        ## cushion the colour across the wheel from its own.
+        "forms": ["black", "red", "green", "brown", "blue", "purple", "cyan",
+                  "light_gray", "gray", "pink", "lime", "yellow",
+                  "light_blue", "magenta", "orange", "white"],
+        ## the behaviour pack's own default value for the field
+        "fallback": "white",
+    },
+}
+
+## how far round one step of an entity's rotation is. An entity carries a float
+## yaw rather than one of four states, and a quarter is as fine as a block shaped
+## like a cell can be drawn, so the yaw is rounded to one of four.
+ENTITY_QUARTER = 90
+
+
+def entity_turn(yaw):
+    """An entity's yaw as one of the four turns a rotation table names.
+
+    Minecraft's yaw is 0 at south and climbs clockwise through west, which is
+    the order every compass rotation table here is written in, so the rounded
+    number is the key to look up.
+    """
+    return str(int(round((yaw % 360) / ENTITY_QUARTER) * ENTITY_QUARTER) % 360)
+
+
+def entity_form(entity, model):
+    """Which form of its family this entity is, as the name the tables use."""
+    told = entity.get("fields", {}).get(model.get("variant"))
+    forms = model.get("forms") or ()
+    try:
+        return forms[int(told)]
+    except (TypeError, ValueError, IndexError):
+        return model.get("fallback") or "default"
+
 PACK_SUFFIX = ".mcpack"
 
 
@@ -440,13 +498,57 @@ class Scaffold:
                                 self.dead_blocks[drawn["name"]][variant]=0
                             self.dead_blocks[drawn["name"]][variant]+=1
             ## consider temp file
+        ## and whatever stands in the structure that is not a block. A big
+        ## build reads through a combined reader, which merges several files
+        ## into one grid and has no entities of its own, the same way it has no
+        ## block entities.
+        counted = struct2make.get_block_list()
+        if hasattr(struct2make, "get_entities"):
+            for key, count in self._add_entities_to_geo(
+                    struct2make, armorstand, export_big).items():
+                counted[key] = counted.get(key, 0) + count
         if export_big:
             armorstand.export_big(self.work_dir)
             self.animation.export_big(self.work_dir,self.big_offset)
         else:
             armorstand.export(self.work_dir)
             self.animation.export(self.work_dir)
-        return struct2make.get_block_list()
+        return counted
+
+    def _add_entities_to_geo(self, struct2make, armorstand, export_big=False):
+        """Draw the entities Scaffold knows, and count them for the list.
+
+        An entity that nothing in ENTITY_MODELS names is passed over in silence
+        rather than reported as skipped. A structure is full of them -- the one
+        this was written against carries a hundred and four dropped items -- and
+        none of them is something a builder places, so listing them as blocks
+        Scaffold could not draw would bury the ones that matter.
+        """
+        counted = {}
+        for entity in struct2make.get_entities():
+            model = ENTITY_MODELS.get(entity["id"])
+            if not model:
+                continue
+            x, y, z = entity["at"]
+            form = entity_form(entity, model)
+            try:
+                armorstand.make_block(x, y, z, model["block"],
+                                      rot=entity_turn(entity["yaw"]),
+                                      data=form, big=export_big)
+            except Exception:
+                ## the same bargain a block gets: it lands on the skipped list
+                ## rather than ending the build
+                self.unsupported_blocks.append(
+                    UnsupportedBlock((x, y, z), {"name": entity["id"]}, form))
+                self.dead_blocks.setdefault(entity["id"], {})
+                self.dead_blocks[entity["id"]][form] = (
+                    self.dead_blocks[entity["id"]].get(form, 0) + 1)
+                continue
+            ## counted the way a block with a variant is, so one line per
+            ## colour and a name a user can override per colour
+            key = "%s/%s" % (entity["id"], form)
+            counted[key] = counted.get(key, 0) + 1
+        return counted
     @staticmethod
     def _digest(path):
         """A file's contents, as a short hex digest. Missing reads as missing."""

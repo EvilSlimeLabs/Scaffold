@@ -25,7 +25,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.insert(0, ROOT)
 
 from tools.blocks import tables as lookup_writer
-from tools.blocks.geometry import Cube, FACES, build
+from tools.blocks.geometry import Cube, FACES, build, on_sheet
 
 LOOKUPS = os.path.join(ROOT, "scaffold", "lookups")
 SHAPES = os.path.join(LOOKUPS, "block_shapes.json")
@@ -318,6 +318,86 @@ BED_FACING = {name: [0, (turn[1] + 270) % 360, 0]
               for name, turn in FACING.items()}
 
 
+# --- straw beds -------------------------------------------------------------
+#
+# 26.50's second bed, and the first that is one thing rather than sixteen: the
+# whole of it is `textures/blocks/straw_bed.png`, a 64x64 sheet laid out the way
+# the dyed bed's is. `straw_bed_foot.geo.json` and `straw_bed_head.geo.json` in
+# bedrock-samples give it a mattress filling the block at the foot, and at the
+# head a lower half with the pillow raised on the end of it.
+#
+# **Its UV space is sixteen units across a sixty-four pixel sheet**, so one unit
+# of Mojang's UV is four texture pixels and every rectangle below is already
+# multiplied by four. A face written there with a negative height is the same
+# rectangle measured upward from its own bottom edge; these are the rectangles.
+#
+# **The frills are left off.** The model hangs ten zero-thickness planes of
+# straw off the edges, each leaning by a fraction of a degree. Every one would
+# be another cube in a block that is meant to cost two, and a transparent texel
+# still takes the depth it stands at, so a fringe of crossing planes would cut
+# holes in the mattress it stands on rather than feathering its edge.
+#
+# **Mojang's bed lies along z with the pillow at +z and this table's lies along
+# x with the head at x16**, the way the dyed bed here already does, so the two
+# share BED_FACING rather than needing a rotation table apiece. `straw_round`
+# carries a box that quarter turn: +z goes to +x, which trades the four side
+# faces round in pairs and turns the top and the bottom within their own tiles.
+STRAW_SHEET = "textures/blocks/straw_bed"
+STRAW_WIDE = 64
+
+## The joints never show: the foot's +z face and the head's -z face are the two
+## halves pressed together, and the head base's +z face is under the pillow.
+## Mojang leaves them out of the model altogether; they are drawn here with the
+## straw side, because a cube has six faces whether or not anything sees them.
+STRAW_HIDDEN = (16, 41, 16, 4)
+
+## (size, where it sits, the rectangle each face reads) in Mojang's own space
+STRAW_FORMS = {
+    ## head_piece_bit 0, the foot: one box filling the block
+    "0": [((16, 4, 16), (0, 0, 0),
+           {"north": (16, 41, 16, 4), "south": STRAW_HIDDEN,
+            "east": (0, 41, 16, 4), "west": (32, 41, 16, 4),
+            "up": (16, 25, 16, 16), "down": (32, 25, 16, 16)})],
+    ## head_piece_bit 1, the head: a low half, and the pillow on the end of it
+    "1": [((16, 4, 8), (0, 0, 0),
+           {"north": STRAW_HIDDEN, "south": STRAW_HIDDEN,
+            "east": (0, 21, 8, 4), "west": (24, 21, 8, 4),
+            "up": (8, 13, 16, 8), "down": (24, 13, 16, 8)}),
+          ((16, 5, 8), (0, 0, 8),
+           {"north": (8, 8, 16, 5), "south": (32, 8, 16, 5),
+            "east": (0, 8, 8, 5), "west": (24, 8, 8, 5),
+            "up": (8, 0, 16, 8), "down": (24, 0, 16, 8)})],
+}
+
+## a quarter turn about y sends the face at +z to +x, and so on round
+STRAW_ROUND = {"east": "south", "west": "north", "north": "east",
+               "south": "west", "up": "up", "down": "down"}
+
+
+def straw_round(size, at, faces):
+    """Mojang's box, carried the quarter turn that lays the bed along x."""
+    wide, tall, deep = size
+    across, up, over = at
+    texture, window = {}, {}
+    for face in FACES:
+        region = faces[STRAW_ROUND[face]]
+        texture[face], window[face] = on_sheet(STRAW_SHEET, region, STRAW_WIDE)
+        if face in ("up", "down"):
+            ## the tile turns with the block, and a turned tile measures its
+            ## window across what used to be its height
+            x, y, w, h = window[face]
+            window[face] = (y, 16 - x - w, h, w, 270)
+    return Cube((deep, tall, wide), (over, up, 16 - across - wide),
+                texture=texture, window=window)
+
+
+STRAW_BEDS = {half: [straw_round(*box) for box in boxes]
+              for half, boxes in STRAW_FORMS.items()}
+## a straw bed carries no block entity at all, so unlike the dyed bed there is
+## nothing to fall back from; the foot is what an unstated one comes up as
+STRAW_BEDS["default"] = STRAW_BEDS["0"]
+
+
 def main():
     print("writing the furniture")
     write("daylight", DAYLIGHT)
@@ -335,6 +415,9 @@ def main():
     ## a lectern and a bed both face somewhere; an enchanting table does not
     turns("lectern", FACING)
     turns("bed", BED_FACING)
+    write("straw_bed", STRAW_BEDS)
+    turns("straw_bed", BED_FACING)
+    define(["straw_bed"], "straw_bed")
     print("now re-run tools/blocks/simplify.py")
 
 
