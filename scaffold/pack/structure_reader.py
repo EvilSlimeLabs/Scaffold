@@ -28,7 +28,14 @@ class StructureFile:
         if "" in self.NBTfile.keys():
             self.NBTfile=self.NBTfile[""]
 
-        self.blocks = list(map(int, self.NBTfile["structure"]["block_indices"][0]))
+        ## block_indices is a list of layers, and the first is the one a
+        ## ghost block is drawn from; the second carries waterlogging and
+        ## is not read here. A version 1 file stores each layer as a list
+        ## of Int tags and a version 2 file as a single IntArray, which is
+        ## already a numpy array -- so this converts one and borrows the
+        ## other, rather than walking either a value at a time.
+        self.blocks = array(
+            self.NBTfile["structure"]["block_indices"][0], dtype=int32)
         self.size = list(map(int, self.NBTfile["size"]))
         self.palette = self.NBTfile["structure"]["palette"]["default"]["block_palette"]
         self.mins = array(list(map(int,self.NBTfile["structure_world_origin"])))
@@ -119,9 +126,12 @@ class CombinedStructures:
             self.structs[file] = {}
             self.structs[file]["nbt"] = nbtlib.load(file, byteorder='little')
             if "" in self.structs[file]["nbt"].keys():
-                self.structs[file]["nbt"] = self.NBTfile[""]
+                self.structs[file]["nbt"] = self.structs[file]["nbt"][""]
             
-            self.structs[file]["blocks"] = array(list(map(int, self.structs[file]["nbt"]["structure"]["block_indices"][0])))
+            ## the first layer, as an array either way -- see StructureFile
+            self.structs[file]["blocks"] = array(
+                self.structs[file]["nbt"]["structure"]["block_indices"][0],
+                dtype=int32)
             
             self.structs[file]["size"] = array(list(map(int, self.structs[file]["nbt"]["size"])))
             self.structs[file]["palette"] = self.structs[file]["nbt"]["structure"]["palette"]["default"]["block_palette"]
