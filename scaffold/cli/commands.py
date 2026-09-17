@@ -15,6 +15,19 @@ def enable_debug():
     armor_stand_geo_class.debug = True
 
 
+def list_tweaks():
+    """Print the tweaks this build offers, for `--tweaks` with no names."""
+    from scaffold import lang_parse
+    from scaffold import tweaks
+
+    english = lang_parse.parse()["en_US"]
+    print("Bedrock Tweaks this build offers, for --tweaks:")
+    for key in tweaks.offered():
+        print("  %-36s %s" % (key, english.get("tweak " + key, key)))
+    print("\nTextures by Bedrock Tweaks and Vanilla Tweaks. A pack built with "
+          "any of\nthem credits them, which their licence asks for.")
+
+
 def build(args):
     """Build one pack from what the command line asked for."""
     opacity = settings.DEFAULT_OPACITY if args.opacity is None else args.opacity
@@ -49,6 +62,16 @@ def build(args):
         pack.set_low_geometry(True)
     if args.tech_pack and args.tech_pack != "none":
         pack.set_tech_pack(args.tech_pack)
+    if args.tweaks:
+        ## A name nothing offers is dropped rather than refused, but saying so
+        ## matters: a typo would otherwise be a pack quietly built without the
+        ## tweak somebody asked for.
+        pack.set_tweaks(args.tweaks)
+        applied = pack.get_tweaks()
+        unknown = [name for name in args.tweaks if name not in applied]
+        if unknown:
+            print("no tweak called: {}".format(", ".join(unknown)))
+            print("run --tweaks with no names to list them")
     if args.icon:
         pack.set_icon(args.icon)
 

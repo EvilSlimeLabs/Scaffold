@@ -122,6 +122,7 @@ class FingerprintTests(unittest.TestCase):
         pack.icon = kw.get("icon", paths.lookup("pack_icon.png"))
         pack.tech_pack = kw.get("tech_pack", False)
         pack.low_geometry = kw.get("low_geometry", False)
+        pack.tweaks = kw.get("tweaks", [])
         pack.big_offset = kw.get("big_offset", None)
         pack.structure_files = kw.get("models", {
             "": {"file": "test_structures/stoneSlabs.mcstructure",
@@ -140,6 +141,9 @@ class FingerprintTests(unittest.TestCase):
                        # already in the player's list
                        {"low_geometry": True},
                        {"big_offset": [1, 2, 3]},
+                       # a pack built with a Bedrock Tweak wears different
+                       # textures, so it is a different pack
+                       {"tweaks": ["ore_borders"]},
                        {"models": {"": {"file": "test_structures/rails.mcstructure",
                                         "offsets": [0, 0, 0]}}},
                        {"models": {"": {"file": "test_structures/stoneSlabs.mcstructure",

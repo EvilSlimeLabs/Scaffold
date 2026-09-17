@@ -74,8 +74,15 @@ class SpecialLanguageTests(unittest.TestCase):
     ## the key that describes the language rather than labels anything.
     ## "OK" is the same word in a pirate's mouth as in anyone else's, and the
     ## transforms are word substitutions: there is nothing in it to change
-    LEFT_ALONE = {"title", "techpack", "axis x", "axis y", "axis z", "ok"}
+    LEFT_ALONE = {"title", "techpack", "tweaks", "axis x", "axis y", "axis z",
+                  "ok"}
     LEFT_ALONE |= set(lang_parse.META)
+    ## **Every tweak's name is a proper name.** They are the titles Bedrock
+    ## Tweaks publishes those packs under, and somebody looking one up on their
+    ## site has to be reading the name they will find there, so they are not
+    ## translated into any language and not transformed into these either.
+    LEFT_ALONE |= {key for key in lang_parse.parse()["en_US"]
+                   if key.startswith("tweak ")}
 
     def test_each_one_says_something_different_from_english(self):
         # Enchanting is deliberately not one of these: the enchanting alphabet

@@ -116,7 +116,7 @@ SKIP_NAMES = {"easyItems.txt", "Thumbs.db", ".DS_Store"}
 
 ## Scaffold's own data, packed under the package it lives in
 DATA_DIRS = ("lookups", "Vanilla_Resource_Pack", "fonts", "images", "techpack",
-             "trust")
+             "tweakpacks", "trust")
 
 ## What the window needs and never names itself, so nothing can find it by
 ## following imports: CustomTkinter keeps its themes and widget fonts as JSON

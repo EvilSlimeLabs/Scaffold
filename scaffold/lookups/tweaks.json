@@ -1,0 +1,47 @@
+{
+	"suspicious_sand_and_gravel_borders": {
+		"from": "utility/suspicious_sand_and_gravel_borders",
+		"control": "sand_and_gravel",
+		"conflicts": ["sus_sand_and_gravel"]
+	},
+	"sus_sand_and_gravel": {
+		"from": "fun/sus_sand_and_gravel",
+		"control": "sand_and_gravel",
+		"conflicts": ["suspicious_sand_and_gravel_borders"]
+	},
+	"ore_borders": {
+		"from": "utility/ore_borders"
+	},
+	"visual_infested_stone": {
+		"from": "utility/visual_infested_stone_items",
+		"carried": true
+	},
+	"visual_waxed_copper": {
+		"from": "utility/visual_waxed_copper_items",
+		"carried": true
+	},
+	"budding_amethyst_borders": {
+		"from": "utility/budding_amethyst_borders"
+	},
+	"different_stems": {
+		"from": "utility/different_stems"
+	},
+	"age_25_kelp": {
+		"from": "utility/age_25_kelp"
+	},
+	"darker_dark_oak_leaves": {
+		"from": "terrain/darker_dark_oak_leaves"
+	},
+	"clean_redstone_dust": {
+		"from": "utility/clean_redstone_dust"
+	},
+	"directional_observers": {
+		"from": "utility/directional_observers"
+	},
+	"directional_hoppers": {
+		"from": "utility/directional_hoppers"
+	},
+	"sticky_piston_sides": {
+		"from": "utility/sticky_piston_sides"
+	}
+}

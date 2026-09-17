@@ -18,6 +18,7 @@ from scaffold import paths
 from scaffold.pack import structure_reader
 from scaffold.pack import tech_pack
 from scaffold import block_list
+from scaffold import tweaks
 from scaffold import version
 debug=False
 
@@ -48,8 +49,17 @@ BLOCK_ENTITY_SHAPES = {"CopperGolemStatue": "Pose", "Banner": "Base"}
 ##
 ## A field mapped to a dict is read for its value; one mapped to a string only
 ## has to be there and say something. The first that answers wins.
+## A lectern is the same shape from the other end: nothing in its states says
+## whether anybody put a book on it, and the block entity carries both a
+## `hasBook` flag and the book itself. The flag is read first and answers for
+## both of its values, so a lectern that says it is empty stays empty whatever
+## else is left beside it; the book itself is the fallback, for a lectern
+## written without the flag at all.
 BLOCK_ENTITY_INSTEAD = {"Banner": (("Type", {"1": "illager"}),
-                             ("Patterns", "designed"))}
+                             ("Patterns", "designed")),
+                        "Lectern": (("hasBook", {"1": "book",
+                                                 "0": "default"}),
+                                    ("book", "book"))}
 
 ## Which field of a block entity names something that goes *with* the block's
 ## own shape state rather than instead of it. A bed keeps its colour beside the
@@ -312,6 +322,8 @@ class Scaffold:
         self._tech_pack_merged=False
         ## full detail unless asked otherwise; see set_low_geometry
         self.low_geometry=False
+        ## no Bedrock Tweaks unless asked for; see set_tweaks
+        self.tweaks=[]
         ## only set when a big build is made; part of the fingerprint either way
         self.big_offset=None
         ## nothing to ask by default, so a failed write raises; see set_retry
@@ -360,6 +372,24 @@ class Scaffold:
         two are unaffected, which is most of them.
         """
         self.low_geometry=bool(enabled)
+
+    def set_tweaks(self,names=()):
+        """Build this pack with these Bedrock Tweaks applied.
+
+        `names` is the tweak ids `lookups/tweaks.json` uses, in the order they
+        should be layered; the ones that did not ship and the ones nothing
+        names are dropped, and of a conflicting pair the later wins. Passing
+        nothing clears them, which is the default.
+
+        The tweaks are an overlay on the vanilla pack the atlas is built from,
+        so a build with one on differs from a build without it in nothing but
+        its textures, and both are the same geometry.
+        """
+        self.tweaks=tweaks.chosen(names)
+
+    def get_tweaks(self):
+        """The tweaks this pack will be built with, after conflicts."""
+        return list(self.tweaks)
 
     def set_tech_pack(self,enabled=True):
         """Bundle the Bedrock Technical Resource Pack into this pack.
@@ -522,7 +552,7 @@ class Scaffold:
         if export_big:
             self.structure_files[model_name]['offsets'][0]-=xlen.item()+7
             self.structure_files[model_name]['offsets'][2]-=zlen.item()+7
-        armorstand = asgc.ArmorStandGeo(model_name,alpha = self.opacity, size=[xlen, ylen, zlen], offsets=self.structure_files[model_name]['offsets'], low_geometry=self.low_geometry)
+        armorstand = asgc.ArmorStandGeo(model_name,alpha = self.opacity, size=[xlen, ylen, zlen], offsets=self.structure_files[model_name]['offsets'], low_geometry=self.low_geometry, tweaks=self.tweaks)
 
         ## the animation only needs the layers of the tallest model; a
         ## shorter one that follows needs a subset of what is already there
@@ -660,6 +690,9 @@ class Scaffold:
                      tech_pack.version() if self.tech_pack != tech_pack.NONE
                      else "off"),
                  "geometry=" + ("low" if self.low_geometry else "high"),
+                 ## the order matters, because two tweaks touching one texture
+                 ## are applied in it, so it is not sorted
+                 "tweaks=" + (",".join(getattr(self, "tweaks", ())) or "none"),
                  "big=" + (",".join(str(v) for v in self.big_offset)
                            if getattr(self, "big_offset", None) else "off")]
         for name in sorted(self.structure_files):
@@ -675,6 +708,25 @@ class Scaffold:
                 ",".join(str(v) for v in offsets)))
         return "\n".join(parts)
 
+    def _write_tweak_credits(self):
+        """The `credits.txt` Bedrock Tweaks' licence asks a pack to carry.
+
+        Written only when a tweak was actually applied, because a pack with none
+        is carrying nobody else's work. It names what was used rather than the
+        whole catalogue, so somebody reading it can tell which files came from
+        where.
+        """
+        if not self.tweaks:
+            return
+        lines = ["This pack includes textures from Bedrock Tweaks.", ""]
+        lines += ["  " + name for name in self.tweaks]
+        lines += ["", "Bedrock Tweaks and Vanilla Tweaks:"]
+        lines += ["  " + link for link in tweaks.CREDIT_LINKS]
+        lines.append("")
+        path = os.path.join(self.work_dir, "credits.txt")
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            f.write("\n".join(lines))
+
     def compile_pack(self, overwrite=False):
         ## consider temp file
         nametags=list(self.structure_files.keys())
@@ -686,7 +738,9 @@ class Scaffold:
                         tech_pack_version=(tech_pack.version()
                                            if self.tech_pack == tech_pack.FULL
                                            else None),
-                        fingerprint=self.fingerprint())
+                        fingerprint=self.fingerprint(),
+                        tweaks=self.tweaks)
+        self._write_tweak_credits()
         copyfile(self.icon, f"{self.work_dir}/pack_icon.png")
         larger_render = paths.lookup("armor_stand.larger_render.geo.json")
         larger_render_path = f"{self.work_dir}/models/entity/armor_stand.larger_render.geo.json"

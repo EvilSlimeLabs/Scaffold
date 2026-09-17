@@ -39,6 +39,7 @@ STEPS = [
     ("tools.blocks.furniture", "beds, lecterns, conduits"),
     ("tools.blocks.heads", "the mob heads"),
     ("tools.blocks.containers", "the shulker boxes"),
+    ("tools.blocks.hopper", "the hopper, mounted and locked"),
     ("tools.blocks.banners", "standing and wall banners"),
     ("tools.blocks.bookshelf", "the bookshelf's sixty-four states"),
     ("tools.blocks.statues", "the copper golem's four poses"),
@@ -50,6 +51,7 @@ STEPS = [
     ("tools.textures.cauldron", "the cauldron's flattened underside"),
     ("tools.textures.beds", "the recoloured beds"),
     ("tools.textures.string", "a string a ghost can be seen with"),
+    ("tools.textures.water", "water you can see a build through"),
     ## after every shape family, because it reads them
     ("tools.blocks.simplify", "the simplified forms"),
     ("tools.app.icon", "the pack icon and the desktop icon"),

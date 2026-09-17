@@ -90,11 +90,21 @@ DEFAULT_LOW_GEOMETRY = False
 ## only thing Scaffold sends anywhere.
 DEFAULT_CHECK_UPDATES = True
 
+## **The Tweaks menu is two settings, not one.** Which tweaks somebody likes is
+## a long-lived answer and turning the lot off for one pack is a short-lived
+## one, so the switch is kept apart from the list. Switching off and on again
+## brings back exactly the tweaks that were on before, which one setting could
+## not do without forgetting them.
+DEFAULT_TWEAKS = False
+DEFAULT_TWEAKS_ON = ()
+
 DEFAULTS = {"lang": DEFAULT_LANGUAGE,
             "theme": DEFAULT_THEME,
             "tech_pack": DEFAULT_TECH_PACK,
             "low_geometry": DEFAULT_LOW_GEOMETRY,
             "check_updates": DEFAULT_CHECK_UPDATES,
+            "tweaks": DEFAULT_TWEAKS,
+            "tweaks_on": list(DEFAULT_TWEAKS_ON),
             "transparency": DEFAULT_TRANSPARENCY,
             "output_dir": ""}          # empty means "use the default"
 
@@ -334,6 +344,48 @@ def set_low_geometry(enabled):
     settings["low_geometry"] = bool(enabled)
     save()
     return settings["low_geometry"]
+
+
+def tweaks():
+    """Whether Bedrock Tweaks are applied to a pack at all."""
+    return bool(settings.get("tweaks", DEFAULT_TWEAKS))
+
+
+def set_tweaks(enabled):
+    """Remember whether the tweaks that are on should be applied."""
+    settings["tweaks"] = bool(enabled)
+    save()
+    return settings["tweaks"]
+
+
+def tweaks_on():
+    """Which tweaks are switched on, whether or not the master switch is.
+
+    A name the running build does not offer is dropped on the way out rather
+    than on the way in, so a settings file written by a newer Scaffold still
+    carries its choices back when that version is run again.
+    """
+    from scaffold import tweaks as tweak_packs
+
+    stored = settings.get("tweaks_on") or []
+    if not isinstance(stored, (list, tuple)):
+        return []
+    offered = tweak_packs.offered()
+    return [name for name in stored if name in offered]
+
+
+def set_tweaks_on(names):
+    """Remember which tweaks are switched on, with conflicts settled."""
+    from scaffold import tweaks as tweak_packs
+
+    settings["tweaks_on"] = tweak_packs.chosen(names)
+    save()
+    return list(settings["tweaks_on"])
+
+
+def chosen_tweaks():
+    """What to hand `core.set_tweaks`: nothing at all when the switch is off."""
+    return tweaks_on() if tweaks() else []
 
 
 def transparency():

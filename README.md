@@ -83,6 +83,7 @@ That is the whole flow. Everything else is optional:
 | **Big Build Mode** | For builds larger than one structure block; see below. |
 | **Make Block Lists** | Writes a text file of every block the build needs, beside the pack. |
 | **Low Geometry** | Draws the most detailed blocks as simpler shapes, and is remembered; see below. |
+| **Tweaks** | Applies Bedrock Tweaks texture changes to the pack; see below. |
 | **TechPack** | What to do about the Bedrock Technical Resource Pack; see below. |
 | **Output folder** | Where finished packs land. Defaults to `Scaffold Builds` in your Documents, and is remembered. |
 
@@ -112,7 +113,7 @@ When the pack is written you get told, with the path and anything that had to be
 
 `SHA256SUMS.txt` still travels with every release for anyone downloading the zip by hand: `sha256sum -c SHA256SUMS.txt` checks it.
 
-Your theme, language, output folder, TechPack choice, Low Geometry switch, block transparency and whether to check for updates are remembered in a `.scaffold` file. Scaffold looks for one **next to the executable** first, so putting it there makes the program portable, carrying its settings on a stick and touching nothing on the host. Otherwise it uses, and creates, one in your home directory.
+Your theme, language, output folder, TechPack choice, Tweaks switch and which tweaks you have chosen, Low Geometry switch, block transparency and whether to check for updates are remembered in a `.scaffold` file. Scaffold looks for one **next to the executable** first, so putting it there makes the program portable, carrying its settings on a stick and touching nothing on the host. Otherwise it uses, and creates, one in your home directory.
 
 ### Block lists
 
@@ -217,6 +218,35 @@ The bundled copy is whatever version of TechPack shipped with your Scaffold buil
 
 ---
 
+## Tweaks
+
+[Bedrock Tweaks](https://bedrocktweaks.net) publishes small texture changes that make a build easier to read: a border round ores so you can pick them out, an observer whose front you can tell, redstone dust without the clutter. Switch **Tweaks** on and press **Choose** to pick which of them your pack is built with, or pass `--tweaks` on the command line. `--tweaks` with no names after it lists what your build offers. Each one shows its own icon, so you can see what it does without reading a word, and **Enable all** turns the lot on or off at once.
+
+Thirteen are offered, in twelve controls:
+
+| Tweak | What it does |
+| --- | --- |
+| **Sand & Gravel** | A three-way slider: off, a border on suspicious sand and gravel, or the sus face. The two cannot both be on, so they share one control |
+| **Ore Borders** | A border round every ore |
+| **Budding Amethyst Borders** | A border on budding amethyst, so it is not mistaken for an ordinary block |
+| **Different Stems** | Melon and pumpkin stems you can tell apart |
+| **Age 25 Kelp** | The top of fully grown kelp looks different from kelp still growing |
+| **Clean Redstone Dust** | Redstone dust without the speckle |
+| **Directional Observers** | An observer you can tell the facing of |
+| **Directional Hoppers** | A hopper you can tell the facing of |
+| **Sticky Piston Sides** | Sticky pistons you can tell from ordinary ones from the side |
+| **Visual Infested Stone** | Infested stone looks different from ordinary stone |
+| **Visual Waxed Copper** | Waxed copper looks different from unwaxed |
+| **Darker Dark Oak Leaves** | Dark oak leaves darker, so they read as dark oak |
+
+The last two are worth a word. Minecraft itself can only tell waxed copper from unwaxed, or infested stone from stone, in your inventory, so those packs change the picture you see when you are holding the block and leave the placed block alone. A ghost block *is* the placed block, so Scaffold puts that picture on the block instead, which is what you want when you are looking at a build.
+
+Your choices are remembered, and kept when the switch is off, so you can turn the lot on and off between packs without picking them again.
+
+Textures by [Bedrock Tweaks](https://bedrocktweaks.net) and [Vanilla Tweaks](https://vanillatweaks.net). A pack built with any of them credits both in its description and carries a `credits.txt`, which their licence asks for. Their licence also means **a pack including them must not be sold or put behind a paywall.**
+
+---
+
 ## Command line
 
 **`Scaffold.exe` is both programs.** Double-click it and the window opens; give it arguments in a terminal and it builds a pack there instead and prints where it landed.
@@ -227,7 +257,7 @@ Scaffold.exe --structure path/to/build.mcstructure --pack_name "CLI Pack" --over
 
 `Scaffold-cli.exe` is the same command line with the window left out of the build, a smaller download for scripts, servers and batch jobs. It takes exactly the same arguments. The only difference is that running it with nothing to build tells you so instead of opening a window.
 
-`--opacity` (1–100, the inverse of the window's transparency slider), `--description`, `--icon`, `--output`, `--offset x,y,z`, `--low_geometry`, `--tech_pack none|compatibility|full` and `--overwrite` are all available. `--help` lists them. Without `--output` the pack lands in the same folder the window uses.
+`--opacity` (1–100, the inverse of the window's transparency slider), `--description`, `--icon`, `--output`, `--offset x,y,z`, `--low_geometry`, `--tech_pack none|compatibility|full`, `--tweaks NAME ...` and `--overwrite` are all available. `--help` lists them, and `--tweaks` with no names after it lists the tweaks. Without `--output` the pack lands in the folder you ran the command in.
 
 A pack that is already there stops the build and names the file, because the command line has nobody to ask. `--overwrite` is how you say to write over it.
 
@@ -259,7 +289,7 @@ git clone https://github.com/EvilSlimeLabs/Scaffold.git
 cd Scaffold
 ```
 
-**Skip `--recurse-submodules`.** `CommunityVanillaResourcePack` and `be_tech_pack` are reference material for `tools/vendor/`, not something an ordinary build reads: what they produce is already staged and committed under `scaffold/Vanilla_Resource_Pack` and `scaffold/techpack`. Only clone them (`git submodule update --init`) if you are updating the vendored assets themselves, with `python -m tools.vendor.vanilla_pack` or `python -m tools.vendor.tech_pack`.
+**Skip `--recurse-submodules`.** `CommunityVanillaResourcePack`, `bedrock-samples`, `bedrock_tweaks` and `be_tech_pack` are reference material for `tools/vendor/`, not something an ordinary build reads: what they produce is already staged and committed under `scaffold/Vanilla_Resource_Pack`, `scaffold/techpack` and `scaffold/tweakpacks`. Only clone them (`git submodule update --init`) if you are updating the vendored assets themselves, with `python -m tools.vendor.vanilla_pack`, `python -m tools.vendor.tech_pack` or `python -m tools.vendor.tweaks`.
 
 ### 2. Install Python and the build dependencies
 

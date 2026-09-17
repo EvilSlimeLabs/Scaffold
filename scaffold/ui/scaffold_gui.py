@@ -21,6 +21,7 @@ import sys
 import threading
 import tkinter
 from tkinter import filedialog
+from tkinter import dialog
 
 import customtkinter as ctk
 import nbtlib
@@ -34,6 +35,7 @@ from scaffold.pack import manifest
 from scaffold import paths
 from scaffold import core
 from scaffold import updates
+from scaffold import tweaks as tweak_packs
 from scaffold.pack import tech_pack
 from scaffold.ui import ui_fonts
 ## Drawn at one scale, chosen once and never changed.
@@ -124,7 +126,7 @@ HEADING_HEIGHT = 26
 
 ## The window's size. It does not resize; see the note where this is applied.
 WINDOW_WIDE = 1080
-WINDOW_TALL = 723
+WINDOW_TALL = 761
 
 ## How wide the global coordinates button is. Sized for the longest translation
 ## of its label rather than the English one. Ukrainian needs seventy per cent
@@ -167,6 +169,11 @@ BOX_INSET = 2
 ## The inset covers the thickest border a field is ever given. That border grows
 ## from one to two while a field is showing an error, so the text keeps the same
 ## distance from the outline in both states instead of shifting.
+## how wide a switch is drawn, which the Tweaks dialog's three-position one is
+## built out from so that a two-position one there is the same size as the ones
+## in the settings panel
+SWITCH_WIDE = 46
+
 FIELD_RADIUS = 8
 FIELD_INSET = 2
 ## What each TechPack choice is called. Written out rather than composed, so
@@ -783,11 +790,71 @@ class StructureRow(ctk.CTkFrame):
         return self.tag_var.get().strip()
 
 
+def hide_dialog(dialog, direction="out"):
+    """Keeps a dialog invisible either being drawn in or before being destroyed."""
+    if direction == "in":
+        dialog.withdraw()
+        dialog.attributes("-alpha", 0.0)
+        dialog.update_idletasks()
+    if direction == "out":
+        dialog.attributes("-alpha", 0.0)
+        dialog.update_idletasks()
+        dialog.withdraw()
+
+
+def present(dialog, app):
+    """Put a dialog on screen, once, in the middle of the window.
+
+    **A toplevel is mapped where the window manager first puts it**, and moving
+    it afterwards is a visible jump from one place to another: the dialog is
+    drawn in a corner, then drawn again in the middle. It is worse the larger
+    the dialog, which is why the Tweaks grid showed it and a two-line notice
+    barely did.
+
+    So the dialog is withdrawn while it is built, laid out and measured where
+    nobody can see it, placed, and only then shown.
+
+    The order matters throughout. A withdrawn window has no size to be centred
+    by until it has been laid out, and a grab on one the server has not mapped
+    yet raises, so that is tried again on the next idle rather than leaving the
+    dialog un-modal.
+
+    `transient` ties the dialog to the window, so it can never end up behind it
+    while the build waits on an answer; a plain toplevel can.
+    """
+    dialog.transient(app)
+    centre_on(dialog, app)
+    dialog.deiconify()
+    dialog.update_idletasks()
+    dialog.attributes("-alpha", 1.0)
+    dialog.lift()
+    dialog.attributes("-topmost", True)
+    ## a dialog answered inside four hundred milliseconds is gone before this
+    ## runs, and touching a destroyed widget raises in the event loop rather
+    ## than where anybody would see it
+    dialog.after(400, lambda: dialog.winfo_exists()
+                 and dialog.attributes("-topmost", False))
+    dialog.focus_force()
+    _hold(dialog)
+    dialog.bind("<Escape>", lambda _e: dialog.destroy())
+
+
+def _hold(dialog):
+    """Take the pointer and the keyboard, retrying until the dialog is up."""
+    if not dialog.winfo_exists():
+        return
+    try:
+        dialog.grab_set()
+    except tkinter.TclError:
+        dialog.after(30, lambda: _hold(dialog))
+
+
 class ResultDialog(ctk.CTkToplevel):
     """What happened, once the pack is written."""
 
     def __init__(self, app, title, lines, folder, reveal=None, pack=None):
         super().__init__(app)
+        hide_dialog(self, direction="in")
         self.app = app
         self.folder = folder
         ## the file to point at once the folder opens, if there is one
@@ -835,19 +902,7 @@ class ResultDialog(ctk.CTkToplevel):
                       hover_color=AMBER_HOVER, text_color=ON_AMBER,
                       command=self.destroy).pack(side="left")
 
-        ## transient ties the dialog to the window, so it can never end up
-        ## behind it. A plain toplevel can.
-        self.transient(app)
-        self.after(60, self._centre)
-        self.after(120, self.grab_set)
-        self.bind("<Escape>", lambda _e: self.destroy())
-
-    def _centre(self):
-        centre_on(self, self.app)
-        self.lift()
-        self.attributes("-topmost", True)
-        self.after(400, lambda: self.attributes("-topmost", False))
-        self.focus_force()
+        present(self, self.app)
 
     def install(self):
         """Put the pack in Minecraft's folder, and leave if it worked.
@@ -925,6 +980,10 @@ class ResultDialog(ctk.CTkToplevel):
             except Exception:
                 pass
         self.destroy()
+        
+    def destroy(self):
+        hide_dialog(self, direction="out")
+        return super().destroy()
 
 
 class QuestionDialog(ctk.CTkToplevel):
@@ -938,6 +997,7 @@ class QuestionDialog(ctk.CTkToplevel):
 
     def __init__(self, app, title):
         super().__init__(app)
+        hide_dialog(self, direction="in")
         self.app = app
         self.answer = None
         self.title(title)
@@ -978,23 +1038,15 @@ class QuestionDialog(ctk.CTkToplevel):
                 command=command).pack(side="left", padx=(8, 0))
 
     def show(self):
-        ## transient ties the dialog to the window, so it can never end up
-        ## behind it while the build waits on the answer
-        self.transient(self.app)
-        self.after(60, self._centre)
-        self.after(120, self.grab_set)
-        self.bind("<Escape>", lambda _e: self.destroy())
-
-    def _centre(self):
-        centre_on(self, self.app)
-        self.lift()
-        self.attributes("-topmost", True)
-        self.after(400, lambda: self.attributes("-topmost", False))
-        self.focus_force()
+        present(self, self.app)
 
     def settle(self, answer):
         self.answer = answer
         self.destroy()
+        
+    def destroy(self):
+        hide_dialog(self, direction="out")
+        return super().destroy()
 
 
 def free_name(folder, name, taken=None):
@@ -1028,6 +1080,7 @@ class OverwriteDialog(QuestionDialog):
 
     def __init__(self, app, folder, name, clashes, suggestion):
         super().__init__(app, app.text("overwrite title"))
+        hide_dialog(self, direction="in")
         self.chosen = suggestion
         self.line(app.text("overwrite body", os.path.basename(folder) or folder))
         for path in clashes[:6]:
@@ -1048,6 +1101,9 @@ class OverwriteDialog(QuestionDialog):
         self.show()
         self.bind("<Return>", lambda _e: self.settle("rename"))
 
+    def destroy(self):
+        hide_dialog(self, direction="out")
+        return super().destroy()
 
 class NoticeDialog(QuestionDialog):
     """Something that went wrong and has only one way out.
@@ -1060,18 +1116,305 @@ class NoticeDialog(QuestionDialog):
 
     def __init__(self, app, title, body):
         super().__init__(app, title)
+        hide_dialog(self, direction="in")
         for line in str(body).splitlines() or [""]:
             self.line(line)
         self.buttons([(app.text("ok"), self.destroy)])
         self.show()
         self.bind("<Return>", lambda _e: self.destroy())
 
+    def destroy(self):
+        hide_dialog(self, direction="out")
+        return super().destroy()
+
+## **A switch with more than two positions.** Sand & Gravel has three answers:
+## off, the bordered pack, or the sus one. Two switches that turned each other
+## off would say the same thing and read as a fault, so it is one switch with a
+## third place for its knob.
+##
+## **It is CustomTkinter's own switch, not a drawing of one.** The engine that
+## paints a switch takes the knob's place along the track as a fraction, so
+## everything that makes a switch look like the others here -- the track, the
+## border, the corner radius, the amber fill behind the knob, the hover, and the
+## grey it goes when it is off -- is inherited rather than imitated. Only where
+## the knob sits and what a click does are new. A drawn copy was never going to
+## match, and did not.
+SWITCH_STEP = 18                    # how much wider each position past the first
+
+
+class MultiSwitch(ctk.CTkSwitch):
+    """A switch with `positions` answers, the first of which is off.
+
+    `value` is the index: 0 is off, 1 is the first choice, and so on. Clicking
+    steps to the next and wraps round, which is what a two-position switch does
+    anyway, and `command` is called with the new index after every step.
+    """
+
+    def __init__(self, parent, positions=2, command=None, value=0, **kw):
+        self._positions = max(2, int(positions))
+        self._position = 0
+        self._stepped = command
+        wide = SWITCH_WIDE + SWITCH_STEP * (self._positions - 2)
+        super().__init__(parent, text="", width=wide, switch_width=wide,
+                         progress_color=AMBER,
+                         button_color=("#FFFFFF", "#E9ECF2"), **kw)
+        self.set_position(value)
+
+    def toggle(self, event=None):
+        """Step to the next position rather than flipping between two."""
+        if self._state != "normal":
+            return
+        self.set_position((self._position + 1) % self._positions, tell=True)
+
+    def set_position(self, value, tell=False):
+        self._position = int(value) % self._positions
+        ## the base class reads this for the colours and for `get`, so an
+        ## off switch is off and every other position is on
+        self._check_state = self._position > 0
+        self._draw()
+        if tell and self._stepped is not None:
+            self._stepped(self._position)
+
+    def get_position(self):
+        return self._position
+
+    def _draw(self, no_color_updates=False):
+        """Paint the switch with its knob at the position it is now at.
+
+        `CTkSwitch._draw` hands the engine 1 or 0; the engine takes a fraction,
+        so a third place is a matter of handing it a half.
+        """
+        along = self._position / (self._positions - 1)
+        ## the base class's own `_draw` would paint the knob at one end or the
+        ## other, so its grandparent is called for the frame and the engine is
+        ## asked for the slider directly
+        ctk.CTkBaseClass._draw(self, no_color_updates)
+        recolour = self._draw_engine.draw_rounded_slider_with_border_and_button(
+            self._apply_widget_scaling(self._switch_width),
+            self._apply_widget_scaling(self._switch_height),
+            self._apply_widget_scaling(self._corner_radius),
+            self._apply_widget_scaling(self._border_width),
+            self._apply_widget_scaling(self._button_length),
+            self._apply_widget_scaling(self._corner_radius),
+            along, "w")
+        if no_color_updates is False or recolour:
+            self._recolour()
+
+    def _recolour(self):
+        """The colours `CTkSwitch._draw` would have applied after painting."""
+        mode = self._apply_appearance_mode
+        self._bg_canvas.configure(bg=mode(self._bg_color))
+        self._canvas.configure(bg=mode(self._bg_color))
+        edge = self._bg_color if self._border_color == "transparent" \
+            else self._border_color
+        self._canvas.itemconfig("border_parts", fill=mode(edge),
+                                outline=mode(edge))
+        self._canvas.itemconfig("inner_parts", fill=mode(self._fg_color),
+                                outline=mode(self._fg_color))
+        lit = self._fg_color if self._progress_color == "transparent" \
+            else self._progress_color
+        self._canvas.itemconfig("progress_parts", fill=mode(lit),
+                                outline=mode(lit))
+        self._canvas.itemconfig("slider_parts", fill=mode(self._button_color),
+                                outline=mode(self._button_color))
+        self._text_label.configure(bg=mode(self._bg_color))
+
+
+def control_label(name):
+    """The string table's key for one control's name, built out of the call.
+
+    Why it is not spelled at the call site is the same reason as
+    `tweak_label` below: the source would then carry a half-written lookup name
+    that the string-coverage test reads as a missing string.
+    """
+    return "tweak control " + name
+
+
+def tweak_label(key):
+    """The string table's key for one tweak's name.
+
+    Built here rather than spelled at the call. `tests/test_interface.py` reads
+    every quoted lookup name out of this file and fails on one the table has no
+    entry for, so a key half written at the call site reads to it as a missing
+    string -- and there is no whole key to write, since the thirteen come from
+    `lookups/tweaks.json` rather than from this file.
+    """
+    return "tweak " + key
+
+
+## the grid the dialog lays its controls out in, filled down each column and
+## then across, straight out of `lookups/tweaks.json`. Twelve cells for thirteen
+## tweaks, because the two that cannot both be on share one.
+TWEAK_ROWS = 4
+TWEAK_ICON = 90
+
+
+class TweaksDialog(QuestionDialog):
+    """Which Bedrock Tweaks to apply, one switch each.
+
+    **A picture rather than a paragraph.** Bedrock Tweaks draws an icon for
+    every pack showing what it does, and `tools/vendor/tweaks.py` stages those
+    beside the art. A cell is the name with its switch beside it and the picture
+    under both, so the names line up across a column and the pictures are as
+    large as the room allows. Nothing here explains what a tweak does in words,
+    because the picture does it better.
+
+    **Sand & Gravel is one switch with three positions**, off and one per pack,
+    because its two packs write the same eight files and cannot both be on. Two
+    switches that turned each other off would read as a fault. The picture
+    follows the position, and an off switch keeps the first pack's picture, so
+    the cell still says what the control is about. `tweaks.controls()` decides
+    which tweaks share a switch; nothing here does.
+
+    Nothing is remembered until OK: Cancel leaves the stored list exactly as it
+    was, so somebody who opened this to look does not have to undo anything.
+    """
+    def __init__(self, app):
+        super().__init__(app, app.text("tweaks"))
+        hide_dialog(self, direction="in")
+        
+        self.controls = []
+
+        on = set(settings.tweaks_on())
+        grid = ctk.CTkFrame(self, fg_color="transparent")
+        grid.grid(row=self.row, column=0, sticky="ew", padx=20, pady=(6, 0))
+        self.row += 1
+
+        for index, (name, keys) in enumerate(tweak_packs.controls()):
+            across, down = index // TWEAK_ROWS, index % TWEAK_ROWS
+            grid.grid_columnconfigure(across, weight=1, uniform="tweak")
+            value = next((keys.index(key) + 1 for key in keys if key in on), 0)
+            self.controls.append(self._cell(grid, across, down, name, keys, value))
+        self._relabel_all()
+
+        ## **The credit sits with the buttons, not with the content.** The
+        ## licence asks for it to travel with the files; it is not something to
+        ## read before deciding, so it goes on the last line where a footnote
+        ## goes, and the buttons keep the right of that row.
+        footer = ctk.CTkFrame(self, fg_color="transparent")
+        footer.grid(row=self.row, column=0, sticky="ew", padx=20, pady=(14, 16))
+        footer.grid_columnconfigure(1, weight=1)
+        self.row += 1
+        ctk.CTkLabel(footer, text=app.text("tweaks credit"), text_color=MUTED,
+                     font=font(size=11), anchor="w", justify="left").grid(
+            row=0, column=0, sticky="w")
+        buttons = ctk.CTkFrame(footer, fg_color="transparent")
+        buttons.grid(row=0, column=2, sticky="e")
+        for index, (label, command) in enumerate(
+                [(app.text("cancel"), self.destroy),
+                 (app.text("ok"), self.keep)]):
+            last = index == 1
+            ctk.CTkButton(
+                buttons, text=label, width=110, height=32, corner_radius=8,
+                font=font(),
+                fg_color=AMBER if last else "transparent",
+                hover_color=AMBER_HOVER if last else BORDER,
+                text_color=ON_AMBER if last else TEXT,
+                border_width=0 if last else 1, border_color=BORDER,
+                command=command).pack(side="left", padx=(8, 0))
+        self.update_idletasks()
+        self.show()
+
+    def heading(self, text):
+        """The title, with the all-on-or-off button on the other end of it.
+
+        `QuestionDialog` puts a title on its own line. Here the line carries the
+        one control that is about the grid as a whole rather than about any cell
+        in it, which is the corner a reader is already looking at.
+        """
+        bar = ctk.CTkFrame(self, fg_color="transparent")
+        bar.grid(row=self.row, column=0, sticky="ew", padx=20, pady=(18, 2))
+        bar.grid_columnconfigure(0, weight=1)
+        self.row += 1
+        ctk.CTkLabel(bar, text=text, font=font(size=17, weight="bold"),
+                     text_color=TEXT, anchor="w").grid(row=0, column=0,
+                                                       sticky="w")
+        self.all_button = ctk.CTkButton(
+            bar, text="", width=110, height=28, corner_radius=8,
+            font=font(size=12), fg_color=FIELD, hover_color=BORDER,
+            text_color=TEXT, border_width=1, border_color=BORDER,
+            command=self.toggle_all)
+        self.all_button.grid(row=0, column=1, sticky="e")
+
+    def _cell(self, grid, across, down, name, keys, value):
+        """One control: its name, its switch, and its picture under both.
+
+        Returns a dict rather than a widget, because the caller needs the keys
+        the switch stands for as much as it needs the switch.
+        """
+        holder = ctk.CTkFrame(grid, fg_color="transparent")
+        holder.grid(row=down, column=across, sticky="ew", padx=8, pady=(2, 10))
+        holder.grid_columnconfigure(0, weight=1)
+
+        ## the name reads at the size the settings panel's own labels do; a
+        ## smaller one here would have made the dialog look like a footnote
+        ctk.CTkLabel(holder, text=self.app.text(control_label(name)),
+                     anchor="w", text_color=TEXT, font=font(size=13),
+                     justify="left").grid(row=0, column=0, sticky="w")
+
+        cell = {"keys": keys}
+        switch = MultiSwitch(holder, positions=len(keys) + 1,
+                             command=lambda _v, c=cell: self._repicture(c),
+                             value=value)
+        switch.grid(row=0, column=1, sticky="e", padx=(8, 0))
+        cell["switch"] = switch
+
+        picture = ctk.CTkLabel(holder, text="", width=TWEAK_ICON,
+                               height=TWEAK_ICON)
+        picture.grid(row=1, column=0, columnspan=2, sticky="w", pady=(4, 0))
+        cell["picture"] = picture
+        self._repicture(cell)
+        return cell
+
+    def _repicture(self, cell):
+        """Show the picture of the pack the switch is pointing at.
+
+        An off switch keeps the first pack's picture rather than going blank,
+        so the cell still says what the control is about.
+        """
+        at = max(0, cell["switch"].get_position() - 1)
+        where = tweak_packs.icon(cell["keys"][at])
+        picture = load_image(where, TWEAK_ICON) if where else None
+        cell["picture"].configure(image=picture, text="" if picture else "?")
+        self._relabel_all()
+
+    def _relabel_all(self):
+        """The button says what pressing it would do, not what is on."""
+        self.all_button.configure(
+            text=self.app.text("tweaks disable all" if self.chosen()
+                               else "tweaks enable all"))
+
+    def chosen(self):
+        """The tweaks the switches are pointing at."""
+        return [cell["keys"][cell["switch"].get_position() - 1]
+                for cell in self.controls if cell["switch"].get_position()]
+
+    def toggle_all(self):
+        """Switch every control off, or every one on if none is.
+
+        On means the first position of each, which for Sand & Gravel is the
+        bordered pack rather than the sus one: a button that turns everything on
+        should not be the only way anybody meets a joke texture.
+        """
+        wanted = 0 if self.chosen() else 1
+        for cell in self.controls:
+            cell["switch"].set_position(wanted)
+            self._repicture(cell)
+
+    def keep(self):
+        chosen = settings.set_tweaks_on(self.chosen())
+        self.settle(chosen)
+
+    def destroy(self):
+        hide_dialog(self, direction="out")
+        return super().destroy()
 
 class RetryDialog(QuestionDialog):
     """A file the build could not write. Answers True to try it again."""
 
     def __init__(self, app, path, exc):
         super().__init__(app, app.text("write failed title"))
+        hide_dialog(self, direction="in")
         self.line(app.text("write failed body", os.path.basename(path)),
                   colour=TEXT)
         self.line(str(exc), colour=DANGER)
@@ -1081,12 +1424,16 @@ class RetryDialog(QuestionDialog):
         self.show()
         self.bind("<Return>", lambda _e: self.settle(True))
 
+    def destroy(self):
+        hide_dialog(self, direction="out")
+        return super().destroy()
 
 class AboutDialog(ctk.CTkToplevel):
     """Who made this, and where to go next."""
 
     def __init__(self, app):
         super().__init__(app)
+        hide_dialog(self, direction="in")
         self.app = app
         self.title(app.text("about"))
         self.resizable(False, False)
@@ -1168,12 +1515,7 @@ class AboutDialog(ctk.CTkToplevel):
                       hover_color=AMBER_HOVER, text_color=ON_AMBER,
                       command=self.destroy).pack(side="left")
 
-        ## transient ties the dialog to the window, so it can never end up
-        ## behind it. A plain toplevel can.
-        self.transient(app)
-        self.after(60, self._centre)
-        self.after(120, self.grab_set)
-        self.bind("<Escape>", lambda _e: self.destroy())
+        present(self, self.app)
 
     def check_now(self):
         """Ask GitHub, off the main thread, and say what came back.
@@ -1210,19 +1552,16 @@ class AboutDialog(ctk.CTkToplevel):
             ## thing: whether a newer version is out is all anyone asked
             self.update_status.configure(text=self.app.text("update current"))
 
-    def _centre(self):
-        centre_on(self, self.app)
-        self.lift()
-        self.attributes("-topmost", True)
-        self.after(400, lambda: self.attributes("-topmost", False))
-        self.focus_force()
-
+    def destroy(self):
+        hide_dialog(self, direction="out")
+        return super().destroy()
 
 class UpdateDialog(ctk.CTkToplevel):
     """A newer build is out. Take it now, or not."""
 
     def __init__(self, app, tag, notes=""):
         super().__init__(app)
+        hide_dialog(self, direction="in")
         self.app = app
         self.tag = tag
         self.title(app.text("update title"))
@@ -1268,17 +1607,7 @@ class UpdateDialog(ctk.CTkToplevel):
         self.update_idletasks()
         self.minsize(self.winfo_reqwidth(), self.winfo_reqheight())
 
-        self.transient(app)
-        self.after(60, self._centre)
-        self.after(120, self.grab_set)
-        self.bind("<Escape>", lambda _e: self.destroy())
-
-    def _centre(self):
-        centre_on(self, self.app)
-        self.lift()
-        self.attributes("-topmost", True)
-        self.after(400, lambda: self.attributes("-topmost", False))
-        self.focus_force()
+        present(self, self.app)
 
     def install(self):
         """Fetch the build and put it in place, then start it and leave."""
@@ -1315,6 +1644,9 @@ class UpdateDialog(ctk.CTkToplevel):
         self.app.destroy()
         os._exit(0)
 
+    def destroy(self):
+        hide_dialog(self, direction="out")
+        return super().destroy()
 
 class Chooser(ctk.CTkFrame):
     """A box showing the current choice, and the list it opens.
@@ -1950,6 +2282,8 @@ class App(ctk.CTk):
         ## Remembered between runs, because it describes the machine the packs
         ## are viewed on rather than any one pack. Full detail is the default.
         self.low_geometry = tkinter.IntVar(value=int(settings.low_geometry()))
+        ## the master switch; which tweaks are on is remembered apart from it
+        self.tweaks = tkinter.IntVar(value=int(settings.tweaks()))
 
         switches = ctk.CTkFrame(panel, fg_color="transparent")
         switches.grid(row=r, column=0, sticky="ew", padx=16, pady=(16, 0)); r += 1
@@ -1993,6 +2327,47 @@ class App(ctk.CTk):
         self.tech_pack.grid(row=0, column=3, sticky="e")
         self.tech_pack.set(settings.settings["tech_pack"]
                            if tech_pack.available() else "none")
+
+        ## **The tweaks are a switch and a door, not fourteen switches.** How
+        ## many there are is decided by `lookups/tweaks.json` rather than by
+        ## this window, and the window does not resize, so the list is a dialog
+        ## and only the master switch is here. The two answers are kept apart in
+        ## the settings as well: switching the lot off for one pack must not
+        ## forget which ones somebody likes.
+        tweaks_row = ctk.CTkFrame(switches, fg_color="transparent")
+        tweaks_row.grid(row=4, column=0, sticky="ew", pady=5)
+        tweaks_row.grid_columnconfigure(0, weight=0)
+        tweaks_row.grid_columnconfigure(2, weight=1)
+        self.tweaks_label = ctk.CTkLabel(tweaks_row, text=self.text("tweaks"),
+                                         anchor="w", text_color=TEXT,
+                                         font=font(size=13))
+        self.tweaks_label.grid(row=0, column=0, sticky="w")
+        self.tweaks_mark = ctk.CTkLabel(
+            tweaks_row, text="?", width=HELP_DOT, height=HELP_DOT,
+            corner_radius=HELP_DOT // 2, fg_color=FIELD, text_color=MUTED,
+            cursor="hand2", font=font(size=11, weight="bold"))
+        self.tweaks_mark.grid(row=0, column=1, padx=(6, 0), sticky="w")
+        draw_every_pixel(self.tweaks_mark)
+        self.tweaks_mark.tip = Tooltip(self.tweaks_mark, self,
+                                       self.text("tweaks help"))
+        self.tweaks_button = ctk.CTkButton(
+            tweaks_row, text=self.text("tweaks choose"), width=96, height=26,
+            corner_radius=8, font=font(size=12), fg_color=FIELD,
+            hover_color=BORDER, text_color=TEXT, border_width=1,
+            border_color=BORDER, command=self.on_tweaks_choose)
+        self.tweaks_button.grid(row=0, column=2, sticky="e", padx=(0, 8))
+        self.tweaks_switch = ctk.CTkSwitch(
+            tweaks_row, text="", variable=self.tweaks, width=SWITCH_WIDE,
+            progress_color=AMBER, button_color=("#FFFFFF", "#E9ECF2"),
+            command=self.on_tweaks)
+        self.tweaks_switch.grid(row=0, column=3, sticky="e")
+        self.count_tweaks()
+        ## **The dialog's pictures are decoded before anybody opens it.** There
+        ## are thirteen, and reading them while the dialog is being built is
+        ## work done with the window already on its way up. `load_image` keeps
+        ## what it has read, so doing it here on the next idle costs the opening
+        ## nothing and the dialog appears already drawn.
+        self.after_idle(self.warm_tweak_icons)
 
         panel.grid_rowconfigure(r, weight=1); r += 1
 
@@ -2043,7 +2418,7 @@ class App(ctk.CTk):
             draw_every_pixel(mark)
             mark.tip = Tooltip(mark, self, self.text(help_key))
 
-        switch = ctk.CTkSwitch(holder, text="", variable=variable, width=46,
+        switch = ctk.CTkSwitch(holder, text="", variable=variable, width=SWITCH_WIDE,
                                progress_color=AMBER,
                                button_color=("#FFFFFF", "#E9ECF2"),
                                command=command)
@@ -2455,6 +2830,31 @@ class App(ctk.CTk):
         self.set_status("%s: %d, %d, %d" % ((self.text("corner"),) +
                                             tuple(self.big_offset)))
 
+    def warm_tweak_icons(self):
+        """Read every tweak's picture into the image cache, once."""
+        for key in tweak_packs.offered():
+            where = tweak_packs.icon(key)
+            if where:
+                load_image(where, TWEAK_ICON)
+
+    def on_tweaks(self):
+        """Remember whether the tweaks that are on should be applied."""
+        settings.set_tweaks(self.tweaks.get())
+        self.count_tweaks()
+
+    def on_tweaks_choose(self):
+        """Open the list, and say afterwards how many came back on."""
+        dialog = TweaksDialog(self)
+        self.wait_window(dialog)
+        self.count_tweaks()
+
+    def count_tweaks(self):
+        """Put the number switched on next to the button, or nothing at all."""
+        how_many = len(settings.tweaks_on())
+        self.tweaks_button.configure(
+            text=self.text("tweaks choose") if not how_many
+            else self.text("tweaks chosen", how_many))
+
     def on_tech_pack(self, mode):
         """Remember the choice, unless there is no TechPack to choose."""
         if mode != "none" and not tech_pack.available():
@@ -2553,6 +2953,10 @@ class App(ctk.CTk):
                 switch.mark.tip.text = self.text(switch.help_key)
         self.tech_label.configure(text=self.text("techpack"))
         self.tech_mark.tip.text = self.text("techpack help")
+        self.tweaks_label.configure(text=self.text("tweaks"))
+        self.tweaks_mark.tip.text = self.text("tweaks help")
+        ## the button carries a count, so it is rebuilt rather than relabelled
+        self.count_tweaks()
         self.tech_pack.refit()
         self.theme_menu.refit()
         self.refresh_output_button()
@@ -2714,6 +3118,9 @@ class App(ctk.CTk):
             "alpha": settings.transparency_to_alpha(self.transparency.get()),
             "low_geometry": bool(self.low_geometry.get()),
             "tech_pack": self.tech_pack.get(),
+            ## read through settings rather than off the switch, because the
+            ## master switch and the list of tweaks are two separate answers
+            "tweaks": settings.chosen_tweaks(),
             "big_build": bool(self.big_build.get()),
             "block_lists": bool(self.block_lists.get()),
             "big_offset": list(self.big_offset),
@@ -2740,6 +3147,8 @@ class App(ctk.CTk):
                 pack.set_low_geometry(True)
             if job["tech_pack"] and job["tech_pack"] != "none":
                 pack.set_tech_pack(job["tech_pack"])
+            if job["tweaks"]:
+                pack.set_tweaks(job["tweaks"])
 
             for index, (tag, path, offset) in enumerate(job["models"]):
                 name = tag or ("" if len(job["models"]) == 1 else str(index))

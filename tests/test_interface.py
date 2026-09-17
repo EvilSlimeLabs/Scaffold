@@ -3,6 +3,13 @@ import re
 import sys
 import unittest
 
+
+def ctk_switch():
+    """CustomTkinter's switch class, imported where it is needed."""
+    import customtkinter
+
+    return customtkinter.CTkSwitch
+
 from scaffold import settings
 from scaffold import lang_parse
 def open_window():
@@ -30,6 +37,214 @@ def settle(app, passes=6):
     """
     for _ in range(passes):
         app.update()
+
+class TweaksDialogTests(unittest.TestCase):
+    """The grid of sliders, and the three-position one in the corner."""
+
+    def setUp(self):
+        from scaffold import tweaks
+
+        self.app = open_window()
+        self.addCleanup(self.app.destroy)
+        settle(self.app)
+        self.tweaks = tweaks
+
+    def dialog(self):
+        from scaffold.ui import scaffold_gui
+
+        made = scaffold_gui.TweaksDialog(self.app)
+        self.addCleanup(made.destroy)
+        settle(self.app)
+        return made
+
+    def test_there_is_one_cell_per_control(self):
+        self.assertEqual(len(self.dialog().controls),
+                         len(self.tweaks.controls()))
+
+    def test_a_pair_that_cannot_both_be_on_is_one_switch_with_three_positions(self):
+        made = self.dialog()
+        shared = [cell for cell in made.controls if len(cell["keys"]) > 1]
+
+        self.assertTrue(shared, "no control stands for more than one tweak")
+        for cell in shared:
+            ## one position per tweak, and an off at the start
+            self.assertEqual(cell["switch"]._positions, len(cell["keys"]) + 1)
+
+    def test_each_position_of_a_switch_names_its_own_tweak(self):
+        made = self.dialog()
+        cell = next(c for c in made.controls if len(c["keys"]) > 1)
+
+        cell["switch"].set_position(0)
+        self.assertEqual([k for k in cell["keys"] if k in made.chosen()], [])
+        for index, key in enumerate(cell["keys"]):
+            with self.subTest(position=index + 1):
+                cell["switch"].set_position(index + 1)
+                self.assertIn(key, made.chosen())
+
+    def test_a_switch_never_lands_on_two_of_its_own_tweaks(self):
+        ## which is the whole reason the pair is one control and not two
+        made = self.dialog()
+        cell = next(c for c in made.controls if len(c["keys"]) > 1)
+        for position in range(cell["switch"]._positions):
+            cell["switch"].set_position(position)
+            with self.subTest(position=position):
+                self.assertLessEqual(
+                    len([k for k in cell["keys"] if k in made.chosen()]), 1)
+
+    def test_an_off_switch_still_shows_a_picture(self):
+        ## a blank cell would stop saying what the control is about
+        made = self.dialog()
+        for cell in made.controls:
+            cell["switch"].set_position(0)
+            made._repicture(cell)
+            with self.subTest(control=cell["keys"][0]):
+                self.assertIsNotNone(cell["picture"].cget("image"))
+
+    def test_toggle_all_turns_everything_on_and_then_off(self):
+        made = self.dialog()
+        for cell in made.controls:
+            cell["switch"].set_position(0)
+
+        made.toggle_all()
+        self.assertEqual(len(made.chosen()), len(made.controls))
+        ## on means the first position of each, never the second: a button that
+        ## turns everything on should not be the only way anybody meets a joke
+        ## texture
+        for cell in made.controls:
+            self.assertEqual(cell["switch"].get_position(), 1)
+
+        made.toggle_all()
+        self.assertEqual(made.chosen(), [])
+
+    def test_the_all_button_says_what_pressing_it_would_do(self):
+        made = self.dialog()
+        for cell in made.controls:
+            cell["switch"].set_position(0)
+        made._relabel_all()
+        self.assertEqual(made.all_button.cget("text"),
+                         self.app.text("tweaks enable all"))
+
+        made.toggle_all()
+        self.assertEqual(made.all_button.cget("text"),
+                         self.app.text("tweaks disable all"))
+
+    def test_a_switch_here_is_the_one_the_settings_panel_uses(self):
+        """Not a drawing of it. A copy was never going to match, and did not."""
+        from scaffold.ui import scaffold_gui
+
+        made = self.dialog()
+        for cell in made.controls:
+            with self.subTest(control=cell["keys"][0]):
+                self.assertIsInstance(cell["switch"], ctk_switch())
+                self.assertEqual(cell["switch"].cget("progress_color"),
+                                 scaffold_gui.AMBER)
+
+    def test_the_names_read_at_the_size_the_settings_panel_uses(self):
+        ## a smaller one here would have made the dialog look like a footnote
+        from scaffold.ui import scaffold_gui
+
+        made = self.dialog()
+        panel = self.app.tweaks_label.cget("font")
+        for cell in made.controls:
+            label = [w for w in cell["switch"].master.winfo_children()
+                     if w is not cell["picture"] and w is not cell["switch"]]
+            with self.subTest(control=cell["keys"][0]):
+                self.assertTrue(label)
+                self.assertEqual(label[0].cget("font").cget("size"),
+                                 panel.cget("size"))
+
+    def test_the_dialog_is_already_in_place_when_it_appears(self):
+        """It is placed while withdrawn, so it is never drawn in the corner
+        first and moved to the middle after."""
+        made = self.dialog()
+        self.app.update_idletasks()
+        middle = self.app.winfo_rootx() + self.app.winfo_width() // 2
+        its_middle = made.winfo_rootx() + made.winfo_width() // 2
+
+        self.assertLess(abs(middle - its_middle), 40,
+                        "the dialog opened away from the middle of the window")
+
+    def test_what_the_sliders_say_is_a_set_the_build_would_accept(self):
+        made = self.dialog()
+        made.toggle_all()
+        chosen = made.chosen()
+
+        self.assertEqual(self.tweaks.chosen(chosen), chosen)
+
+
+class WindowFitsTests(unittest.TestCase):
+    """Everything the window holds has to be inside the window.
+
+    **The window does not resize and does not scroll.** `WINDOW_TALL` is a
+    constant, and a row added to the settings panel pushes whatever is below it
+    down rather than making room; the Make button is last, so it is the one that
+    goes off the bottom. Nothing complains when that happens -- Tk places the
+    widget and the frame simply clips it -- so a build can ship with the button
+    that makes a pack half missing, which is what adding the Tweaks row did.
+
+    Both checks here are on the real window, laid out, rather than on the
+    constants, because what a row costs depends on the fonts and the scale of
+    the machine it is drawn on.
+    """
+
+    ## CustomTkinter floors a widget's size to an even number and draws its
+    ## border a pixel proud, so a label inside a frame of its own height comes
+    ## out a pixel or two over. That is cosmetic and not what this is looking
+    ## for; anything worse is a widget that has been pushed out.
+    SLACK = 4
+
+    def setUp(self):
+        self.app = open_window()
+        self.addCleanup(self.app.destroy)
+        settle(self.app)
+        self.app.update_idletasks()
+
+    def panel_of(self, widget):
+        """The settings panel a widget sits in, found by walking up to it."""
+        parent = widget.master
+        while parent is not None and parent.winfo_height() < 400:
+            parent = parent.master
+        return parent
+
+    def test_the_make_button_is_inside_the_panel_that_holds_it(self):
+        panel = self.panel_of(self.app.make_button)
+        self.assertIsNotNone(panel, "the Make button has no panel")
+        bottom = (self.app.make_button.winfo_rooty()
+                  - panel.winfo_rooty()
+                  + self.app.make_button.winfo_height())
+
+        self.assertLessEqual(
+            bottom, panel.winfo_height(),
+            "the Make button runs %d pixels past the bottom of its panel. "
+            "Something was added to the settings column without WINDOW_TALL "
+            "being raised to match." % (bottom - panel.winfo_height()))
+
+    def test_nothing_is_pushed_out_of_the_frame_it_sits_in(self):
+        over = []
+
+        def walk(parent):
+            for child in parent.winfo_children():
+                try:
+                    if child.winfo_ismapped():
+                        past = ((child.winfo_rooty() + child.winfo_height())
+                                - (parent.winfo_rooty() + parent.winfo_height()))
+                        if past > self.SLACK:
+                            over.append("%s is %d past %s"
+                                        % (child, past, parent))
+                except Exception:
+                    ## a widget that has not been placed has no coordinates to
+                    ## compare, and is not what this is looking for
+                    pass
+                walk(child)
+
+        walk(self.app)
+        self.assertEqual(over, [], "widgets pushed out of their frame")
+
+    def test_the_window_is_as_tall_as_it_says_it_is(self):
+        from scaffold.ui import scaffold_gui
+
+        self.assertEqual(self.app.winfo_height(), scaffold_gui.WINDOW_TALL)
+
 
 class TransparencyTests(unittest.TestCase):
     """The slider is transparency; everything downstream wants alpha."""
@@ -700,6 +915,8 @@ class SettingsFileTests(unittest.TestCase):
             "low_geometry": (True, settings.set_low_geometry),
             "check_updates": (False, settings.set_check_updates),
             "transparency": (42, settings.set_transparency),
+            "tweaks": (True, settings.set_tweaks),
+            "tweaks_on": (["ore_borders"], settings.set_tweaks_on),
             "output_dir": (os.path.join(os.path.expanduser("~"), "Somewhere"),
                            settings.set_output_dir),
         }

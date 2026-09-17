@@ -1,0 +1,32 @@
+{
+	"resource_pack_name": "vanilla",
+	"texture_name": "atlas.terrain",
+	"padding": 8,
+	"num_mip_levels": 4,
+	"texture_data": {
+		"infested_chiseled_stone_bricks_carried": {
+			"textures": "textures/blocks/infested_chiseled_stone_bricks_carried"
+		},
+		"infested_cobblestone_carried": {
+			"textures": "textures/blocks/infested_cobblestone_carried"
+		},
+		"infested_cracked_stone_bricks_carried": {
+			"textures": "textures/blocks/infested_cracked_stone_bricks_carried"
+		},
+		"infested_deepslate_top_carried": {
+			"textures": "textures/blocks/infested_deepslate_top_carried"
+		},
+		"infested_deepslate_carried": {
+			"textures": "textures/blocks/infested_deepslate_carried"
+		},
+		"infested_mossy_stone_bricks_carried": {
+			"textures": "textures/blocks/infested_mossy_stone_bricks_carried"
+		},
+		"infested_stone_carried": {
+			"textures": "textures/blocks/infested_stone_carried"
+		},
+		"infested_stone_bricks_carried": {
+			"textures": "textures/blocks/infested_stone_bricks_carried"
+		}
+	}
+}

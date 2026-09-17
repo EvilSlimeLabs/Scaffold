@@ -1512,6 +1512,67 @@ TRAPDOORS = {
 }
 
 
+# --- the arm of an extended piston ------------------------------------------
+#
+# An extended piston is two blocks. The base keeps its own block and the head
+# and the rod stand in the block in front of it, which the game calls
+# `piston_arm_collision`, or `sticky_piston_arm_collision` for the sticky one.
+# Neither id had a family -- only the legacy spelling `pistonArmCollision` did,
+# and that one was a bare plate with no rotation table -- so an extended piston
+# was drawn as its base alone with nothing in front of it.
+#
+# Neither id has a `blocks.json` entry, because neither is a block anyone
+# places, so every face here is named outright.
+#
+# `piston_side` holds the whole side of a retracted piston: the head band is
+# its top four rows and the body is the twelve below. The plate reads the band
+# and the rod reads the body.
+PISTON_HEAD = 4                             # how thick the head plate is
+PISTON_ROD = 4                              # and how wide the shaft behind it
+PISTON_INSET = 0.4                          # the ghost block's shade under size
+PISTON_SIDE = "textures/blocks/piston_side"
+PISTON_BAND = (0, 0, 16, PISTON_HEAD)       # the head's own band on that tile
+PISTON_BODY = (0, PISTON_HEAD, PISTON_ROD, 16 - PISTON_HEAD)
+PISTON_END = (0, PISTON_HEAD, PISTON_ROD, PISTON_ROD)
+PISTON_FACE = {"normal": "textures/blocks/piston_top_normal",
+               "sticky": "textures/blocks/piston_top_sticky"}
+
+
+def piston_arm(kind):
+    """The head plate and the rod behind it, pointing up.
+
+    Up is the unturned form because the piston's own rotation table is written
+    that way, and the arm has to be turned by exactly the table its base is.
+    """
+    skin = {face: PISTON_SIDE for face in FACES}
+    skin["up"] = PISTON_FACE[kind]
+    ## the underside of the plate is up against the rod and never seen
+    skin["down"] = "textures/blocks/piston_inner"
+    window = {face: PISTON_BAND for face in FACES}
+    window["up"] = window["down"] = (0, 0, 16, 16)
+    plate = Cube((16 - 2 * PISTON_INSET, PISTON_HEAD - PISTON_INSET,
+                  16 - 2 * PISTON_INSET),
+                 (PISTON_INSET, 16 - PISTON_HEAD, PISTON_INSET),
+                 texture=skin, window=window)
+    ## the rod, square in section, reaching from the base up to the plate
+    at = (16 - PISTON_ROD) / 2.0
+    rod = Cube((PISTON_ROD, 16 - PISTON_HEAD, PISTON_ROD), (at, 0, at),
+               texture=PISTON_SIDE,
+               window={face: PISTON_END if face in ("up", "down")
+                       else PISTON_BODY for face in FACES})
+    return [plate, rod]
+
+
+PISTON_ARMS = {"default": piston_arm("normal")}
+STICKY_PISTON_ARMS = {"default": piston_arm("sticky")}
+
+## `facing_direction`, and the same table the `piston` and `sticky_piston`
+## families carry. An arm points the way its base does, so the two have to be
+## turned identically or the head leaves the block the base pushed it into.
+PISTON_TURNS = {"0": [180, 0, 0], "1": [0, 0, 0], "2": [270, 0, 0],
+                "3": [90, 0, 0], "4": [0, 0, 270], "5": [0, 0, 90]}
+
+
 def main():
     print("writing the mounted forms")
     write("frame", FRAMES)
@@ -1545,6 +1606,13 @@ def main():
     ## the one that was missing
     write("fence_gate", FENCE_GATES)
     turns("fence_gate", GATE_FACING)
+    write("piston_arm", PISTON_ARMS)
+    turns("piston_arm", PISTON_TURNS)
+    write("sticky_piston_arm", STICKY_PISTON_ARMS)
+    turns("sticky_piston_arm", PISTON_TURNS)
+    define(["piston_arm_collision", "pistonArmCollision"], "piston_arm")
+    define(["sticky_piston_arm_collision", "stickyPistonArmCollision"],
+           "sticky_piston_arm")
     write("trapdoor", TRAPDOORS)
     write("shelf_mushroom", SHELF_MUSHROOMS)
     turns("shelf_mushroom", MOUNTED_TURNS)

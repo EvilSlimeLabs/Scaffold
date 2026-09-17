@@ -11,6 +11,7 @@ import os
 import time
 
 from scaffold import paths
+from scaffold import tweaks as tweaks_packs
 debug = False##used in API test to force errors and break error handler, should remain false.
 
 ## Blocks that never become geometry. scaffold_core needs the same list in the
@@ -149,8 +150,17 @@ def tinted(texture, colour):
 DEFAULT_ALPHA = 0.35
 
 class ArmorStandGeo:
-    def __init__(self, name, alpha = DEFAULT_ALPHA,offsets=None, size=[64, 64, 64], ref_pack=None, low_geometry=False):
+    def __init__(self, name, alpha = DEFAULT_ALPHA,offsets=None, size=[64, 64, 64], ref_pack=None, low_geometry=False, tweaks=None):
         self.ref_resource_pack = ref_pack or paths.vanilla_pack()
+        ## **The chosen tweaks are an overlay on the pack below.** A Bedrock
+        ## Tweaks pack is an ordinary resource pack, and applying one in game is
+        ## a matter of putting it higher in the list; nothing here has a list,
+        ## so the same thing is done by looking in each tweak's folder before
+        ## the vanilla pack and by merging what they declare over what it does.
+        ## `scaffold/tweaks.py` settles which ones are on and in what order.
+        self.tweaks = tweaks_packs.chosen(tweaks)
+        (self.tweak_folders, tweak_blocks, tweak_terrain,
+         self.tweak_carried) = tweaks_packs.overlay(self.tweaks)
         ## Each of these tables maps a block to a property that the structure
         ## file leaves hidden, implied, or otherwise unclear.
         with open("{}/blocks.json".format(self.ref_resource_pack)) as f:
@@ -159,6 +169,11 @@ class ArmorStandGeo:
         with open("{}/textures/terrain_texture.json".format(self.ref_resource_pack)) as f:
             ##maps textures names to texture files.
             self.terrain_texture = json.load(f)
+        ## a tweak's own declarations go over the vanilla ones, block by block
+        ## and texture name by texture name, so one that renames a single
+        ## texture leaves the other thousand alone
+        self.blocks_def.update(tweak_blocks)
+        self.terrain_texture.setdefault("texture_data", {}).update(tweak_terrain)
         with open(paths.lookup("block_rotation.json")) as f:
             ## rotation per state, per shape family. A block whose state has no
             ## entry is left unrotated, and reports it when debug is on.
@@ -389,9 +404,19 @@ class ArmorStandGeo:
             elif top:
                 shape_variant = "top"
 
+            ## **A mounting and a state can both describe one block**, and then
+            ## the form carries the two joined with a dash. A hopper takes its
+            ## mounting from which way it faces and its lock from `toggle_bit`,
+            ## so "side-1" is a locked hopper on a wall. The joined name is read
+            ## first, and a family with no form for the pair falls through to
+            ## the state on its own the way every other family does.
+            joined = "{}-{}".format(shape_variant, data)
+            if (joined in self.block_shapes[block_type]
+                    or joined in self.block_uv[block_type]):
+                shape_variant = joined
             ## a numeric state - snow depth, repeater delay, sea pickle count -
             ## names its own variant and outranks the flags above
-            if str(data) in self.block_shapes[block_type] or str(data) in self.block_uv[block_type]:
+            elif str(data) in self.block_shapes[block_type] or str(data) in self.block_uv[block_type]:
                 shape_variant = str(data)
 
             ## A shape family that does not describe this variant falls back to
@@ -737,8 +762,7 @@ class ArmorStandGeo:
                         _named, colour = split_tint(texture_files[key])
                         _named, turn = split_turn(texture_files[key])
                         self.extend_uv_image(
-                            "{}/{}.png".format(self.ref_resource_pack, source),
-                            window, colour, turn)
+                            self.texture_file(source), window, colour, turn)
                         self.uv_map[texture_files[key]] = len(self.uv_map.keys())
                     except Exception as e:
                         raise RuntimeError("Failed to load texture {}".format(texture_files[key]))
@@ -755,6 +779,27 @@ class ArmorStandGeo:
         for key in self.blocks.keys():
             self.geometry["bones"].append(self.blocks[key])
 
+    ## the extensions a texture may be saved with, in the order they are
+    ## tried. Bedrock reads either and a tweak may ship one where the vanilla
+    ## pack ships the other, which is how Age 25 Kelp arrives as a TGA.
+    TEXTURE_KINDS = (".png", ".tga")
+
+    def texture_file(self, source):
+        """Where one texture actually is, tweaks first and vanilla after.
+
+        `source` is a pack relative path with no extension, the way
+        `terrain_texture.json` writes it. The path handed back is the first that
+        exists; when none does, the vanilla pack's PNG is named anyway, so the
+        error a caller raises points at the file somebody would expect.
+        """
+        for root in self.tweak_folders + [self.ref_resource_pack]:
+            for kind in self.TEXTURE_KINDS:
+                candidate = os.path.join(root, source.replace("/", os.sep)
+                                         + kind)
+                if os.path.isfile(candidate):
+                    return candidate
+        return "{}/{}.png".format(self.ref_resource_pack, source)
+
     def get_block_texture_paths(self, blockName, variant = ""):
         # helper function for getting the texture locations from the vanilla files.
         ## **A drawn thing that is not a block has no declaration to read.** An
@@ -764,9 +809,20 @@ class ArmorStandGeo:
         ## through; a real block missing its declaration has no overwrite
         ## either, so it still fails and is still reported as unsupported.
         declared = self.blocks_def.get(blockName)
-        if not declared or "textures" not in declared:
+        if not declared:
             return {}
-        texture_layout = declared["textures"]
+        ## **A tweak may paint the carried block rather than the placed one.**
+        ## Minecraft can only tell waxed copper from unwaxed in the inventory,
+        ## so Bedrock Tweaks puts that art in `carried_textures`. A ghost block
+        ## is the placed block and there is no inventory near it, so for those
+        ## packs the carried textures are the ones to read.
+        if (blockName in self.tweak_carried
+                and "carried_textures" in declared):
+            texture_layout = declared["carried_textures"]
+        elif "textures" in declared:
+            texture_layout = declared["textures"]
+        else:
+            return {}
         texturedata = self.terrain_texture["texture_data"]
         textures = {}
 

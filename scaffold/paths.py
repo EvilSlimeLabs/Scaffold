@@ -110,6 +110,17 @@ def lookup(name):
     return data("lookups", name)
 
 
+def tweaks_pack(name):
+    """One staged Bedrock Tweaks pack, by the id `lookups/tweaks.json` uses.
+
+    The folder is `tweakpacks` and the module that reads it is `tweaks.py`, on
+    purpose: a directory and a module of the same name inside one package are
+    two things the import system has to choose between, and `techpack/` sits
+    beside `pack/tech_pack.py` for the same reason.
+    """
+    return data("tweakpacks", name)
+
+
 def documents():
     """The user's Documents folder, or the closest thing this platform has.
 

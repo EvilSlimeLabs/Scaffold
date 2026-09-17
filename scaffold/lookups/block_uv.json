@@ -10031,20 +10031,202 @@
 	"hopper": {
 		"default": {
 			"uv_sizes": {
-				"up": [[1, 1]],
-				"down": [[1, 1]],
-				"north": [[1, 1]],
-				"south": [[1, 1]],
-				"east": [[1, 1]],
-				"west": [[1, 1]]
+				"up": [[ 1.0, 1.0 ], [ 0.5, 0.5 ], [ 0.25, 0.25 ]],
+				"down": [[ 1.0, 1.0 ], [ 0.5, 0.5 ], [ 0.25, 0.25 ]],
+				"north": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"south": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"east": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"west": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]]
 			},
 			"offset": {
-				"up": [[0, 0]],
-				"down": [[0, 0]],
-				"north": [[0, 0]],
-				"south": [[0, 0]],
-				"east": [[0, 0]],
-				"west": [[0, 0]]
+				"up": [[ 0.0, 0.0 ], [ 0.25, 0.25 ], [ 0.375, 0.375 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.25, 0.25 ], [ 0.375, 0.375 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.6875 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.6875 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.6875 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.6875 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/hopper_top",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"down": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"north": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"south": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"east": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"west": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				]
+			}
+		},
+		"default-1": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ], [ 0.5, 0.5 ], [ 0.25, 0.25 ]],
+				"down": [[ 1.0, 1.0 ], [ 0.5, 0.5 ], [ 0.25, 0.25 ]],
+				"north": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"south": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"east": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"west": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ], [ 0.25, 0.25 ], [ 0.375, 0.375 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.25, 0.25 ], [ 0.375, 0.375 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.6875 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.6875 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.6875 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.6875 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/hopper_top",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"down": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"north": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"south": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"east": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"west": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				]
+			}
+		},
+		"side": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ], [ 0.5, 0.5 ], [ 0.25, 0.25 ]],
+				"down": [[ 1.0, 1.0 ], [ 0.5, 0.5 ], [ 0.25, 0.25 ]],
+				"north": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"south": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"east": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"west": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ], [ 0.25, 0.25 ], [ 0.0625, 0.375 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.25, 0.25 ], [ 0.0625, 0.375 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.0625, 0.4375 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.0625, 0.4375 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.4375 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.4375 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/hopper_top",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"down": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"north": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"south": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"east": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"west": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				]
+			}
+		},
+		"side-1": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ], [ 0.5, 0.5 ], [ 0.25, 0.25 ]],
+				"down": [[ 1.0, 1.0 ], [ 0.5, 0.5 ], [ 0.25, 0.25 ]],
+				"north": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"south": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"east": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]],
+				"west": [[ 1.0, 0.4375 ], [ 0.5, 0.375 ], [ 0.25, 0.25 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ], [ 0.25, 0.25 ], [ 0.0625, 0.375 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.25, 0.25 ], [ 0.0625, 0.375 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.0625, 0.4375 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.0625, 0.4375 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.4375 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.25, 0.375 ], [ 0.375, 0.4375 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/hopper_top",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"down": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"north": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"south": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"east": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				],
+				"west": [
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside",
+					"textures/blocks/hopper_outside"
+				]
 			}
 		}
 	},
@@ -10699,20 +10881,46 @@
 	"piston_arm": {
 		"default": {
 			"uv_sizes": {
-				"up": [[1, 1]],
-				"down": [[1, 1]],
-				"north": [[1, 1]],
-				"south": [[1, 1]],
-				"east": [[1, 1]],
-				"west": [[1, 1]]
+				"up": [[ 1.0, 1.0 ], [ 0.25, 0.25 ]],
+				"down": [[ 1.0, 1.0 ], [ 0.25, 0.25 ]],
+				"north": [[ 1.0, 0.25 ], [ 0.25, 0.75 ]],
+				"south": [[ 1.0, 0.25 ], [ 0.25, 0.75 ]],
+				"east": [[ 1.0, 0.25 ], [ 0.25, 0.75 ]],
+				"west": [[ 1.0, 0.25 ], [ 0.25, 0.75 ]]
 			},
 			"offset": {
-				"up": [[0, 0]],
-				"down": [[0, 0]],
-				"north": [[0, 0]],
-				"south": [[0, 0]],
-				"east": [[0, 0]],
-				"west": [[0, 0]]
+				"up": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/piston_top_normal",
+					"textures/blocks/piston_side"
+				],
+				"down": [
+					"textures/blocks/piston_inner",
+					"textures/blocks/piston_side"
+				],
+				"north": [
+					"textures/blocks/piston_side",
+					"textures/blocks/piston_side"
+				],
+				"south": [
+					"textures/blocks/piston_side",
+					"textures/blocks/piston_side"
+				],
+				"east": [
+					"textures/blocks/piston_side",
+					"textures/blocks/piston_side"
+				],
+				"west": [
+					"textures/blocks/piston_side",
+					"textures/blocks/piston_side"
+				]
 			}
 		}
 	},
@@ -13020,6 +13228,80 @@
 					"textures/blocks/lectern_base",
 					"textures/blocks/lectern_sides^90",
 					"textures/blocks/lectern_sides"
+				]
+			}
+		},
+		"book": {
+			"uv_sizes": {
+				"up": [[ 1.0, -1.0 ], [ 1.0, 0.125 ], [ -1.0, -1.0 ], [ 0.375, 0.625 ], [ 0.375, 0.625 ], [ 0.3125, 0.5 ], [ 0.3125, 0.5 ]],
+				"down": [[ 1.0, 1.0 ], [ 1.0, 0.125 ], [ 1.0, 0.75 ], [ 0.375, 0.625 ], [ 0.375, 0.625 ], [ 0.3125, 0.5 ], [ 0.3125, 0.5 ]],
+				"north": [[ 1.0, 0.125 ], [ 0.5, 1.0 ], [ 1.0, 0.25 ], [ 0.375, 0.625 ], [ 0.375, 0.625 ], [ 0.3125, 0.5 ], [ 0.3125, 0.5 ]],
+				"south": [[ 1.0, 0.125 ], [ 0.5, 1.0 ], [ 1.0, 0.25 ], [ 0.375, 0.625 ], [ 0.375, 0.625 ], [ 0.3125, 0.5 ], [ 0.3125, 0.5 ]],
+				"east": [[ 1.0, 0.125 ], [ 0.5, 1.0 ], [ 1.0, 0.25 ], [ 0.375, 0.625 ], [ 0.375, 0.625 ], [ 0.3125, 0.5 ], [ 0.3125, 0.5 ]],
+				"west": [[ 1.0, 0.125 ], [ -0.5, 1.0 ], [ 1.0, 0.25 ], [ 0.375, 0.625 ], [ 0.375, 0.625 ], [ 0.3125, 0.5 ], [ 0.3125, 0.5 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 1.0 ], [ 0.0, 0.5625 ], [ 1.0, 1.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.0, 0.5625 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.5625 ], [ 0.5, 0.0 ], [ 0.0, 0.25 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.8125 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.5625 ], [ 0.0, 0.0 ], [ 0.0, 0.25 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.5625 ], [ 0.5, 0.0 ], [ 0.0, 0.25 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/lectern_base",
+					"textures/blocks/lectern_base",
+					"textures/blocks/lectern_top",
+					"textures/entity/enchanting_table_book#0,0",
+					"textures/entity/enchanting_table_book#16,0",
+					"textures/entity/enchanting_table_book#0,10",
+					"textures/entity/enchanting_table_book#12,10"
+				],
+				"down": [
+					"textures/blocks/planks_oak",
+					"textures/blocks/lectern_base",
+					"textures/blocks/lectern_base",
+					"textures/entity/enchanting_table_book#0,0",
+					"textures/entity/enchanting_table_book#16,0",
+					"textures/entity/enchanting_table_book#0,10",
+					"textures/entity/enchanting_table_book#12,10"
+				],
+				"north": [
+					"textures/blocks/lectern_base",
+					"textures/blocks/lectern_front",
+					"textures/blocks/lectern_sides",
+					"textures/entity/enchanting_table_book#0,0",
+					"textures/entity/enchanting_table_book#16,0",
+					"textures/entity/enchanting_table_book#0,10",
+					"textures/entity/enchanting_table_book#12,10"
+				],
+				"south": [
+					"textures/blocks/lectern_base",
+					"textures/blocks/lectern_front",
+					"textures/blocks/lectern_sides",
+					"textures/entity/enchanting_table_book#0,0",
+					"textures/entity/enchanting_table_book#16,0",
+					"textures/entity/enchanting_table_book#0,10",
+					"textures/entity/enchanting_table_book#12,10"
+				],
+				"east": [
+					"textures/blocks/lectern_base",
+					"textures/blocks/lectern_sides^90",
+					"textures/blocks/lectern_sides",
+					"textures/entity/enchanting_table_book#0,0",
+					"textures/entity/enchanting_table_book#16,0",
+					"textures/entity/enchanting_table_book#0,10",
+					"textures/entity/enchanting_table_book#12,10"
+				],
+				"west": [
+					"textures/blocks/lectern_base",
+					"textures/blocks/lectern_sides^90",
+					"textures/blocks/lectern_sides",
+					"textures/entity/enchanting_table_book#0,0",
+					"textures/entity/enchanting_table_book#16,0",
+					"textures/entity/enchanting_table_book#0,10",
+					"textures/entity/enchanting_table_book#12,10"
 				]
 			}
 		}
@@ -16679,6 +16961,26 @@
 				"south": [[ 0, 0 ]],
 				"east": [[ 0, 0 ]],
 				"west": [[ 0, 0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/hopper_top"
+				],
+				"down": [
+					"textures/blocks/hopper_outside"
+				],
+				"north": [
+					"textures/blocks/hopper_outside"
+				],
+				"south": [
+					"textures/blocks/hopper_outside"
+				],
+				"east": [
+					"textures/blocks/hopper_outside"
+				],
+				"west": [
+					"textures/blocks/hopper_outside"
+				]
 			}
 		}
 	},
@@ -25881,6 +26183,52 @@
 				"west": [
 					"textures/blocks/cave_vines_head_berries",
 					"textures/blocks/cave_vines_head_berries"
+				]
+			}
+		}
+	},
+	"sticky_piston_arm": {
+		"default": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ], [ 0.25, 0.25 ]],
+				"down": [[ 1.0, 1.0 ], [ 0.25, 0.25 ]],
+				"north": [[ 1.0, 0.25 ], [ 0.25, 0.75 ]],
+				"south": [[ 1.0, 0.25 ], [ 0.25, 0.75 ]],
+				"east": [[ 1.0, 0.25 ], [ 0.25, 0.75 ]],
+				"west": [[ 1.0, 0.25 ], [ 0.25, 0.75 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.0, 0.25 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/piston_top_sticky",
+					"textures/blocks/piston_side"
+				],
+				"down": [
+					"textures/blocks/piston_inner",
+					"textures/blocks/piston_side"
+				],
+				"north": [
+					"textures/blocks/piston_side",
+					"textures/blocks/piston_side"
+				],
+				"south": [
+					"textures/blocks/piston_side",
+					"textures/blocks/piston_side"
+				],
+				"east": [
+					"textures/blocks/piston_side",
+					"textures/blocks/piston_side"
+				],
+				"west": [
+					"textures/blocks/piston_side",
+					"textures/blocks/piston_side"
 				]
 			}
 		}

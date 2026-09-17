@@ -50,6 +50,12 @@ def _words(text, table):
 # --- pirate ----------------------------------------------------------------
 
 PIRATE = {
+    ## the words the Tweaks menu brought in
+    "choose": "pick", "chosen": "picked", "pick": "pick",
+    "enable": "run up", "disable": "strike",
+    "texture": "hide", "textures": "hides", "border": "rim",
+    "publishes": "puts out", "apply": "clap on", "kept": "kept",
+    "changes": "alterations", "easier": "easier", "read": "read",
     "install": "stow", "installed": "stowed", "installing": "stowin'",
     "could": "could nae", "not": "nay",
     ## the words the update notice brought in
@@ -115,6 +121,12 @@ def pirate(text):
 # --- lolcat ----------------------------------------------------------------
 
 LOLCAT = {
+    ## the words the Tweaks menu brought in
+    "choose": "pik", "chosen": "pikd", "pick": "pik",
+    "enable": "turn on", "disable": "turn off",
+    "texture": "skin", "textures": "skinz", "border": "edj",
+    "publishes": "maeks", "apply": "slap on", "kept": "keeped",
+    "changes": "chaenjez", "easier": "ezier", "read": "reed",
     "install": "put in", "installed": "putted in", "installing": "puttin in",
     "could": "cud", "not": "no",
     ## the words the update notice brought in
@@ -177,6 +189,12 @@ def lolcat(text):
 # --- shakespearean ---------------------------------------------------------
 
 SHAKESPEARE = {
+    ## the words the Tweaks menu brought in
+    "choose": "elect", "chosen": "elected", "pick": "elect",
+    "enable": "permit", "disable": "forbid",
+    "texture": "raiment", "textures": "raiments", "border": "margin",
+    "publishes": "sets forth", "apply": "bestow", "kept": "kept",
+    "changes": "alterations", "easier": "the readier", "read": "con",
     "install": "instate", "installed": "instated",
     "installing": "instating", "could": "couldst", "not": "nay",
     ## the words the update notice brought in

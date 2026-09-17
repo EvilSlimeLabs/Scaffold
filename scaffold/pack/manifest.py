@@ -44,6 +44,13 @@ PAST_AUTHORS = ((ITALIC_PURPLE, "DrAv0011"),
 ## separate the parts a reader wants to pick out at a glance.
 DESCRIPTION_LIMIT = 25
 
+## **A pack built with a tweak has to say so.** Bedrock Tweaks' licence lets
+## their files be included in another pack provided the result is not sold and
+## provided the credit goes with it, naming both Vanilla Tweaks and Bedrock
+## Tweaks. This is that credit, and `core` also writes a `credits.txt` into the
+## pack, which the licence asks for by name.
+TWEAKS_CREDIT = "Textures from Bedrock Tweaks (bedrocktweaks.net)"
+
 
 def derived_pack_uuids(pack_name):
     """UUIDs derived from the pack name, the same for every build of it.
@@ -85,7 +92,8 @@ def credits_line():
     return "Scaffold {}, {}, by {}".format(version.read(), TAGLINE, ", ".join(names))
 
 
-def build_description(nameTags=(), user_text="", tech_pack_version=None):
+def build_description(nameTags=(), user_text="", tech_pack_version=None,
+                      tweaks=()):
     """The pack description, one part per line.
 
     Ordered by how much it belongs to the person who built the pack: their own
@@ -98,12 +106,14 @@ def build_description(nameTags=(), user_text="", tech_pack_version=None):
         lines.append("Nametags: {}".format(", ".join(nameTags)))
     if tech_pack_version:
         lines.append("TechPack {} included".format(tech_pack_version))
+    if tweaks:
+        lines.append(TWEAKS_CREDIT)
     lines.append(credits_line())
     return "\n".join(lines)
 
 
 def export(work_dir, pack_name, nameTags=(), user_text="", tech_pack_version=None,
-           fingerprint=None):
+           fingerprint=None, tweaks=()):
     ## work_dir is wherever the tree happens to be assembled; the name is only
     ## what the player reads, and the fingerprint is what identifies the pack
     tempname = pack_name.split("/")[-1]
@@ -115,7 +125,8 @@ def export(work_dir, pack_name, nameTags=(), user_text="", tech_pack_version=Non
         "format_version": 2,
         "header": {
             "name": display_name(tempname),
-            "description": build_description(nameTags, user_text, tech_pack_version),
+            "description": build_description(nameTags, user_text,
+                                             tech_pack_version, tweaks),
             "uuid": header_uuid,
             "version": pack_version,
             "min_engine_version": [

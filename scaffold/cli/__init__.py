@@ -40,6 +40,12 @@ def main(argv=None):
 
     if args.debug:
         commands.enable_debug()
+    ## `--tweaks` with no names after it is a question, not a build: the list
+    ## of them is in a lookup table rather than in the argument parser, so
+    ## --help cannot show it and this is where it is answered
+    if args.tweaks == []:
+        commands.list_tweaks()
+        return 0
     if args.structure and args.pack_name:
         commands.build(args)
         return 0

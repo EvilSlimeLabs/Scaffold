@@ -40,6 +40,14 @@ def parse(argv=None):
                              "more expensive; this trades the detail on the few "
                              "blocks that carry a lot of it for a pack that is "
                              "cheaper to display.")
+    parser.add_argument("--tweaks", nargs="*", metavar="NAME", default=None,
+                        help="Apply these Bedrock Tweaks to the pack: small "
+                             "texture changes that make a build easier to read, "
+                             "such as a border round ores or an observer whose "
+                             "front you can tell. Given with no names it lists "
+                             "the ones this build offers and stops. A pack "
+                             "built with any of them credits Bedrock Tweaks and "
+                             "Vanilla Tweaks, which their licence asks for.")
     parser.add_argument("--tech_pack", nargs="?", const="full", default="none",
                         choices=("none", "compatibility", "full"),
                         help="What to do about TechPack. Both projects replace "

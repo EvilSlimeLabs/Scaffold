@@ -23,7 +23,9 @@ A texture is KEPT when any of these holds:
     those at runtime from the biome colormap, and a ghost block cannot run the
     colormap, so Scaffold bakes the tint in
   * this pack's copy is more opaque. Some textures are solid on purpose so the
-    ghost survives the alpha pass that the transparency slider applies
+    ghost survives the alpha pass that the transparency slider applies. The
+    water tiles are the exception and go the other way, which is why they are
+    listed in ALWAYS_KEEP instead
   * a commit outside the bulk vanilla imports touched it, meaning somebody
     edited it by hand and git remembers why
 
@@ -59,6 +61,10 @@ BULK_IMPORT_COMMITS = {"37129f1", "a2c33d7", "47ffecd", "634b9cb"}
 ## deliberate edits to keep.
 ALWAYS_KEEP = {
     "grass_side.png", "grass_side_snowed.png", "grass_top.png", "none.png",
+    ## outlined and made see-through by tools/textures/water.py. These are the
+    ## one pair that is deliberately *less* opaque than vanilla, so the opacity
+    ## test above would hand them back to the community pack every sync.
+    "water_still_grey.png", "water_flow_grey.png",
 }
 
 ## RTX and deferred-rendering companions. The generator never reads them and

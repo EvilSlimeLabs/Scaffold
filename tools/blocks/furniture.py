@@ -182,6 +182,61 @@ LECTERN = {"default": [
                  "east": LECTERN_DESK_SIDE, "west": LECTERN_DESK_SIDE},
          rotation=(-22, 0, 0))]}
 
+## --- the book on it --------------------------------------------------------
+##
+## A lectern's book is not in its states. The block carries which way it faces
+## and whether it is powered, and whether anybody put a book on it is in the
+## block entity beside it, the way a sign keeps its text; `core`s
+## `BLOCK_ENTITY_INSTEAD` reads it and names this form.
+##
+## The book is drawn the way the game draws it: two covers open flat with a
+## sheaf of pages on each, lying along the desk and leaning with it. Vanilla
+## paints it from `textures/entity/enchanting_table_book.png`, a 64 by 32 sheet
+## the enchanting table's book comes off as well, so the regions below are
+## Mojang's own layout -- the covers across the top ten rows and the pages in
+## the nine under them.
+BOOK_SHEET = "textures/entity/enchanting_table_book"
+BOOK_SIZE = 64
+
+## the two halves of the cover, and the two sheaves of pages
+BOOK_COVER = (6, 10)
+BOOK_PAGES = (5, 8)
+## where each is on the sheet
+BOOK_COVER_LEFT = (0, 0) + BOOK_COVER
+BOOK_COVER_RIGHT = (16, 0) + BOOK_COVER
+BOOK_PAGES_LEFT = (0, 10) + BOOK_PAGES
+BOOK_PAGES_RIGHT = (12, 10) + BOOK_PAGES
+
+## how thick a leaf is drawn, and how far above the desk the book sits. The
+## desk's own top is at 16 and leans -22 about its middle, so the book leans
+## with it and is written just clear of the surface.
+BOOK_LEAF = 0.2
+BOOK_ON = 16.1
+BOOK_LEAN = (-22, 0, 0)
+
+
+def leaf(size, at, region):
+    """One flat piece of the book, painted from the sheet on both faces.
+
+    Only the two large faces are ever seen -- the leaf is a fifth of a pixel
+    thick -- so all six take the same region rather than four of them reading a
+    strip of whatever they happen to sit over.
+    """
+    name, window = on_sheet(BOOK_SHEET, region, BOOK_SIZE)
+    return Cube((size[0], BOOK_LEAF, size[1]), at, texture=name,
+                window={face: window for face in FACES}, rotation=BOOK_LEAN)
+
+
+## the covers first and the pages a hair above them, so the pages win where the
+## two overlap
+LECTERN_BOOK = LECTERN["default"] + [
+    leaf(BOOK_COVER, (2, BOOK_ON, 3), BOOK_COVER_LEFT),
+    leaf(BOOK_COVER, (8, BOOK_ON, 3), BOOK_COVER_RIGHT),
+    leaf(BOOK_PAGES, (3, BOOK_ON + BOOK_LEAF, 4), BOOK_PAGES_LEFT),
+    leaf(BOOK_PAGES, (8, BOOK_ON + BOOK_LEAF, 4), BOOK_PAGES_RIGHT)]
+
+LECTERN["book"] = LECTERN_BOOK
+
 
 # --- enchanting table -------------------------------------------------------
 #

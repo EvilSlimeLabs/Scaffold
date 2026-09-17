@@ -25,6 +25,7 @@
 	"torch_facing_direction":"rot",
 	"weirdo_direction":"rot",
 	"upside_down_bit":"top",
+	"toggle_bit":"shape",
 	"top_slot_bit":"top",
 	"minecraft:vertical_half":"top",
 	"door_hinge_bit": "hinge",
