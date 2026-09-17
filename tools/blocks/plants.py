@@ -87,6 +87,24 @@ def crossed(texture, window=None, tall=16):
 # of them.
 CROSS_TEXTURE = {"default": crossed("default")}
 
+# --- the vines that carry glow berries ---------------------------------------
+#
+# **The berries are in the block id, not in a state.** `cave_vines` is a bare
+# vine, and `cave_vines_body_with_berries` and `cave_vines_head_with_berries`
+# are separate blocks. Their terrain_texture entries are lists of two -- the
+# plain picture and the one with berries on it -- and a list is indexed by a
+# *variant*, which is read off a block state. These blocks have no state that
+# says so, so the plain first entry was drawn and a lit vine full of glow
+# berries came out as a bare one.
+#
+# Naming the berry texture outright is what settles it, which is what a family
+# of their own is for.
+BERRY_BODY = "textures/blocks/cave_vines_body_berries"
+BERRY_HEAD = "textures/blocks/cave_vines_head_berries"
+
+CAVE_VINES_BERRIES = {"default": crossed(BERRY_BODY)}
+CAVE_VINES_HEAD_BERRIES = {"default": crossed(BERRY_HEAD)}
+
 # --- the two block tall flowers ----------------------------------------------
 #
 # A lower half and an upper half, each its own block, told apart by
@@ -193,6 +211,11 @@ def main():
 
     tables.write("sunflower", SUNFLOWER)
     tables.define(["sunflower"], "sunflower")
+
+    tables.write("cave_vines_berries", CAVE_VINES_BERRIES)
+    tables.define(["cave_vines_body_with_berries"], "cave_vines_berries")
+    tables.write("cave_vines_head_berries", CAVE_VINES_HEAD_BERRIES)
+    tables.define(["cave_vines_head_with_berries"], "cave_vines_head_berries")
 
     print("now re-run tools/blocks/faces.py and tools/blocks/simplify.py")
 

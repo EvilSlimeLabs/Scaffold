@@ -386,7 +386,7 @@ def straw_round(size, at, faces):
             ## the tile turns with the block, and a turned tile measures its
             ## window across what used to be its height
             x, y, w, h = window[face]
-            window[face] = (y, 16 - x - w, h, w, 270)
+            window[face] = (16 - y - h, x, h, w, 90)
     return Cube((deep, tall, wide), (over, up, 16 - across - wide),
                 texture=texture, window=window)
 

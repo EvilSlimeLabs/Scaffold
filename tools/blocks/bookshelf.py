@@ -90,9 +90,16 @@ def variant(mask):
 
     for index in filled:
         (u, v, wide, tall), (x, y) = slot_box(index)
-        sizes.append([wide, tall, PROUD])
+        ## **Measured on the shelf, not on the block.** The slots are read off
+        ## the texture as fractions of a whole block, but the shelf itself is
+        ## drawn at BODY -- a shade under full size, the way every ghost block
+        ## that fills its cell is -- so a panel placed at those fractions sits
+        ## proud of the shelf's own edges and the six of them spread wider than
+        ## the slots they are meant to fill. Scaling both the size and the
+        ## corner by BODY keeps each book in its slot.
+        sizes.append([wide * BODY, tall * BODY, PROUD])
         ## standing on the front of the block, which is its south face
-        offsets.append([x, y, BODY])
+        offsets.append([x * BODY, y * BODY, BODY])
         for face in FACES:
             ## only the south face of a panel is really seen; the slivers round
             ## its edge take the same window rather than a meaningless one

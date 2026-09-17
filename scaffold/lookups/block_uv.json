@@ -7259,6 +7259,118 @@
 				"south": [[ 0.4375, 0.0 ], [ 0.4375, 0.0 ], [ 0.4625, 0.21875 ], [ 0.45, 0.0625 ], [ 0.45, 0.4375 ]],
 				"east": [[ 0.0, 0.0 ], [ 0.875, 0.0 ], [ 0.375, 0.21875 ], [ 0.0625, 0.0625 ], [ 0.0625, 0.4375 ]],
 				"west": [[ 0.0, 0.0 ], [ 0.875, 0.0 ], [ 0.375, 0.21875 ], [ 0.0625, 0.0625 ], [ 0.0625, 0.4375 ]]
+			},
+			"overwrite": {
+				"up": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"down": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"north": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"south": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"east": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"west": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				]
+			}
+		},
+		"open": {
+			"uv_sizes": {
+				"up": [[ 0.125, 0.125 ], [ 0.125, 0.125 ], [ 0.4375, 0.1 ], [ 0.4375, 0.1 ], [ 0.4375, 0.1 ], [ 0.4375, 0.1 ]],
+				"down": [[ 0.125, 0.125 ], [ 0.125, 0.125 ], [ 0.4375, 0.1 ], [ 0.4375, 0.1 ], [ 0.4375, 0.1 ], [ 0.4375, 0.1 ]],
+				"north": [[ 0.125, 0.6875 ], [ 0.125, 0.6875 ], [ 0.4375, 0.1875 ], [ 0.4375, 0.1875 ], [ 0.4375, 0.1875 ], [ 0.4375, 0.1875 ]],
+				"south": [[ 0.125, 0.6875 ], [ 0.125, 0.6875 ], [ 0.4375, 0.1875 ], [ 0.4375, 0.1875 ], [ 0.4375, 0.1875 ], [ 0.4375, 0.1875 ]],
+				"east": [[ 0.125, 0.6875 ], [ 0.125, 0.6875 ], [ 0.1, 0.1875 ], [ 0.1, 0.1875 ], [ 0.1, 0.1875 ], [ 0.1, 0.1875 ]],
+				"west": [[ 0.125, 0.6875 ], [ 0.125, 0.6875 ], [ 0.1, 0.1875 ], [ 0.1, 0.1875 ], [ 0.1, 0.1875 ], [ 0.1, 0.1875 ]]
+			},
+			"offset": {
+				"up": [[ 0.4375, 0.875 ], [ 0.4375, 0.0 ], [ 0.5625, 0.8875 ], [ 0.5625, 0.8875 ], [ 0.5625, 0.0125 ], [ 0.5625, 0.0125 ]],
+				"down": [[ 0.4375, 0.0 ], [ 0.4375, 0.875 ], [ 0.5625, 0.0125 ], [ 0.5625, 0.0125 ], [ 0.5625, 0.8875 ], [ 0.5625, 0.8875 ]],
+				"north": [[ 0.4375, 0.0 ], [ 0.4375, 0.0 ], [ 0.5625, 0.0625 ], [ 0.5625, 0.4375 ], [ 0.5625, 0.0625 ], [ 0.5625, 0.4375 ]],
+				"south": [[ 0.4375, 0.0 ], [ 0.4375, 0.0 ], [ 0.5625, 0.0625 ], [ 0.5625, 0.4375 ], [ 0.5625, 0.0625 ], [ 0.5625, 0.4375 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.875, 0.0 ], [ 0.0125, 0.0625 ], [ 0.0125, 0.4375 ], [ 0.8875, 0.0625 ], [ 0.8875, 0.4375 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.875, 0.0 ], [ 0.0125, 0.0625 ], [ 0.0125, 0.4375 ], [ 0.8875, 0.0625 ], [ 0.8875, 0.4375 ]]
+			},
+			"overwrite": {
+				"up": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"down": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"north": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"south": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"east": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				],
+				"west": [
+					"default",
+					"default",
+					"default",
+					"default",
+					"default",
+					"default"
+				]
 			}
 		}
 	},
@@ -24871,10 +24983,10 @@
 			},
 			"overwrite": {
 				"up": [
-					"textures/blocks/straw_bed#16,25^270"
+					"textures/blocks/straw_bed#16,25^90"
 				],
 				"down": [
-					"textures/blocks/straw_bed#32,25^270"
+					"textures/blocks/straw_bed#32,25^90"
 				],
 				"north": [
 					"textures/blocks/straw_bed#0,41"
@@ -24900,8 +25012,8 @@
 				"west": [[ 1.0, 0.25 ], [ 1.0, 0.3125 ]]
 			},
 			"offset": {
-				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
-				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"up": [[ 0.5, 0.0 ], [ 0.5, 0.0 ]],
+				"down": [[ 0.5, 0.0 ], [ 0.5, 0.0 ]],
 				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
 				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
 				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
@@ -24909,12 +25021,12 @@
 			},
 			"overwrite": {
 				"up": [
-					"textures/blocks/straw_bed#8,13^270",
-					"textures/blocks/straw_bed#8,0^270"
+					"textures/blocks/straw_bed#8,13^90",
+					"textures/blocks/straw_bed#8,0^90"
 				],
 				"down": [
-					"textures/blocks/straw_bed#24,13^270",
-					"textures/blocks/straw_bed#24,0^270"
+					"textures/blocks/straw_bed#24,13^90",
+					"textures/blocks/straw_bed#24,0^90"
 				],
 				"north": [
 					"textures/blocks/straw_bed#0,21",
@@ -24953,10 +25065,10 @@
 			},
 			"overwrite": {
 				"up": [
-					"textures/blocks/straw_bed#16,25^270"
+					"textures/blocks/straw_bed#16,25^90"
 				],
 				"down": [
-					"textures/blocks/straw_bed#32,25^270"
+					"textures/blocks/straw_bed#32,25^90"
 				],
 				"north": [
 					"textures/blocks/straw_bed#0,41"
@@ -25617,6 +25729,98 @@
 				],
 				"west": [
 					"textures/entity/cushion/white_cushion#0,16"
+				]
+			}
+		}
+	},
+	"cave_vines_berries": {
+		"default": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"north": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"south": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"east": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"west": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/cave_vines_body_berries",
+					"textures/blocks/cave_vines_body_berries"
+				],
+				"down": [
+					"textures/blocks/cave_vines_body_berries",
+					"textures/blocks/cave_vines_body_berries"
+				],
+				"north": [
+					"textures/blocks/cave_vines_body_berries",
+					"textures/blocks/cave_vines_body_berries"
+				],
+				"south": [
+					"textures/blocks/cave_vines_body_berries",
+					"textures/blocks/cave_vines_body_berries"
+				],
+				"east": [
+					"textures/blocks/cave_vines_body_berries",
+					"textures/blocks/cave_vines_body_berries"
+				],
+				"west": [
+					"textures/blocks/cave_vines_body_berries",
+					"textures/blocks/cave_vines_body_berries"
+				]
+			}
+		}
+	},
+	"cave_vines_head_berries": {
+		"default": {
+			"uv_sizes": {
+				"up": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"down": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"north": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"south": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"east": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]],
+				"west": [[ 1.0, 1.0 ], [ 1.0, 1.0 ]]
+			},
+			"offset": {
+				"up": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"down": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"north": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"south": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"east": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]],
+				"west": [[ 0.0, 0.0 ], [ 0.0, 0.0 ]]
+			},
+			"overwrite": {
+				"up": [
+					"textures/blocks/cave_vines_head_berries",
+					"textures/blocks/cave_vines_head_berries"
+				],
+				"down": [
+					"textures/blocks/cave_vines_head_berries",
+					"textures/blocks/cave_vines_head_berries"
+				],
+				"north": [
+					"textures/blocks/cave_vines_head_berries",
+					"textures/blocks/cave_vines_head_berries"
+				],
+				"south": [
+					"textures/blocks/cave_vines_head_berries",
+					"textures/blocks/cave_vines_head_berries"
+				],
+				"east": [
+					"textures/blocks/cave_vines_head_berries",
+					"textures/blocks/cave_vines_head_berries"
+				],
+				"west": [
+					"textures/blocks/cave_vines_head_berries",
+					"textures/blocks/cave_vines_head_berries"
 				]
 			}
 		}

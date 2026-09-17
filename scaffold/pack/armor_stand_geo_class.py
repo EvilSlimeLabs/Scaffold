@@ -380,6 +380,10 @@ class ArmorStandGeo:
                 shape_variant = "open_hinged" if hinge else "open"
             elif block_type == "trapdoor" and trap_open:
                 shape_variant = "open"
+            elif block_type == "fence_gate" and trap_open:
+                ## a gate swings its two halves back against their posts, which
+                ## is a shape rather than a turn
+                shape_variant = "open"
             elif block_type == "lever" and trap_open:
                 shape_variant = "on"
             elif top:

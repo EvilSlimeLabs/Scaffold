@@ -1390,6 +1390,53 @@ MOUNTED_TURNS = {"south": [0, 0, 0], "west": [0, 90, 0],
                  "north": [0, 180, 0], "east": [0, 270, 0]}
 
 
+# --- fence gates ------------------------------------------------------------
+#
+# **A gate standing open is a different shape, not the closed one turned.** The
+# two posts stay where they are and each half swings a quarter turn about its
+# own post, so the bars end up running along x instead of along z. Without an
+# open form every gate in a build was drawn shut, which is the one thing a
+# ghost block of a gate has to get right: an open gate marks a doorway and a
+# closed one marks a wall.
+#
+# The closed form is what the table has always held, written out here so the
+# family has one generator rather than half of one. The numbers are unchanged.
+GATE_POST = (2, 11, 2)              # the two uprights, at each end
+GATE_BAR = (1.6, 3, 14)             # the long rails between them, closed
+GATE_LATCH = (1.2, 4, 4)            # the block where the two halves meet
+GATE_HALF = 7                       # how far one half reaches, open
+
+
+def fence_gate_closed():
+    return [Cube(GATE_POST, (7, 5, 0)),
+            Cube(GATE_POST, (7, 5, 14)),
+            Cube(GATE_LATCH, (7.4, 8.5, 6)),
+            Cube(GATE_BAR, (7.2, 12, 1)),
+            Cube(GATE_BAR, (7.2, 6, 1))]
+
+
+def fence_gate_open():
+    """The posts, and four half rails swung back against them.
+
+    Both halves swing the same way, which is what an open gate looks like from
+    either side; the latch goes with them and is left off, because open there
+    is nothing for the two halves to latch to.
+    """
+    made = [Cube(GATE_POST, (7, 5, 0)), Cube(GATE_POST, (7, 5, 14))]
+    thick = GATE_BAR[0]
+    ## each pair hinges on its own post, so it keeps that post's z and runs
+    ## out along x from the post's edge
+    for at_z in (0, 14):
+        middle = at_z + (GATE_POST[2] - thick) / 2.0
+        for at_y in (12, 6):
+            made.append(Cube((GATE_HALF, GATE_BAR[1], thick),
+                             (9, at_y, middle)))
+    return made
+
+
+FENCE_GATES = {"default": fence_gate_closed(), "open": fence_gate_open()}
+
+
 def main():
     print("writing the mounted forms")
     write("frame", FRAMES)
@@ -1419,6 +1466,9 @@ def main():
     ## a shrieker was drawn from the plain cube family, so it needs pointing at
     ## the one written here; `tripwire` already has both of its block ids
     define(["sculk_shrieker"], "sculk_shrieker")
+    ## the closed form is byte for byte what the table already held; "open" is
+    ## the one that was missing
+    write("fence_gate", FENCE_GATES)
     write("shelf_mushroom", SHELF_MUSHROOMS)
     turns("shelf_mushroom", MOUNTED_TURNS)
     define(["shelf_mushroom"], "shelf_mushroom")
