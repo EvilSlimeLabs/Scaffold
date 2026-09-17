@@ -2,12 +2,12 @@
  "signatures": [
   {
    "keyid": "31d230ecfb94103867de64b683e7fadc21a501fea03bda45eff0208f8fe56fd2",
-   "sig": "a95c4cda15d66401ff6b593e7dff7d5cd30b325059510af6a11e079ba3f1390221793aa770443ba66e45a5770737ac235c25cbd1dcd3a814612e14ce388e720b"
+   "sig": "399623dd5b238c8ad675966b85b9684ead34e357e2083302974bde9d0c1d9ec36e0694ffdd9690d159ce3a4be02525e214015c15d5c9e18044a5208136305a05"
   }
  ],
  "signed": {
   "_type": "targets",
-  "expires": "2026-10-17T03:45:16Z",
+  "expires": "2026-10-17T20:05:51Z",
   "spec_version": "1.0.31",
   "targets": {
    "Scaffold-0.9.2.tar.gz": {
@@ -127,8 +127,36 @@
      "sha256": "2bb761bed6d47bb0f2b305505f1f9370f397fdc9be21ce509eb51a14bce2ab36"
     },
     "length": 53268845
+   },
+   "Scaffold-1.2.0.patch": {
+    "custom": {
+     "tufup": {
+      "tar_hash": "a5c3202e10aa68c251f98cd4a77e4cc59aeeaf93fc3c1cdbcb85500deb93dfc1",
+      "tar_hash_algorithm": "sha256",
+      "tar_size": 53811200
+     },
+     "user": null
+    },
+    "hashes": {
+     "sha256": "cfd598140a3d3de3900625bfe9d8f9860cef6fa28f4eb700e13f6571d307b5d4"
+    },
+    "length": 49768566
+   },
+   "Scaffold-1.2.0.tar.gz": {
+    "custom": {
+     "tufup": {
+      "required": false
+     },
+     "user": {
+      "notes": "New Tweaks menu: apply certain textures from Bedrock Tweaks. Pistons now show extended if they are. Water is now translucent. Fixed lectern and hopper visuals."
+     }
+    },
+    "hashes": {
+     "sha256": "14a1324cff5c8c4d8990492886d0e2a8fdf2f5e039d9e396ce5ba7a634207332"
+    },
+    "length": 53568484
    }
   },
-  "version": 8
+  "version": 9
  }
 }
