@@ -130,4 +130,7 @@ install failed title=Could nay stow
 install exists=A haul wi' this moniker an' these here contents be a'ready stowed:
 install error=Th' haul could nay be stowed: {}
 ok=OK
+install done title=Stowed
+install done=Th' haul be this instant in Minecraft's resource haul chest as:
+install restart=If Minecraft be flung open, batten it an' cast off it anew afore th' haul turns up in th' list.
 language badge=PT

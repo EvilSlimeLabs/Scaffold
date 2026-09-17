@@ -129,3 +129,6 @@ install failed title=test
 install exists=test
 install error=test
 ok=test
+install done title=test
+install done=test
+install restart=test

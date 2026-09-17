@@ -129,3 +129,6 @@ install failed title=无法安装
 install exists=已经安装了一个同名且内容相同的资源包：
 install error=无法安装该资源包：{}
 ok=确定
+install done title=已安装
+install done=该资源包已放入 Minecraft 的资源包文件夹，名为：
+install restart=如果 Minecraft 正在运行，请关闭后重新打开，资源包才会出现在列表中。

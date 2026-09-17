@@ -38,6 +38,16 @@ FILES = ("SourceSansPro-Regular.ttf",
          "NotoSansSC-Scaffold.ttf",
          "ScaffoldEnchanting.ttf")
 
+## Which family each file carries, so a file that fails to register can be
+## turned into "do not ask Tk for that family". Tk substitutes silently for a
+## family it does not have, so asking for one that is not there is how a window
+## ends up in a face nobody chose with nothing said about it.
+FILE_FAMILY = {"SourceSansPro-Regular.ttf": FAMILY,
+               "SourceSansPro-Semibold.ttf": FAMILY,
+               "SourceSansPro-Bold.ttf": FAMILY,
+               "NotoSansSC-Scaffold.ttf": CJK_FAMILY,
+               "ScaffoldEnchanting.ttf": SGA_FAMILY}
+
 ## A language whose script the interface face does not cover gets its own. Keyed
 ## by locale or by the language part of one: `zh` covers zh_CN and zh_TW alike,
 ## and en_SGA is English written in the enchanting alphabet.
@@ -54,6 +64,9 @@ LANGUAGE_SCALE = {"en_SGA": 0.85}
 FALLBACKS = ("Segoe UI", "Helvetica Neue", "DejaVu Sans", "sans-serif")
 
 _registered = None
+## the families this process really has, and the files that did not make it
+_families = set()
+_missing = []
 
 
 def folder():
@@ -65,16 +78,19 @@ def path(name):
 
 
 def _register_windows():
+    """Hand each file to this process, and record which families arrived."""
     import ctypes
     FR_PRIVATE = 0x10
-    added = 0
     for name in FILES:
         file_path = path(name)
         if not os.path.isfile(file_path):
+            _missing.append("%s is not there" % name)
             continue
         if ctypes.windll.gdi32.AddFontResourceExW(file_path, FR_PRIVATE, 0):
-            added += 1
-    return added > 0
+            _families.add(FILE_FAMILY.get(name, FAMILY))
+        else:
+            _missing.append("%s would not load" % name)
+    return bool(_families)
 
 
 def register():
@@ -106,6 +122,17 @@ def _for(table, locale, missing):
     return table.get(lang_parse.language_of(locale), missing)
 
 
+def trouble():
+    """What could not be registered, for anything that wants to say so.
+
+    Empty when every bundled face loaded. A release build that cannot reach one
+    of them is the case this exists for: the window still opens and still reads,
+    but the language that wanted that face is in the wrong one.
+    """
+    register()
+    return list(_missing)
+
+
 def family(locale=None):
     """The family name to ask Tk for, for this locale.
 
@@ -113,14 +140,29 @@ def family(locale=None):
     fallback does not reach a privately registered font, so the face is chosen
     outright rather than left to chance: Chinese gets the CJK subset, Enchanting
     gets the rune face, everything else gets the interface face.
+
+    **A face that did not register is never asked for.** Naming one Windows does
+    not have gets a silent substitution, which is indistinguishable from the
+    face being wrong for any other reason; falling back to the interface face
+    instead is at least a choice somebody made.
     """
     if not register():
         return FALLBACKS[0]
-    return _for(LANGUAGE_FAMILY, locale, FAMILY)
+    wanted = _for(LANGUAGE_FAMILY, locale, FAMILY)
+    if wanted not in _families:
+        return FAMILY if FAMILY in _families else FALLBACKS[0]
+    return wanted
 
 
 def scale(locale=None):
-    """How much to shrink this language's face, as a factor of the asked size."""
+    """How much to shrink this language's face, as a factor of the asked size.
+
+    Tied to the face actually in use: the rune face is asked for a little
+    smaller because it is wider, and shrinking text that fell back to the
+    interface face would only make it small for no reason.
+    """
+    if _for(LANGUAGE_FAMILY, locale, FAMILY) != family(locale):
+        return 1.0
     return _for(LANGUAGE_SCALE, locale, 1.0)
 
 

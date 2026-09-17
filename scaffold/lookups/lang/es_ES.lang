@@ -129,3 +129,6 @@ install failed title=No se pudo instalar
 install exists=Ya hay instalado un paquete con este nombre y este contenido:
 install error=No se pudo instalar el paquete: {}
 ok=Aceptar
+install done title=Instalado
+install done=El paquete ya está en la carpeta de paquetes de recursos de Minecraft como:
+install restart=Si Minecraft está abierto, ciérralo y vuelve a abrirlo para que el paquete aparezca en la lista.

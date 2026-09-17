@@ -129,3 +129,6 @@ install failed title=Dili ma-install
 install exists=Naa nay naka-install nga pack nga parehas ang ngalan ug ang sulod:
 install error=Dili ma-install ang pack: {}
 ok=OK
+install done title=Na-install
+install done=Naa na ang pack sa resource pack folder sa Minecraft, isip:
+install restart=Kung abli ang Minecraft, sirhi kini ug ablihi pag-usab aron mogawas ang pack sa lista.

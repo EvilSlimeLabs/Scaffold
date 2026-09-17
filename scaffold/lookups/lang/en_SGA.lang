@@ -130,4 +130,7 @@ install failed title=Could not install
 install exists=A pack with this name and these contents is already installed:
 install error=The pack could not be installed: {}
 ok=OK
+install done title=Installed
+install done=The pack is now in Minecraft's resource pack folder as:
+install restart=If Minecraft is open, close it and start it again before the pack turns up in the list.
 language badge=SGA

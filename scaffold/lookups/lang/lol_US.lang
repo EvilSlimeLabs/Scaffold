@@ -130,4 +130,7 @@ install failed title=Cud no put in
 install exists=A pak wif this naem an deez contents iz alreddy putted in:
 install error=Teh pak cud no be putted in: {}
 ok=OK
+install done title=Putted in
+install done=Teh pak iz rite now in Minecraft's resource pak foldur as:
+install restart=If Minecraft iz opun, bai it an go it agin before teh pak turns up in teh list.
 language badge=LOL

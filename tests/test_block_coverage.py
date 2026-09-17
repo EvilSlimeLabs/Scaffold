@@ -523,9 +523,22 @@ class MountingTests(unittest.TestCase):
             self.assertEqual(entry["offset"]["east"][index], [1.0, 0.0])
             self.assertEqual(entry["uv_sizes"]["west"][index], [1.0, 1.0],
                              "the inward face is mirrored as well")
-            for face in ("north", "south", "up", "down"):
+            ## **The two long edges are not the same edge, and the two short
+            ## ones carry no ornament.** A door's picture has its hinge down
+            ## the left of the tile and its handle down the right, so reading
+            ## the same strip for both put hinges on the handle side; and the
+            ## top and bottom of the picture are plain, so a vertical strip
+            ## there put a hinge across the head and foot of every door.
+            for face in ("north", "south"):
                 self.assertEqual(entry["uv_sizes"][face][index], [0.1875, 1.0],
-                                 "%s reads more than the frame" % face)
+                                 "%s reads more than one edge" % face)
+            for face in ("up", "down"):
+                self.assertEqual(entry["uv_sizes"][face][index], [1.0, 0.1875],
+                                 "%s reads a standing strip, not a flat one"
+                                 % face)
+            self.assertNotEqual(entry["offset"]["north"][index],
+                                entry["offset"]["south"][index],
+                                "both long edges read the same strip")
         # the two halves have a picture each, and neither is left to the block's
         # own faces, which would put the lower one on the top of the door
         self.assertEqual(entry["overwrite"]["up"], ["@down", "@north"])

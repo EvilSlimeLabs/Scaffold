@@ -386,8 +386,17 @@ DOOR_THICK = 3
 DOOR_LOWER = "@down"            # door_lower, the half nearest the floor
 DOOR_UPPER = "@north"           # door_upper, declared on `side`
 DOOR_WHOLE = (0, 0, 16, 16)
-DOOR_EDGE = (0, 0, DOOR_THICK, 16)          # the frame down one side
-DOOR_TOP = (0, 0, 16, DOOR_THICK)           # and across the top of it
+## **The two long edges are not the same edge.** A door's picture carries its
+## hinge down the left of the tile and its handle down the right, so an edge
+## that reads the left strip for both sides puts hinges on the handle side and
+## a door that opens from nowhere. These are the two, and `door_half` gives one
+## to each.
+DOOR_HINGE = (0, 0, DOOR_THICK, 16)
+DOOR_HANDLE = (16 - DOOR_THICK, 0, DOOR_THICK, 16)
+## and the two short edges, which carry no ornament at all: the top and bottom
+## of the picture are plain, and reading a vertical strip there was what put a
+## hinge across the head and foot of every door in the pack
+DOOR_TOP = (0, 0, 16, DOOR_THICK)
 DOOR_FOOT = (0, 16 - DOOR_THICK, 16, DOOR_THICK)
 
 
@@ -407,17 +416,20 @@ def door_half(at, texture, along_x, mirror=False):
     panel = (16, 0, -16, 16) if mirror else DOOR_WHOLE
     if along_x:
         size = (16, 16, DOOR_THICK)
+        ## the picture's u runs along x here, so its left edge -- the hinge --
+        ## is at x0, which is the west face
         window = {"north": panel, "south": DOOR_WHOLE,
-                  "east": DOOR_EDGE, "west": DOOR_EDGE,
+                  "west": DOOR_HINGE, "east": DOOR_HANDLE,
                   ## a top face sixteen across and three deep cannot read a
-                  ## frame three across and sixteen down without turning it, so
-                  ## it takes the top of the door's own picture instead
+                  ## strip three across and sixteen down without turning it, so
+                  ## it takes the plain top of the door's own picture instead
                   "up": DOOR_TOP, "down": DOOR_FOOT}
     else:
         size = (DOOR_THICK, 16, 16)
+        ## and here u runs along z, so the hinge is at z0, the north face
         window = {"east": panel, "west": DOOR_WHOLE,
-                  "north": DOOR_EDGE, "south": DOOR_EDGE,
-                  "up": DOOR_EDGE, "down": DOOR_EDGE}
+                  "north": DOOR_HINGE, "south": DOOR_HANDLE,
+                  "up": DOOR_TOP, "down": DOOR_FOOT}
     return Cube(size, at, texture, window=window)
 
 
@@ -1436,6 +1448,69 @@ def fence_gate_open():
 
 FENCE_GATES = {"default": fence_gate_closed(), "open": fence_gate_open()}
 
+## **All four facings, not two.** A closed gate is symmetric about its own
+## plane, so north and south were given the same turn and east and west the
+## same turn, and nothing ever showed it. An open gate is not symmetric: it
+## swings to the side its facing names, and a gate opened from the other side
+## records that by flipping its facing. Sharing a turn between opposite
+## facings therefore swung half the gates in a build the wrong way.
+##
+## The numbers and the words disagreed as well -- east and west read 180 as
+## words and 0 as numbers -- so the numbers are set to Bedrock's own gate
+## order, 0 south, 1 west, 2 north, 3 east, and now say the same as the words.
+GATE_FACING = {"south": [0, 270, 0], "west": [0, 0, 0],
+               "north": [0, 90, 0], "east": [0, 180, 0]}
+GATE_FACING.update({"0": GATE_FACING["south"], "1": GATE_FACING["west"],
+                    "2": GATE_FACING["north"], "3": GATE_FACING["east"]})
+
+
+# --- trapdoors --------------------------------------------------------------
+#
+# A trapdoor is a panel three pixels thick and, like a door, every one of its
+# six faces was left to work its own window out from where the cube sits. On
+# the two big faces that is right -- they read the whole picture. On the four
+# thin ones it reads whatever three rows of the picture happen to line up with
+# the panel's position, which for a trapdoor lying on the floor is the *bottom*
+# three rows, and that is where the handle is drawn. So every closed trapdoor
+# wore a handle down all four of its edges.
+#
+# **The edges are plain.** The top three rows of a trapdoor's picture carry no
+# ornament, which is what the upside-down form has always read and why that one
+# looked right.
+#
+# **And the handle belongs at the far edge.** A trapdoor is hinged along the
+# side its `direction` names and opens away from it, so the handle is on the
+# opposite edge; the picture draws it at the bottom, and the face reads it a
+# half turn round.
+TRAP_THICK = 3
+TRAP_FACE = (0, 0, 16, 16, 180)             # the whole picture, turned
+TRAP_EDGE_WIDE = (0, 0, 16, TRAP_THICK)     # a plain strip, sixteen across
+TRAP_EDGE_TALL = (0, 0, TRAP_THICK, 16)     # and the same standing up
+
+
+def trapdoor(at, along_y):
+    """One trapdoor panel, its edges reading the plain part of the picture."""
+    if along_y:
+        ## lying flat: the big faces are up and down
+        size = (16, TRAP_THICK, 16)
+        window = {"up": TRAP_FACE, "down": TRAP_FACE,
+                  "north": TRAP_EDGE_WIDE, "south": TRAP_EDGE_WIDE,
+                  "east": TRAP_EDGE_WIDE, "west": TRAP_EDGE_WIDE}
+    else:
+        ## standing open: the big faces are north and south
+        size = (16, 16, TRAP_THICK)
+        window = {"north": TRAP_FACE, "south": TRAP_FACE,
+                  "up": TRAP_EDGE_WIDE, "down": TRAP_EDGE_WIDE,
+                  "east": TRAP_EDGE_TALL, "west": TRAP_EDGE_TALL}
+    return Cube(size, at, "default", window=window)
+
+
+TRAPDOORS = {
+    "default": [trapdoor((0, 0, 0), True)],
+    "top": [trapdoor((0, 16 - TRAP_THICK, 0), True)],
+    "open": [trapdoor((0, 0, 0), False)],
+}
+
 
 def main():
     print("writing the mounted forms")
@@ -1469,6 +1544,8 @@ def main():
     ## the closed form is byte for byte what the table already held; "open" is
     ## the one that was missing
     write("fence_gate", FENCE_GATES)
+    turns("fence_gate", GATE_FACING)
+    write("trapdoor", TRAPDOORS)
     write("shelf_mushroom", SHELF_MUSHROOMS)
     turns("shelf_mushroom", MOUNTED_TURNS)
     define(["shelf_mushroom"], "shelf_mushroom")

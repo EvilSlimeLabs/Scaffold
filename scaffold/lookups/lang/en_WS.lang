@@ -130,4 +130,7 @@ install failed title=Couldst nay instate
 install exists=A bundle with this appellation and these same contents is e'en now instated:
 install error=The bundle couldst nay be instated: {}
 ok=OK
+install done title=Instated
+install done=The bundle is anon in Minecraft's resource bundle coffer as:
+install restart=If Minecraft is unsealed, depart it and stir it once more ere the bundle turns up in the list.
 language badge=WS

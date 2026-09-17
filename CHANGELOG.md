@@ -15,16 +15,18 @@ re-applied, say that first.
 
 ## 1.1.2
 
-Glow berry vines show their berries, fence gates are drawn open when they are
-open, and the books in a chiseled bookshelf sit properly in their slots. The
-straw bed's blanket is the right way round. Cushions now show up in big builds
-as well as ordinary ones, and one sitting on a snow layer rests on top of it
-instead of sinking into it. The poplar hanging sign has its own picture again.
-A finished pack can be installed straight into Minecraft from the window that
-says it is built, without importing it by hand. An update now tells you what it
-changes before you take it, and the Enchanting language is written in the
-enchanting alphabet throughout. Packs built from the command line are saved in
-the folder you ran it in.
+Glow berry vines show their berries, and fence gates are drawn open when they
+are open, swinging to the side they swing to rather than always the same way.
+The books in a chiseled bookshelf sit properly in their slots. Doors and
+trapdoors no longer carry a hinge along every edge: their tops and bottoms are
+plain, one side has the hinge and the other the handle. The straw bed's blanket
+is the right way round. Cushions now show up in big builds as well as ordinary
+ones, and one sitting on a snow layer rests on top of it instead of sinking
+into it. The poplar hanging sign has its own picture again. A finished pack can
+be installed straight into Minecraft from the window that says it is built, and
+it tells you when it has, including that Minecraft needs restarting before the
+pack appears. An update now tells you what it changes before you take it, and
+packs built from the command line are saved in the folder you ran it in.
 
 ## 1.1.1
 

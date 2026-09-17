@@ -873,6 +873,15 @@ class ResultDialog(ctk.CTkToplevel):
         self.app.set_status(
             self.app.text("status installed", os.path.basename(where)),
             sticky=True)
+        ## **Say so, and say the one thing that is not obvious.** A pack copied
+        ## into the folder while Minecraft is running does not appear in its
+        ## list until it is started again, and somebody who does not know that
+        ## concludes the install silently failed.
+        NoticeDialog(self.app, self.app.text("install done title"),
+                     os.linesep.join([self.app.text("install done"),
+                                      os.path.basename(where),
+                                      "",
+                                      self.app.text("install restart")]))
         self.destroy()
 
     def open_folder(self):
