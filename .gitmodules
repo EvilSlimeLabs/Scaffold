@@ -7,3 +7,7 @@
 [submodule "bedrock-samples"]
 	path = bedrock-samples
 	url = https://github.com/Mojang/bedrock-samples.git
+[submodule "bedrock_tweaks"]
+	path = bedrock_tweaks
+	url = https://github.com/BedrockTweaks/Files.git
+	branch = devel
