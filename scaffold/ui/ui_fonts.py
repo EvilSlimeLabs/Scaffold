@@ -16,6 +16,7 @@ Chinese and other scripts Source Sans Pro does not cover fall through to the
 system font, which is what Tk does for a missing glyph anyway.
 """
 import os
+import shutil
 import sys
 
 from scaffold import lang_parse
@@ -68,6 +69,50 @@ _registered = None
 _families = set()
 _missing = []
 
+## **Where a face is copied to when it cannot be registered where it lives.**
+##
+## A release is one self-contained executable that unpacks itself into a folder
+## under %TEMP% and runs from there, so in a frozen build the bundled faces are
+## handed to Windows from a temporary path. Some machines will not load a font
+## from there -- a policy that blocks GDI reading fonts out of %TEMP% is the
+## likeliest reason -- and `AddFontResourceExW` simply answers zero.
+##
+## **Chinese hides it and Enchanting does not.** When a private face fails,
+## Tk substitutes: for Chinese, Windows has CJK faces of its own and the window
+## still reads correctly, so nothing looks wrong. The enchanting alphabet has no
+## system equivalent -- it is custom glyphs sitting at ordinary letters -- so it
+## comes out as plain English, which is the only visible symptom of a failure
+## that is not really about that font at all.
+##
+## So a file that will not load where it lives is copied to the home directory,
+## which is stable, per-user, writable, and not a temporary folder, and offered
+## again from there.
+CACHE_DIR = ".scaffold-fonts"
+
+
+def cache_dir():
+    return os.path.join(os.path.expanduser("~"), CACHE_DIR)
+
+
+def _cached(name):
+    """A copy of one bundled face in the home directory, or None.
+
+    Copied once and reused: the file never changes for a given release, and
+    copying a quarter of a megabyte on every launch would be waste.
+    """
+    source = path(name)
+    if not os.path.isfile(source):
+        return None
+    target = os.path.join(cache_dir(), name)
+    try:
+        if (not os.path.isfile(target)
+                or os.path.getsize(target) != os.path.getsize(source)):
+            os.makedirs(cache_dir(), exist_ok=True)
+            shutil.copyfile(source, target)
+        return target
+    except OSError:
+        return None
+
 
 def folder():
     return paths.data("fonts")
@@ -80,16 +125,28 @@ def path(name):
 def _register_windows():
     """Hand each file to this process, and record which families arrived."""
     import ctypes
+
     FR_PRIVATE = 0x10
+
+    def offer(where):
+        return bool(where and ctypes.windll.gdi32.AddFontResourceExW(
+            where, FR_PRIVATE, 0))
+
     for name in FILES:
         file_path = path(name)
         if not os.path.isfile(file_path):
             _missing.append("%s is not there" % name)
             continue
-        if ctypes.windll.gdi32.AddFontResourceExW(file_path, FR_PRIVATE, 0):
+        if offer(file_path):
+            _families.add(FILE_FAMILY.get(name, FAMILY))
+            continue
+        ## where it lives would not do; try a copy somewhere stable
+        again = _cached(name)
+        if offer(again):
             _families.add(FILE_FAMILY.get(name, FAMILY))
         else:
-            _missing.append("%s would not load" % name)
+            _missing.append("%s would not load from %s"
+                            % (name, os.path.dirname(file_path)))
     return bool(_families)
 
 

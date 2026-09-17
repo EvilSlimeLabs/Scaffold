@@ -132,3 +132,4 @@ ok=Aceptar
 install done title=Instalado
 install done=El paquete ya está en la carpeta de paquetes de recursos de Minecraft como:
 install restart=Si Minecraft está abierto, ciérralo y vuelve a abrirlo para que el paquete aparezca en la lista.
+fonts missing=No se pudieron cargar algunas tipografías incluidas, así que el texto puede aparecer en otra:

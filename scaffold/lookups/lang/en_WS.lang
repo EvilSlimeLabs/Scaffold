@@ -133,4 +133,5 @@ ok=OK
 install done title=Instated
 install done=The bundle is anon in Minecraft's resource bundle coffer as:
 install restart=If Minecraft is unsealed, depart it and stir it once more ere the bundle turns up in the list.
+fonts missing=Some bundled typefaces couldst nay be loaded, so text may perchance appear in some other face:
 language badge=WS

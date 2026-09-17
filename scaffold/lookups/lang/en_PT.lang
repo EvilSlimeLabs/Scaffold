@@ -133,4 +133,5 @@ ok=OK
 install done title=Stowed
 install done=Th' haul be this instant in Minecraft's resource haul chest as:
 install restart=If Minecraft be flung open, batten it an' cast off it anew afore th' haul turns up in th' list.
+fonts missing=Some bundled typefaces could nay be loaded, so text might appear in some other face:
 language badge=PT

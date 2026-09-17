@@ -133,4 +133,5 @@ ok=OK
 install done title=Installed
 install done=The pack is now in Minecraft's resource pack folder as:
 install restart=If Minecraft is open, close it and start it again before the pack turns up in the list.
+fonts missing=Some bundled typefaces could not be loaded, so text may appear in another face:
 language badge=SGA

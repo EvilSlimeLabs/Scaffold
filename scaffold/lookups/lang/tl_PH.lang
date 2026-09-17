@@ -132,3 +132,4 @@ ok=OK
 install done title=Na-install
 install done=Nasa resource pack folder na ng Minecraft ang pack, bilang:
 install restart=Kung bukas ang Minecraft, isara ito at buksang muli bago lumitaw ang pack sa listahan.
+fonts missing=May mga kasamang typeface na hindi ma-load, kaya maaaring ibang typeface ang lumabas:

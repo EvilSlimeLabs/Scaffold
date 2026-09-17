@@ -132,3 +132,4 @@ ok=OK
 install done title=Na-install
 install done=Naa na ang pack sa resource pack folder sa Minecraft, isip:
 install restart=Kung abli ang Minecraft, sirhi kini ug ablihi pag-usab aron mogawas ang pack sa lista.
+fonts missing=Adunay mga kauban nga typeface nga dili ma-load, mao nga lahi nga typeface ang mogawas:

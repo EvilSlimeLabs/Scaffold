@@ -1104,6 +1104,19 @@ class AboutDialog(ctk.CTkToplevel):
         ctk.CTkLabel(self, text=app.text("about body"), text_color=MUTED,
                      font=font(), wraplength=340, justify="center").grid(
             row=2, column=0, padx=22, pady=(6, 2))
+        ## **Said here rather than nowhere.** A bundled face that Windows will
+        ## not load leaves the window in a face nobody chose, and the only
+        ## visible symptom is the Enchanting language coming out in plain
+        ## letters -- Chinese still reads, because Windows substitutes a CJK
+        ## face of its own. Naming the files that failed is the difference
+        ## between a puzzle and a bug report. Below everything else, and only
+        ## when there is something to say.
+        trouble = ui_fonts.trouble()
+        if trouble:
+            ctk.CTkLabel(
+                self, text=os.linesep.join([app.text("fonts missing")] + trouble),
+                text_color=DANGER, font=font(size=11), wraplength=340,
+                justify="center").grid(row=20, column=0, padx=22, pady=(0, 8))
         ctk.CTkLabel(self, text="%s: DrAv0011, FondUnicycle, RavinMaddHatter"
                                 % app.text("original authors"),
                      text_color=MUTED, wraplength=340, justify="center",
