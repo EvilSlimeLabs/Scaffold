@@ -3,7 +3,6 @@
 [![Block coverage](https://img.shields.io/endpoint?url=https://evilslimelabs.github.io/Scaffold/badges/coverage.json)](https://github.com/EvilSlimeLabs/Scaffold/blob/master/tools/checks/game_pack.py)
 [![Tests at release](https://img.shields.io/endpoint?url=https://evilslimelabs.github.io/Scaffold/badges/tests.json)](https://github.com/EvilSlimeLabs/Scaffold/tree/master/tests)
 [![Latest release](https://img.shields.io/github/v/release/EvilSlimeLabs/Scaffold)](https://github.com/EvilSlimeLabs/Scaffold/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/EvilSlimeLabs/Scaffold/total)](https://github.com/EvilSlimeLabs/Scaffold/releases)
 [![PyPI](https://img.shields.io/pypi/v/mcpe-scaffold)](https://pypi.org/project/mcpe-scaffold/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)](https://github.com/EvilSlimeLabs/Scaffold/blob/master/pyproject.toml)
 
