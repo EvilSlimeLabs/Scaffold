@@ -793,9 +793,16 @@ def gh_run(args, capture=True):
                           encoding="utf-8", errors="replace")
 
 
+## the repository gh found in check_github, as owner/name. Every release command
+## names it with --repo: without that, gh asks for a default repository to be
+## set with `gh repo set-default` and fails, even with a single remote.
+GITHUB_REPO = None
+
+
 def check_github(release_version):
     """gh is there, signed in, sees this repository, and has no release of this
     version yet."""
+    global GITHUB_REPO
     if gh() is None:
         sys.exit("Build stopped: gh, GitHub's command line, is not installed.\n"
                  "  winget install GitHub.cli, then gh auth login")
@@ -805,10 +812,17 @@ def check_github(release_version):
     if seen.returncode != 0:
         sys.exit("Build stopped: gh cannot see this repository.\n  %s"
                  % seen.stderr.strip())
-    if gh_run(["release", "view", release_version]).returncode == 0:
+    GITHUB_REPO = seen.stdout.strip()
+    ## a release that is not there is the answer wanted; any other failure is
+    ## a question gh could not answer, and is not taken as "no release"
+    found = gh_run(["release", "view", release_version, "--repo", GITHUB_REPO])
+    if found.returncode == 0:
         sys.exit("Build stopped: %s already has a GitHub release.\n"
                  "  Bump [project] version in pyproject.toml and run again."
                  % release_version)
+    if "not found" not in (found.stderr or "").lower():
+        sys.exit("Build stopped: gh could not say whether %s has a release.\n  %s"
+                 % (release_version, (found.stderr or "").strip()))
     print("   gh is signed in to %s, and %s has no release yet"
           % (seen.stdout.strip(), release_version))
 
@@ -825,13 +839,15 @@ def github_release(release_version, files):
     try:
         made = gh_run(["release", "create", release_version] + list(files) +
                       ["--title", "Scaffold %s" % release_version, "--notes-file", path,
-                       "--target", "master"], capture=False)
+                       "--target", "master", "--repo", GITHUB_REPO], capture=False)
     finally:
         os.remove(path)
     if made.returncode != 0:
         sys.exit("\nThe update server and both branches are published, but the GitHub "
-                 "release was not made.\n  gh release create %s %s --notes-file <notes>"
-                 % (release_version, " ".join(os.path.relpath(f, ROOT) for f in files)))
+                 "release was not made.\n  gh release create %s %s --repo %s "
+                 "--target master --notes-file <notes>"
+                 % (release_version, " ".join(os.path.relpath(f, ROOT) for f in files),
+                    GITHUB_REPO))
     for name in files:
         print("   %s" % os.path.basename(name))
 

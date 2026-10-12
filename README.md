@@ -457,6 +457,6 @@ Every block in the 100+ bundled test structures builds, and every block Mojang's
 
 ### **Maintained by <span style="color:#55FF55;">EvilSlimeLabs</span> <span style="font-size:small;">([Website](https://evilsimelabs.com)) ([GitHub](https://github.com/EvilSlimeLabs)).</span>**
 
-Scaffold was originally created by **DrAv0011**, **FondUnicycle** and **RavinMaddHatter**, and everything here is built on their work.
+Scaffold is forked from Structura, which was created by **DrAv0011**, **FondUnicycle** and **RavinMaddHatter**, and everything here is built on their work.
 
 <br clear="left">

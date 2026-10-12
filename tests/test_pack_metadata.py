@@ -168,6 +168,11 @@ class VersionTests(unittest.TestCase):
     def test_the_version_comes_from_pyproject(self):
         self.assertEqual(version.read(), self.project()["project"]["version"])
 
+    def test_an_installed_copy_is_asked_by_its_published_name(self):
+        # a pip install has no pyproject.toml, so its version is read from the
+        # metadata filed under [project] name; any other name answers nothing
+        self.assertEqual(version.DISTRIBUTION, self.project()["project"]["name"])
+
     def test_the_package_exposes_it_the_usual_way(self):
         import scaffold
         self.assertEqual(scaffold.__version__, version.read())

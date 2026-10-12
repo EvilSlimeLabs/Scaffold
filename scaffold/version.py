@@ -30,7 +30,9 @@ import os
 import sys
 
 FALLBACK = "0.0.0"
-DISTRIBUTION = "scaffold"
+## the name the package is published under on PyPI, `[project] name`, which is
+## what an installed copy's metadata is filed by; the import name is `scaffold`
+DISTRIBUTION = "mcpe-scaffold"
 
 _cached = None
 

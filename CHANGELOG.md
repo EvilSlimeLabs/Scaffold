@@ -13,6 +13,10 @@ no jargon. A paragraph, not a document: it is read in a dialog that cannot
 scroll. If an update needs anything doing, such as a pack being rebuilt or
 re-applied, say that first. Be succinct; too long and people won't bother to read it.
 
+## 1.3.1
+
+Scaffold installed from PyPI now knows its own version. It said 0.0.0, and packs it built were labelled 0.0.0 too. The downloadable program was not affected.
+
 ## 1.3.0
 
 Rebuild your packs to pick these up. Redstone dust now joins up the way it does in game. A new Clearer Redstone tab in the Tweaks menu, with art from Redstone Tweaks, shows dust power and how full containers and pots are, among much else. Fences, walls, panes and stair corners join up in structures saved in Minecraft 26.50 or later. Waterlogged blocks show their water without hiding the block. Over a hundred blocks were reshaped to match the game, ghosts sit centred in their block, and low geometry draws plants and small blocks as their inventory picture. Double chests show as one chest. The command line can read its options from a file.
