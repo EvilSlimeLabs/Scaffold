@@ -3,32 +3,29 @@ import unittest
 
 from nbtlib import Byte, Int
 
-from scaffold.core import scaffold
 from scaffold.pack.armor_stand_geo_class import ArmorStandGeo
 
 
 class LockedHopperStateTests(unittest.TestCase):
-    """`toggle_bit` has to survive `_process_block` as a shape state."""
+    """`toggle_bit` picks the locked form of whichever mounting a hopper has."""
 
-    def setUp(self):
-        self.processor = scaffold.__new__(scaffold)
+    @classmethod
+    def setUpClass(cls):
+        cls.geo = ArmorStandGeo("test")
 
-    def process(self, states):
-        block = {"name": "minecraft:hopper", "states": states}
-        ## [rot, top, variant, open_bit, data, hinge, tint]
-        return self.processor._process_block(block)
+    def form(self, states):
+        return self.geo.choose("hopper", states)[0]
 
-    def test_toggle_bit_reaches_the_tables_as_the_forms_data(self):
-        locked = self.process({"facing_direction": Int(0), "toggle_bit": Byte(1)})
-        free = self.process({"facing_direction": Int(0), "toggle_bit": Byte(0)})
+    def test_toggle_bit_picks_the_locked_form(self):
+        self.assertEqual(self.form({"facing_direction": Int(0), "toggle_bit": Byte(1)}),
+                         "default-1")
+        self.assertEqual(self.form({"facing_direction": Int(2), "toggle_bit": Byte(1)}),
+                         "side-1")
+        self.assertEqual(self.form({"facing_direction": Int(0), "toggle_bit": Byte(0)}),
+                         "default")
 
-        self.assertEqual(locked[4], "1")
-        self.assertEqual(free[4], "0")
-
-    def test_a_hopper_with_no_toggle_bit_carries_no_form_data(self):
-        plain = self.process({"facing_direction": Int(0)})
-
-        self.assertEqual(plain[4], 0)
+    def test_a_hopper_with_no_toggle_bit_is_drawn_unlocked(self):
+        self.assertEqual(self.form({"facing_direction": Int(0)}), "default")
 
 
 class LockedHopperShapeTests(unittest.TestCase):
@@ -76,7 +73,9 @@ class HopperPaintTests(unittest.TestCase):
     def test_only_the_bowl_is_topped_with_the_rim(self):
         bowl, neck, spout = self.geo.block_uv["hopper"]["default"]["overwrite"]["up"]
 
-        self.assertIn("hopper_top", bowl)
+        ## the bowl's top reads the block's up slot, which is hopper_top, so a
+        ## tweak that gives the hopper its own top is read
+        self.assertTrue(bowl.startswith("@up"), bowl)
         self.assertIn("hopper_outside", neck)
         self.assertIn("hopper_outside", spout)
 

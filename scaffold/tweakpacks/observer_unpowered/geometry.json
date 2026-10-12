@@ -1,0 +1,120 @@
+{
+	"families": {
+		"observer": {
+			"data": {
+				"join": [
+					"powered_bit"
+				]
+			},
+			"turn_by": [
+				{
+					"state": "minecraft:facing_direction"
+				}
+			],
+			"forms": {
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/observer_unpowered/front"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/observer_unpowered/back"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/observer_unpowered/side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/observer_unpowered/side",
+										"turn": 180
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/observer_unpowered/top"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/observer_unpowered/top_mirror"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

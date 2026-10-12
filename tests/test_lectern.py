@@ -3,18 +3,16 @@ import unittest
 
 from nbtlib import Byte, Compound, String
 
-from scaffold.core import scaffold
 from scaffold.pack.armor_stand_geo_class import ArmorStandGeo, LOW_SUFFIX
 
 
 class LecternBookStateTests(unittest.TestCase):
-    def setUp(self):
-        self.processor = scaffold.__new__(scaffold)
+    @classmethod
+    def setUpClass(cls):
+        cls.geo = ArmorStandGeo("test")
 
     def form(self, entity):
-        block = {"name": "minecraft:lectern", "states": {}}
-        ## [rot, top, variant, open_bit, data, hinge, tint]
-        return self.processor._process_block(block, entity)[4]
+        return self.geo.choose("lectern", {}, entity)[0]
 
     def entity(self, **fields):
         return dict({"id": String("Lectern")}, **fields)
@@ -34,7 +32,7 @@ class LecternBookStateTests(unittest.TestCase):
             self.form(self.entity(hasBook=Byte(0), book=book)), "default")
 
     def test_a_lectern_with_no_block_entity_is_drawn_plain(self):
-        self.assertEqual(self.form(None), 0)
+        self.assertEqual(self.form(None), "default")
 
 
 class LecternBookShapeTests(unittest.TestCase):
@@ -55,14 +53,20 @@ class LecternBookShapeTests(unittest.TestCase):
                             for name in painted),
                         painted)
 
-    def test_low_geometry_has_no_book_form_so_it_falls_back_to_the_plain_desk(self):
-        ## a simplified family is one cube and one form, so a lectern built with
-        ## low geometry on is drawn without its book and without anything here
-        ## having to know that
+    def test_low_geometry_keeps_the_book_as_a_form_of_its_own(self):
+        ## a simplified family has a simpler form for every form the detailed
+        ## one has, so a lectern carrying a book is still told apart from one
+        ## without when low geometry is on
         low = self.geo.block_shapes["lectern" + LOW_SUFFIX]
+        detailed = self.geo.block_shapes["lectern"]
 
-        self.assertEqual(list(low), ["default"])
-        self.assertNotIn("book", low)
+        self.assertEqual(sorted(low), sorted(detailed))
+        ## and each is a box of quads wearing the lectern's inventory slot, four
+        ## to a face
+        for form in low:
+            sizes = low[form]["size"]
+            self.assertEqual(len(sizes), 24)
+            self.assertTrue(all(min(size) == 0 for size in sizes))
 
 
 if __name__ == "__main__":

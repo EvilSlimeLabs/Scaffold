@@ -1,9 +1,7 @@
 {
-	"metadata": {
-		"version": "1.0.0",
-		"description": "Block categories for Scaffold",
-		"MCVersion": "26.50"
-	},
+	"format": 2,
+	"minecraft": "26.50",
+	"about": "The headings a block list is grouped under, in the order they are tried: shell globs on the block id, first match wins.",
 	"categories": [
 		{
 			"name": "Flowers and Plants",
@@ -156,8 +154,7 @@
 			"match": [
 				"pale_oak*",
 				"*_pale_oak*",
-				"*pale_oak*",
-				"*/pale_oak"
+				"*pale_oak*"
 			]
 		},
 		{
@@ -165,8 +162,7 @@
 			"match": [
 				"dark_oak*",
 				"*_dark_oak*",
-				"*dark_oak*",
-				"*/dark_oak"
+				"*dark_oak*"
 			]
 		},
 		{
@@ -175,7 +171,6 @@
 				"oak*",
 				"*_oak*",
 				"*oak*",
-				"*/oak",
 				"planks",
 				"wood",
 				"wooden_slab",
@@ -195,8 +190,7 @@
 			"match": [
 				"spruce*",
 				"*_spruce*",
-				"*spruce*",
-				"*/spruce"
+				"*spruce*"
 			]
 		},
 		{
@@ -204,8 +198,7 @@
 			"match": [
 				"birch*",
 				"*_birch*",
-				"*birch*",
-				"*/birch"
+				"*birch*"
 			]
 		},
 		{
@@ -213,8 +206,7 @@
 			"match": [
 				"jungle*",
 				"*_jungle*",
-				"*jungle*",
-				"*/jungle"
+				"*jungle*"
 			]
 		},
 		{
@@ -223,7 +215,6 @@
 				"acacia*",
 				"*_acacia*",
 				"*acacia*",
-				"*/acacia",
 				"log2",
 				"leaves2"
 			]
@@ -233,8 +224,7 @@
 			"match": [
 				"mangrove*",
 				"*_mangrove*",
-				"*mangrove*",
-				"*/mangrove"
+				"*mangrove*"
 			]
 		},
 		{
@@ -242,8 +232,7 @@
 			"match": [
 				"cherry*",
 				"*_cherry*",
-				"*cherry*",
-				"*/cherry"
+				"*cherry*"
 			]
 		},
 		{
@@ -251,8 +240,7 @@
 			"match": [
 				"poplar*",
 				"*_poplar*",
-				"*poplar*",
-				"*/poplar"
+				"*poplar*"
 			]
 		},
 		{
@@ -260,8 +248,7 @@
 			"match": [
 				"bamboo*",
 				"*_bamboo*",
-				"*bamboo*",
-				"*/bamboo"
+				"*bamboo*"
 			]
 		},
 		{
@@ -269,8 +256,7 @@
 			"match": [
 				"crimson*",
 				"*_crimson*",
-				"*crimson*",
-				"*/crimson"
+				"*crimson*"
 			]
 		},
 		{
@@ -278,8 +264,7 @@
 			"match": [
 				"warped*",
 				"*_warped*",
-				"*warped*",
-				"*/warped"
+				"*warped*"
 			]
 		},
 		{
@@ -343,27 +328,19 @@
 			"match": [
 				"cobblestone*",
 				"mossy_cobblestone*",
-				"infested_cobblestone",
-				"*/cobblestone",
-				"*/mossy_cobblestone"
+				"infested_cobblestone"
 			]
 		},
 		{
 			"name": "Red Sandstone",
 			"match": [
-				"*red_sandstone*",
-				"*/red_sandstone",
-				"*/smooth_red_sandstone",
-				"*/cut_red_sandstone"
+				"*red_sandstone*"
 			]
 		},
 		{
 			"name": "Sandstone",
 			"match": [
-				"*sandstone*",
-				"*/sandstone",
-				"*/smooth_sandstone",
-				"*/cut_sandstone"
+				"*sandstone*"
 			]
 		},
 		{
@@ -381,40 +358,31 @@
 		{
 			"name": "Granite",
 			"match": [
-				"*granite*",
-				"*/granite",
-				"*/polished_granite"
+				"*granite*"
 			]
 		},
 		{
 			"name": "Diorite",
 			"match": [
-				"*diorite*",
-				"*/diorite",
-				"*/polished_diorite"
+				"*diorite*"
 			]
 		},
 		{
 			"name": "Andesite",
 			"match": [
-				"*andesite*",
-				"*/andesite",
-				"*/polished_andesite"
+				"*andesite*"
 			]
 		},
 		{
 			"name": "Quartz",
 			"match": [
-				"*quartz*",
-				"*/quartz",
-				"*/smooth_quartz"
+				"*quartz*"
 			]
 		},
 		{
 			"name": "Purpur",
 			"match": [
-				"*purpur*",
-				"*/purpur"
+				"*purpur*"
 			]
 		},
 		{
@@ -422,10 +390,7 @@
 			"match": [
 				"*prismarine*",
 				"sea_lantern",
-				"dark_prismarine*",
-				"*/prismarine_dark",
-				"*/prismarine_brick",
-				"*/prismarine_rough"
+				"dark_prismarine*"
 			]
 		},
 		{
@@ -443,9 +408,7 @@
 			"match": [
 				"*nether_brick*",
 				"nether_brick",
-				"*_nether_bricks",
-				"*/nether_brick",
-				"*/red_nether_brick"
+				"*_nether_bricks"
 			]
 		},
 		{
@@ -455,8 +418,7 @@
 				"*end_stone*",
 				"end_bricks",
 				"end_brick*",
-				"end_portal_frame",
-				"*/end_stone_brick"
+				"end_portal_frame"
 			]
 		},
 		{
@@ -487,8 +449,7 @@
 				"brick_stairs",
 				"brick_double_slab",
 				"brick_wall",
-				"bricks",
-				"*/brick"
+				"bricks"
 			]
 		},
 		{
@@ -561,11 +522,7 @@
 				"stone_block_slab",
 				"stone_block_slab2",
 				"stone_block_slab3",
-				"stone_block_slab4",
-				"*/stone",
-				"*/stone_brick",
-				"*/smooth_stone",
-				"*/mossy_stone_brick"
+				"stone_block_slab4"
 			]
 		},
 		{

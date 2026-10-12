@@ -4,9 +4,9 @@
 
 A crop is not one block. Wheat has eight textures, one per stage of growth, and
 a lookup that names only the last of them draws a field of seedlings as a field
-ready to harvest. The same is true of a cocoa pod, which changes size as well as
-texture, of a sweet berry bush, of a turtle egg clutch, and of a composter,
-which fills up.
+ready to harvest. The same is true of a sweet berry bush, and of a composter,
+which fills up. Cocoa, turtle eggs, the dripleaves and the pitcher crop are
+drawn from Java's models, in `tools/blocks/models.py`.
 
 Each of these is written here as a family of its own with one variant per state
 value, because the shared `cross_texture` family cannot carry them: a variant
@@ -28,12 +28,14 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
 
+from tools.blocks import java
 from tools.blocks import tables as lookup_writer
 from tools.blocks.geometry import Cube, FACES, build, px
+from tools.blocks import tables as _tables
 
 LOOKUPS = os.path.join(ROOT, "scaffold", "lookups")
-SHAPES = os.path.join(LOOKUPS, "block_shapes.json")
-UV = os.path.join(LOOKUPS, "block_uv.json")
+SHAPES = lookup_writer.SHAPES
+UV = lookup_writer.UV
 DEFINITION = os.path.join(LOOKUPS, "block_definition.json")
 
 BLOCKS = "textures/blocks/%s"
@@ -54,15 +56,8 @@ def write(family, forms, center=(8, 8, 8)):
 
 
 def define(blocks, family):
-    """Point block ids at a family, leaving the rest of the file alone."""
-    table = load(DEFINITION)
-    for block in blocks:
-        table[block] = family
-    ## the file is one key a line, tab indented, with no space after the colon;
-    ## writing it any other way reformats three thousand lines
-    body = json.dumps(table, indent="\t", ensure_ascii=False,
-                      separators=(",", ":"))
-    io.open(DEFINITION, "w", encoding="utf-8", newline="").write(body + "\n")
+    """Point block ids at a shape family."""
+    _tables.define(blocks, family)
 
 
 # --- the plants that grow where they stand ----------------------------------
@@ -86,6 +81,55 @@ def growing(stages):
     return forms
 
 
+# --- the four planes of a crop ----------------------------------------------------
+#
+# Wheat, carrots, potatoes, beetroot and nether wart are Java's `crop`: four
+# planes in a hash, two along each axis, four pixels in from the edges and sunk
+# a pixel into the farmland. Seagrass is the same four standing on the floor,
+# and a cactus the same four a pixel in, with a top and a bottom. Each plane
+# shows the whole tile from both sides, the far side read backwards.
+
+def planes(inset, low=0, along_x="#plant", along_z="#plant", tall=16):
+    """Four planes `inset` pixels in from each side, from `low` up, as Java
+    elements: two along x, reading `along_x`, and two along z."""
+    near, far = inset, 16 - inset
+    forward, backward = [0, 0, 16, 16], [16, 0, 0, 16]
+    top = low + tall
+    return [
+        {"from": [near, low, 0], "to": [near, top, 16], "faces": {
+            "west": {"uv": forward, "texture": along_z},
+            "east": {"uv": backward, "texture": along_z}}},
+        {"from": [far, low, 0], "to": [far, top, 16], "faces": {
+            "west": {"uv": backward, "texture": along_z},
+            "east": {"uv": forward, "texture": along_z}}},
+        {"from": [0, low, near], "to": [16, top, near], "faces": {
+            "north": {"uv": forward, "texture": along_x},
+            "south": {"uv": backward, "texture": along_x}}},
+        {"from": [0, low, far], "to": [16, top, far], "faces": {
+            "north": {"uv": backward, "texture": along_x},
+            "south": {"uv": forward, "texture": along_x}}},
+    ]
+
+
+def painted_with(**named):
+    """A texture lookup for Java elements: each variable a file of its own."""
+    return lambda name: {"texture": BLOCKS % named[name]} if name in named else None
+
+
+CROP = planes(4, low=-1)
+
+
+def planted(stages):
+    """One form per stage of a crop, its planes wearing that stage's tile."""
+    forms = {str(stage): java.form(CROP, painted_with(plant=name))
+             for stage, name in enumerate(stages)}
+    forms["default"] = forms[str(len(stages) - 1)]
+    return forms
+
+
+## the crops drawn as Java's `crop`; the rest of CROPS stay crossed
+HASHED = ("wheat", "carrots", "potatoes", "beetroot", "nether_wart")
+
 ## Bedrock counts a crop's growth in `growth`, which runs to 7 for the ones that
 ## take eight steps and to 3 for the ones that take four. A stage with no
 ## texture of its own repeats the one before it, the way the game does.
@@ -99,94 +143,6 @@ CROPS = {
                          "torchflower_crop_stage_1"],
     "sweet_berry_bush": ["sweet_berry_bush_stage%d" % n for n in range(4)],
 }
-
-
-# --- cocoa ------------------------------------------------------------------
-#
-# A cocoa pod grows on the side of a jungle log and gets larger as it ripens,
-# so both the box and the texture change. The sizes are vanilla's: 4, 6 and 8
-# across, hanging from the top of the block and standing off the log it grew on.
-#
-# Each stage's tile holds three pictures rather than one: the pod's top in the
-# corner, the pod's side to the right of it, and the stalk it hangs by drawn
-# diagonally between them. A face working its own window out from where the pod
-# sits reads across all three and comes out as bark, which is what a cocoa pod
-# was drawn with.
-#
-# The corner and the side move as the pod grows, so each stage names its own.
-COCOA_ART = {
-    ## stage: the pod's top, then the pod's side
-    "0": ((0, 0, 4, 4), (11, 4, 4, 5)),
-    "1": ((0, 0, 6, 6), (9, 4, 6, 7)),
-    "2": ((0, 0, 7, 7), (7, 4, 8, 9)),
-}
-
-
-def pod(size, at, stage):
-    """One cocoa pod, its top and bottom off the corner of the tile and its
-    four sides off the picture beside it."""
-    cap, side = COCOA_ART[stage]
-    return Cube(size, at, BLOCKS % ("cocoa_stage_%s" % stage), window={
-        "up": cap, "down": cap,
-        "north": side, "south": side, "east": side, "west": side})
-
-
-COCOA = {
-    "0": [pod((4, 5, 4), (6, 7, 11), "0")],
-    "1": [pod((6, 7, 6), (5, 5, 9), "1")],
-    "2": [pod((8, 9, 8), (4, 3, 7), "2")],
-}
-COCOA["default"] = COCOA["2"]
-
-
-# --- turtle eggs ------------------------------------------------------------
-#
-# One to four eggs in a clutch, and the count is a state of its own. A big egg
-# is 4 by 7 by 4 and a small one 4 by 5 by 4; vanilla mixes them as the clutch
-# grows. The cracking is the texture rather than the shape, and comes through
-# `variants.json`, because turtle_egg's terrain texture is a list of three.
-#
-# The tile holds an egg drawn several times over rather than one picture: the
-# side of one down the left of it, four across the top of that, and the smaller
-# egg's own to the right. A face working its own window out from where the egg
-# stands reads whichever eggs happen to line up with it, which is why a clutch
-# came out as pale boxes with corners of other eggs on them. Every face takes an
-# egg the size of that face instead.
-#
-# **And the two sizes are drawn in different corners of the tile.** The big
-# egg's side is four across and seven down at (1, 4) and the small one's is four
-# by five at (10, 10); the caps are four by four, the tops at (0, 0) and (6, 7)
-# and the two undersides side by side along the bottom at (0, 11) and (4, 11).
-# One window for both sizes takes the big egg's from a column that is empty for
-# its first pixel and the small egg's from wherever seven rows down happens to
-# land, which is what left eggs with a clear stripe up them.
-BIG = (4, 7, 4)
-SMALL = (4, 5, 4)
-## side, top and underside, per size, all read straight out of the tile
-EGG_ART = {
-    BIG: {"side": (1, 4, 4, 7), "up": (0, 0, 4, 4), "down": (0, 11, 4, 4)},
-    SMALL: {"side": (10, 10, 4, 5), "up": (6, 7, 4, 4), "down": (4, 11, 4, 4)},
-}
-
-
-def egg(size, at):
-    """One egg, every face reading an egg rather than a slice of the block."""
-    art = EGG_ART[size]
-    side = art["side"]
-    return Cube(size, at, window={
-        "north": side, "south": side, "east": side, "west": side,
-        "up": art["up"], "down": art["down"]})
-
-
-TURTLE_EGGS = {
-    "one_egg": [egg(BIG, (6, 0, 6))],
-    "two_egg": [egg(BIG, (3, 0, 6)), egg(SMALL, (9, 0, 7))],
-    "three_egg": [egg(BIG, (2, 0, 5)), egg(SMALL, (8, 0, 3)),
-                  egg(SMALL, (7, 0, 9))],
-    "four_egg": [egg(BIG, (2, 0, 5)), egg(SMALL, (8, 0, 3)),
-                 egg(SMALL, (7, 0, 9)), egg(SMALL, (11, 0, 8))],
-}
-TURTLE_EGGS["default"] = TURTLE_EGGS["one_egg"]
 
 
 # --- composter --------------------------------------------------------------
@@ -229,101 +185,101 @@ def composter():
 # Short seagrass is one plant, and the tall kind is two blocks with a texture
 # each for its bottom and its top. `sea_grass_type` says which of the three a
 # block is, and without it every one of them wore the tall top.
-def panes(first, second):
-    """The crossed pair, each pane with a texture of its own."""
-    return [Cube(size, at, BLOCKS % name, window=WHOLE_TILE)
-            for (size, at), name in zip(CROSS, (first, second))]
-
-
+SEAGRASS_PLANES = planes(4, along_x="#a", along_z="#b")
 SEAGRASS = {
-    "default": panes("seagrass", "seagrass"),
-    "double_bot": panes("seagrass_doubletall_bottom_a",
-                        "seagrass_doubletall_bottom_b"),
-    "double_top": panes("seagrass_doubletall_top_a",
-                        "seagrass_doubletall_top_b"),
+    "default": java.form(SEAGRASS_PLANES, painted_with(a="seagrass", b="seagrass")),
+    "double_bot": java.form(SEAGRASS_PLANES, painted_with(
+        a="seagrass_doubletall_bottom_a", b="seagrass_doubletall_bottom_b")),
+    "double_top": java.form(SEAGRASS_PLANES, painted_with(
+        a="seagrass_doubletall_top_a", b="seagrass_doubletall_top_b")),
 }
+
+## A cactus is the four planes a pixel in, wearing its declared side, with its
+## top and bottom across the whole block, as Java's `cactus` is. The side tile
+## is drawn to reach past where the green faces meet, which is where the spines
+## are, so planes that cross leave no gap where boxes would.
+CACTUS = {"default": java.form(planes(1, along_x="#side", along_z="#side") + [
+    {"from": [0, 0, 0], "to": [16, 16, 16], "faces": {
+        "up": {"uv": [0, 0, 16, 16], "texture": "#top"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#bottom"}}}],
+    lambda name: None)}
 
 
 # --- coral fans -------------------------------------------------------------
 #
-# A fan is a plant, not a block: crossed panes rather than the near cube both
-# families were drawn as. The wall kind hangs off the side it grew on, which is
-# what `coral_direction` says, and nothing was reading it.
-CORAL_FAN = {"default": [Cube(size, at, window=WHOLE_TILE)
-                         for size, at in CROSS]}
-CORAL_WALL_FAN = {"default": [
-    Cube((0.16, 16, 16), (8, 0, 2), window=WHOLE_TILE),
-    Cube((16, 16, 0.16), (0, 0, 2), window=WHOLE_TILE)]}
+# Java's `coral_fan` and `coral_wall_fan`. A fan on the floor is four blades
+# spreading from its middle, each tilted up out of the ground; one on a wall is
+# one blade tilted out from the wall, which `coral_direction` turns.
+CORAL_FAN_BLADES = [
+    {"from": [8, 0, 0], "to": [24, 0, 16],
+     "rotation": {"origin": [8, 0, 0], "axis": "z", "angle": 22.5},
+     "faces": {"up": {"uv": [0, 0, 16, 16], "rotation": 90},
+               "down": {"uv": [0, 16, 16, 0], "rotation": 270}}},
+    {"from": [-8, 0, 0], "to": [8, 0, 16],
+     "rotation": {"origin": [8, 0, 0], "axis": "z", "angle": -22.5},
+     "faces": {"up": {"uv": [0, 0, 16, 16], "rotation": 270},
+               "down": {"uv": [0, 16, 16, 0], "rotation": 90}}},
+    {"from": [0, 0, 8], "to": [16, 0, 24],
+     "rotation": {"origin": [0, 0, 8], "axis": "x", "angle": -22.5},
+     "faces": {"up": {"uv": [16, 16, 0, 0]}, "down": {"uv": [16, 0, 0, 16]}}},
+    {"from": [0, 0, -8], "to": [16, 0, 8],
+     "rotation": {"origin": [0, 0, 8], "axis": "x", "angle": 22.5},
+     "faces": {"up": {"uv": [0, 0, 16, 16]}, "down": {"uv": [0, 16, 16, 0]}}},
+]
+## The wall fan: one blade tilted up out of the wall it grows on, the south
+## side of its block, toward the north. Java's `coral_wall_fan` crosses a second
+## blade tilted down through it; Bedrock draws the one, which a world showed.
+CORAL_WALL_BLADES = [
+    {"from": [0, 8, 0], "to": [16, 8, 16],
+     "rotation": {"origin": [8, 8, 14], "axis": "x", "angle": 22.5, "rescale": True},
+     "faces": {"up": {"uv": [0, 0, 16, 16]}, "down": {"uv": [16, 16, 0, 0]}}}]
+## `coral_fan_direction` turns a floor fan a quarter. A wall fan's
+## `coral_direction` names the way it faces, out from its wall: 0 west, 1 east,
+## 2 north, 3 south, as PocketMine's schema reads it, turned by Minecraft's
+## angles for those directions.
+GROUND_CORAL_TURNS = {"0": [0, 0, 0], "1": [0, 270, 0]}
+CORAL_TURNS = {"0": [0, 90, 0], "1": [0, 270, 0], "2": [0, 0, 0], "3": [0, 180, 0]}
+CORAL_FAN = {"default": java.form(CORAL_FAN_BLADES, lambda name: None)}
+CORAL_WALL_FAN = {"default": java.form(CORAL_WALL_BLADES, lambda name: None)}
 
-## coral_direction on a wall fan, and coral_fan_direction on a ground one,
-## which lies one of two ways round
-CORAL_TURNS = {"0": [0, 0, 0], "1": [0, 90, 0], "2": [0, 180, 0],
-               "3": [0, 270, 0]}
 
-
-# --- big dripleaves ---------------------------------------------------------
+# --- petals ------------------------------------------------------------------
 #
-# One block id is two different things. `big_dripleaf_head` says whether a block
-# is the leaf you stand on or a length of the stalk holding one up, and nothing
-# was reading it, so both were drawn as a near cube of whatever texture
-# `blocks.json` happened to hand over.
+# Pink petals and wildflowers are a bed of flowers lying on the ground, one to
+# four quarters of the block filled as `growth` climbs: 0 is one quarter, 3 and
+# above all four. The tile is the whole bed seen from above, so each quarter
+# reads its own quarter of it, and the flat faces read it backwards both ways,
+# which puts the tile's top left at the block's north west corner. Both blocks
+# declare the bed first in a texture list whose second entry is the stem, and
+# the list's first entry is what a block's own face reads.
 #
-# **Its faces are texture slots, not faces.** The entry reads `up:
-# big_dripleaf_side2`, `down: big_dripleaf_side1`, `north: big_dripleaf_stem`
-# and the leaf on the other three, because the game picks from those slots for
-# its own model rather than painting them on the six sides of a cube. Taken
-# literally, the leaf's top wears `side2`, which is four rows of edge profile
-# over an empty tile, and the leaf is very nearly invisible from above. Every
-# face here names the texture it wants outright.
-LEAF_TOP = BLOCKS % "big_dripleaf_top"
-LEAF_EDGE = BLOCKS % "big_dripleaf_side2"
-LEAF_STEM = BLOCKS % "big_dripleaf_stem"
-
-LEAF_THICK = 2
-LEAF_AT = 13        # the surface you stand on, near the top of the block
-STALK = 4           # the stalk is square and runs down the back of the leaf
+# The order the quarters fill in, north west first and round to the east, is
+# taken from the Java edition's models and has not been checked in a world.
+# The stems are left off.
+PETAL_THIN = 0.16
+PETAL_UP = 2
+## where each quarter is, (x, z), and where its picture is on the tile, (u, v)
+PETAL_QUARTERS = [((8, 0), (0, 0)), ((8, 8), (0, 8)),
+                  ((0, 8), (8, 8)), ((0, 0), (8, 0))]
 
 
-def leaf():
-    """The platform, textured top and bottom and edged with its own profile.
-
-    The edge strip is the top four rows of `big_dripleaf_side2`; the rest of
-    that tile is empty, so a face reading the whole of it shows nothing.
-    """
-    return Cube((16, LEAF_THICK, 16), (0, LEAF_AT, 0), texture={
-        "up": LEAF_TOP, "down": LEAF_TOP,
-        "north": LEAF_EDGE, "south": LEAF_EDGE,
-        "east": LEAF_EDGE, "west": LEAF_EDGE}, window={
-        "up": (0, 0, 16, 16), "down": (0, 0, 16, 16),
-        "north": (0, 0, 16, LEAF_THICK), "south": (0, 0, 16, LEAF_THICK),
-        "east": (0, 0, 16, LEAF_THICK), "west": (0, 0, 16, LEAF_THICK)})
+def petals(count):
+    made = []
+    for (x, z), (u, v) in PETAL_QUARTERS[:count]:
+        made.append(Cube((8, PETAL_THIN, 8), (x, PETAL_UP, z), window={
+            "up": (u, v, 8, 8), "down": (u, v, 8, 8),
+            "north": (u, v, 8, 1), "south": (u, v, 8, 1),
+            "east": (u, v, 8, 1), "west": (u, v, 8, 1)}, behind=True))
+    return made
 
 
-def stalk(tall, at):
-    """A length of stem, against the back of the block where the leaf hangs
-    off it. A stalk block and the stub under a leaf stand in the same place, so
-    a dripleaf several blocks tall lines up."""
-    middle = (16 - STALK) // 2
-    return Cube((STALK, tall, STALK), (middle, at, 0), texture=LEAF_STEM,
-                window={face: (0, 0, 16, 16) for face in FACES})
-
-
-BIG_DRIPLEAF = {
-    ## big_dripleaf_head: the leaf, with a stub of stalk under it
-    "1": [leaf(), stalk(LEAF_AT, 0)],
-    ## and a plain length of the stalk
-    "0": [stalk(16, 0)],
-}
-BIG_DRIPLEAF["default"] = BIG_DRIPLEAF["1"]
-
-## minecraft:cardinal_direction, which the leaf hangs off the far side of
-DRIPLEAF_TURNS = {"south": [0, 0, 0], "west": [0, 90, 0],
-                  "north": [0, 180, 0], "east": [0, 270, 0],
-                  "0": [0, 0, 0], "1": [0, 90, 0],
-                  "2": [0, 180, 0], "3": [0, 270, 0]}
+PETALS = {str(growth): petals(min(growth + 1, 4)) for growth in range(8)}
+PETALS["default"] = PETALS["0"]
 
 
 def turns(family, table):
+    """A family's rotation table, Minecraft's angles or the name of the state
+    whose own angles it turns by."""
     lookup_writer.put(os.path.join(LOOKUPS, "block_rotation.json"),
                       family, table, tight=True)
 
@@ -331,27 +287,34 @@ def turns(family, table):
 def main():
     print("writing the forms that change with a state")
     for family, stages in CROPS.items():
-        write(family, growing(stages))
+        if family in HASHED:
+            lookup_writer.forms(family, planted(stages))
+        else:
+            write(family, growing(stages))
         ## every one of these is a block id as well as a family name
         define([family], family)
 
-    write("cocoa", COCOA)
-    write("turtle_egg", TURTLE_EGGS)
     write("composter", composter())
     define(["composter"], "composter")
 
-    write("seagrass", SEAGRASS)
+    lookup_writer.forms("seagrass", SEAGRASS)
+    lookup_writer.forms("cactus", CACTUS)
     ## only `seagrass`: blocks.json has no `sea_grass`, and a
     ## definition for a block the pack never declares raises
     define(["seagrass"], "seagrass")
-    write("coral_fan", CORAL_FAN)
-    write("coral_fan_wall", CORAL_WALL_FAN)
-    turns("coral_fan", CORAL_TURNS)
+    lookup_writer.forms("coral_fan", CORAL_FAN)
+    lookup_writer.forms("coral_fan_wall", CORAL_WALL_FAN)
+    turns("coral_fan", GROUND_CORAL_TURNS)
     turns("coral_fan_wall", CORAL_TURNS)
 
-    write("big_dripleaf", BIG_DRIPLEAF)
-    turns("big_dripleaf", DRIPLEAF_TURNS)
-    define(["big_dripleaf"], "big_dripleaf")
+    write("flowerbed", PETALS)
+    lookup_writer.rules("flowerbed", data={"number": ["growth"]},
+                        turn_by=[{"state": "minecraft:cardinal_direction"}])
+    turns("flowerbed", "minecraft:cardinal_direction")
+    define(["pink_petals", "wildflowers"], "flowerbed")
+
+    ## a torchflower is a flower like any other
+    define(["torchflower"], "cross_texture")
     print("re-run tools/blocks/simplify.py if any of these grew past two cubes")
 
 

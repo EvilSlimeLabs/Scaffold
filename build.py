@@ -15,10 +15,11 @@ if it is installed, and MinGW64 does not, because Nuitka stopped downloading
 that for Python 3.13. The README says the same thing for anyone building from a
 fresh checkout.
 
-**Upload SHA256SUMS.txt with the release.** It is what a hand download is
+**SHA256SUMS.txt goes with the release.** It is what a hand download is
 checked against. The program's own updates do not use it -- those go through
 `scaffold/updates.py`, which verifies TUF metadata instead -- but a release
-without it gives anyone downloading by hand nothing to check.
+without it gives anyone downloading by hand nothing to check. `--publish`
+attaches it to the GitHub release with the zip and both executables.
 
     python build.py                    the lot
     python build.py --skip-tools       do not regenerate the data first
@@ -27,7 +28,8 @@ without it gives anyone downloading by hand nothing to check.
 
     python build.py --init-trust       create the signing keys, once
     python build.py --init-pages       set up pages/ as the gh-pages worktree
-    python build.py --publish          sign a build in and push it, both branches
+    python build.py --publish          sign a build in, push both branches, make the
+                                       GitHub release, which publishes to PyPI
     python build.py --unpublish 1.2.3  take the newest release back off the server
 
 The version comes from pyproject.toml, which is packed into the executable so
@@ -36,11 +38,13 @@ the compiled program can read it back.
 import argparse
 import hashlib
 import io
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import zipfile
 
 from scaffold import version
@@ -84,9 +88,26 @@ def run_tools():
     run([sys.executable, "-m", "tools.generate"], "generating the data")
 
 
+## what the last test run in this build said, for the README's tests badge:
+## how many ran, or None when the tests were skipped
+TESTS_RAN = None
+
+
 def run_tests():
-    run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-t", ".", "-v"],
-        "unit tests")
+    """Run the suite, showing it as it goes, and keep how many ran."""
+    global TESTS_RAN
+    cmd = [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-t", ".", "-v"]
+    print("\n>> unit tests")
+    print("   " + " ".join(cmd))
+    proc = subprocess.Popen(cmd, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            text=True, encoding="utf-8", errors="replace")
+    for line in proc.stdout:
+        sys.stdout.write(line)
+        found = re.match(r"Ran (\d+) tests?", line)
+        if found:
+            TESTS_RAN = int(found.group(1))
+    if proc.wait() != 0:
+        sys.exit("\nBuild stopped: unit tests failed (exit %d)" % proc.returncode)
 
 
 # --- compiling ---------------------------------------------------------------
@@ -451,6 +472,42 @@ def pages_scaffolding():
     print("   %s -> %s" % (", ".join(made), os.path.relpath(PAGES_DIR, ROOT)))
 
 
+## **The README's coverage and tests badges are files on the site.** shields.io
+## draws an "endpoint" badge from a small JSON file it fetches, so each release
+## writes what it knows into `badges/` beside the update metadata and the
+## README points at them; nothing else needs to run for them to stay current.
+BADGES = "badges"
+
+
+def write_badges():
+    """Write the badges a release knows the answer to: how much of the game's
+    block list Scaffold draws, and how many tests passed when it was built."""
+    folder = os.path.join(PAGES_DIR, BADGES)
+    os.makedirs(folder, exist_ok=True)
+    made = []
+
+    def badge(name, label, message, colour):
+        with open(os.path.join(folder, name + ".json"), "w", encoding="utf-8",
+                  newline="\n") as f:
+            json.dump({"schemaVersion": 1, "label": label, "message": message,
+                       "color": colour}, f)
+            f.write("\n")
+        made.append(name)
+
+    sys.path.insert(0, ROOT)
+    from tools import sources
+    from tools.checks import game_pack
+    found = game_pack.coverage()
+    if found is not None:
+        covered, game, _missing = found
+        badge("coverage", "blocks", "%d/%d · Minecraft %s"
+              % (len(covered), len(game), sources.game_version()),
+              "brightgreen" if covered == game else "yellow")
+    if TESTS_RAN is not None:
+        badge("tests", "tests", "%d passed" % TESTS_RAN, "brightgreen")
+    print("   badges: %s" % (", ".join(made) or "none"))
+
+
 def init_trust():
     """Create the four roles' keys, once, and the root they answer to.
 
@@ -710,6 +767,103 @@ def bundle(exe):
     return BUNDLE_DIR
 
 
+# --- the GitHub release -------------------------------------------------------
+#
+# **A publish makes the GitHub release too, here and not in a workflow.** Its
+# files are the executables this machine compiled and signed into the update
+# repository; a copy built anywhere else would not be the one the updater
+# vouches for. `gh`, GitHub's command line, does it with the credential it keeps
+# in the system keyring. Publishing the release is what GitHub fires
+# `.github/workflows/pypi.yml` on, which puts the Python package on PyPI.
+
+## where gh is installed when a shell opened before it was is not told
+GH_FALLBACK = r"C:\Program Files\GitHub CLI\gh.exe"
+
+
+def gh():
+    """The gh executable, or None."""
+    found = shutil.which("gh")
+    if found:
+        return found
+    return GH_FALLBACK if os.path.isfile(GH_FALLBACK) else None
+
+
+def gh_run(args, capture=True):
+    return subprocess.run([gh()] + args, cwd=ROOT, capture_output=capture, text=True,
+                          encoding="utf-8", errors="replace")
+
+
+def check_github(release_version):
+    """gh is there, signed in, sees this repository, and has no release of this
+    version yet."""
+    if gh() is None:
+        sys.exit("Build stopped: gh, GitHub's command line, is not installed.\n"
+                 "  winget install GitHub.cli, then gh auth login")
+    if gh_run(["auth", "status"]).returncode != 0:
+        sys.exit("Build stopped: gh is not signed in.\n  gh auth login")
+    seen = gh_run(["repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner"])
+    if seen.returncode != 0:
+        sys.exit("Build stopped: gh cannot see this repository.\n  %s"
+                 % seen.stderr.strip())
+    if gh_run(["release", "view", release_version]).returncode == 0:
+        sys.exit("Build stopped: %s already has a GitHub release.\n"
+                 "  Bump [project] version in pyproject.toml and run again."
+                 % release_version)
+    print("   gh is signed in to %s, and %s has no release yet"
+          % (seen.stdout.strip(), release_version))
+
+
+def github_release(release_version, files):
+    """Make the GitHub release: the tag, the CHANGELOG section as its text, and
+    the files a download needs, each executable on its own included, since
+    either one is the whole program."""
+    print("\n>> making the GitHub release %s" % release_version)
+    notes = release_notes(release_version) or "Scaffold %s." % release_version
+    handle, path = tempfile.mkstemp(suffix=".md")
+    with os.fdopen(handle, "w", encoding="utf-8") as f:
+        f.write(notes + "\n")
+    try:
+        made = gh_run(["release", "create", release_version] + list(files) +
+                      ["--title", "Scaffold %s" % release_version, "--notes-file", path,
+                       "--target", "master"], capture=False)
+    finally:
+        os.remove(path)
+    if made.returncode != 0:
+        sys.exit("\nThe update server and both branches are published, but the GitHub "
+                 "release was not made.\n  gh release create %s %s --notes-file <notes>"
+                 % (release_version, " ".join(os.path.relpath(f, ROOT) for f in files)))
+    for name in files:
+        print("   %s" % os.path.basename(name))
+
+
+def check_committed():
+    """Nothing uncommitted in the source or the site, before anything is built.
+
+    **A release is made from what is committed.** A publish commits what the
+    build itself changes, the regenerated tables and the version's files, and
+    pushes it; anything else left in the tree would either ride along in that
+    commit unread or be missing from a release whose tag names a commit that
+    does not have it. Committing on the way is deliberately not offered: a
+    commit made by `git add -A` takes whatever is lying in the tree, and the
+    message for a release's source deserves more than a flag.
+    """
+    for where, label in ((ROOT, "the repository"), (PAGES_DIR, "pages/ (gh-pages)")):
+        if not os.path.isdir(where):
+            continue
+        found = subprocess.run(["git", "status", "--porcelain"], cwd=where,
+                               capture_output=True, text=True).stdout.splitlines()
+        if found:
+            shown = "\n".join("    " + line for line in found[:15])
+            more = "\n    ... and %d more" % (len(found) - 15) if len(found) > 15 else ""
+            sys.exit("Build stopped: %s has uncommitted changes.\n%s%s\n"
+                     "  Commit them first:\n"
+                     "    git -C %s add -A\n"
+                     "    git -C %s commit -m \"...\""
+                     % (label, shown, more, os.path.relpath(where, ROOT),
+                        os.path.relpath(where, ROOT)))
+    print("   nothing uncommitted")
+
+
 def ready_to_publish(release_version):
     """Everything a publish needs, checked before anything is compiled.
 
@@ -719,6 +873,7 @@ def ready_to_publish(release_version):
     of an hour of Nuitka.
     """
     print("\n>> checking this release can be published")
+    check_committed()
     if not os.path.isdir(KEYS_DIR) or not os.listdir(KEYS_DIR):
         sys.exit("Build stopped: no signing keys in %s.\n"
                  "  python build.py --init-trust" % KEYS_DIR)
@@ -733,6 +888,7 @@ def ready_to_publish(release_version):
                  % release_version)
     check_keys()
     print("   %s is not published yet" % release_version)
+    check_github(release_version)
 
 
 def ready_to_unpublish(wanted):
@@ -903,6 +1059,7 @@ def publish(exe, release_version):
     repo.publish_changes(private_key_dirs=[KEYS_DIR])
     publish_root(repo)
     pages_scaffolding()
+    write_badges()
     push_release(release_version)
 
 
@@ -979,6 +1136,7 @@ def main():
 
     if args.publish:
         publish(exe, release_version)
+        github_release(release_version, shipped + [sums])
     else:
         print("\nNobody can update to this yet. To sign it into the update "
               "repository:\n  python build.py --skip-tools --skip-tests "

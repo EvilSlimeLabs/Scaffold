@@ -29,7 +29,7 @@ sys.path.insert(0, ROOT)
 ## taken from the runtime rather than spelled again here
 from scaffold.core import ENTITY_MODELS
 from tools.blocks.geometry import Cube, FACES, on_sheet, unwrap
-from tools.blocks.tables import define, turns, write
+from tools.blocks.tables import define, unturn, write
 
 
 # --- cushions ---------------------------------------------------------------
@@ -82,19 +82,16 @@ CUSHIONS = {colour: cushion(colour) for colour in CUSHION_COLOURS}
 ## is drawn in the colour the behaviour pack's own default value names
 CUSHIONS["default"] = CUSHIONS[CUSHION["fallback"]]
 
-## **A yaw, quantised, rather than a block state.** An entity is not placed on a
-## grid of facings: it carries a float `Rotation` and `core.entity_turn` rounds
-## it to the nearest quarter. Minecraft's yaw is 0 at south and climbs
-## clockwise through west, so these are the four compass turns every other
-## family here uses, keyed by the number the rounding produces.
-CUSHION_TURNS = {"0": [0, 0, 0], "90": [0, 90, 0],
-                 "180": [0, 180, 0], "270": [0, 270, 0]}
+## **A yaw rather than a block state, so no rotation table.** An entity is not
+## placed on a grid of facings: it carries a float `Rotation`, and that angle is
+## the turn `make_block` applies once `core.entity_yaw` has made it a block
+## angle. The cushion rests facing north, the way every block does.
 
 
 def main():
     print("writing the entity forms")
     write("cushion", CUSHIONS)
-    turns("cushion", CUSHION_TURNS)
+    unturn("cushion")
     define(["cushion"], "cushion")
 
 

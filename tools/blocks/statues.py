@@ -10,22 +10,23 @@ now and `scaffold.core` turns the `Pose` field into the shape variant, which is
 what this table answers.
 
 **The four poses are four geometry files**, not one shape leaned four ways. The
-community submodule ships `copper_golem`, `copper_golem_sitting`,
+game's resource pack ships `copper_golem`, `copper_golem_sitting`,
 `copper_golem_running` and `copper_golem_star`, and each is the golem's nine or
 eleven cubes with the arms and the legs turned where that pose puts them. Built
 from three boxes instead, the statue is a copper blob wearing terrain tiles.
 
 The sheet is `textures/blocks/copper_golem.png`, which is a 64x64 entity sheet
 rather than a tile, so every face names the corner of it that its own face was
-drawn at. `terrain_texture.json` already points the block's declared name at it,
-so the reference travels as `@up` and the eight oxidation stages all resolve to
-the same sheet, which is what they did before.
+drawn at. `terrain_texture.json` points the block's declared name at it, and
+Bedrock declares that one sheet on all eight statues, so the unweathered family
+reads it as `@up` and each later age is a family of its own naming its own
+entity sheet. A waxed statue is drawn as the age it was waxed at.
 
 The golem is **taller than the block it stands on**, twenty four pixels to the
 top of the pompom, and is drawn at that size: shrinking it would put the ghost
 somewhere the real statue will not be. The dragon head is the same case.
 
-Writes into `lookups/block_shapes.json` and `lookups/block_uv.json`. Not needed
+Writes into `lookups/block_geometry.json`. Not needed
 at run time. Re-run `tools/blocks/simplify.py` afterwards.
 """
 import io
@@ -36,18 +37,28 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
 
+from tools import sources
+
 from tools.blocks import tables as lookup_writer
 from tools.blocks.geometry import Cube, FACES, build, on_sheet, spun, unwrap
 from scaffold import jsonc
 
-SHAPES = os.path.join(ROOT, "scaffold", "lookups", "block_shapes.json")
-UV = os.path.join(ROOT, "scaffold", "lookups", "block_uv.json")
-GEOMETRY = os.path.join(ROOT, "CommunityVanillaResourcePack", "models", "entity")
+SHAPES = lookup_writer.SHAPES
+UV = lookup_writer.UV
+GEOMETRY = sources.resource_pack("models", "entity")
 FAMILY = "copper_golem_statue"
 
-## the golem's own sheet, which the block already declares on every face
+## the golem's own sheet, which the block declares on every face, and the sheet
+## each age of copper wears instead. Each age is a family of its own, because
+## Bedrock declares the unweathered sheet on all eight statues.
 SHEET = "@up"
 SHEET_WIDE = 64
+AGES = {"": SHEET,
+        "exposed": "textures/entity/copper_golem/copper_golem_exposed",
+        "weathered": "textures/entity/copper_golem/copper_golem_weathered",
+        "oxidized": "textures/entity/copper_golem/copper_golem_oxidized"}
+## what a statue reads from its block entity, the same for every age
+RULES = {"data": {"entity": "Pose"}, "turn_by": [{"state": "minecraft:cardinal_direction"}]}
 
 ## Which model each pose is drawn with, in the order the game numbers them.
 POSES = {
@@ -105,7 +116,7 @@ def settled(cube, turns):
     return [m - size / 2.0 for m, size in zip(middle, cube["size"])], total
 
 
-def statue(name):
+def statue(name, sheet=SHEET):
     """One pose, as the cubes of a block."""
     bones = model(name)
     made = []
@@ -116,14 +127,13 @@ def statue(name):
             texture, window = {}, {}
             for face, region in unwrap(cube.get("uv", [0, 0]),
                                        cube["size"]).items():
-                texture[face], window[face] = on_sheet(SHEET, region,
+                texture[face], window[face] = on_sheet(sheet, region,
                                                        SHEET_WIDE)
-            ## an entity faces -z and a block faces +z, so the model is turned
-            ## half about the middle of the block: its front ends up on the
-            ## south face, where the rotation tables put a block at rest, and a
-            ## turn the cube carries has its X and Z run the other way with it
-            at = (8 - origin[0] - wide, origin[1], 8 - origin[2] - deep)
-            spin = [-turn[0], turn[1], -turn[2]] if any(turn) else None
+            ## a model's coordinates are a block's, measured from the middle
+            ## of its floor rather than its corner, and it faces north as a
+            ## block at rest does, so it moves half a block and nothing turns
+            at = (origin[0] + 8, origin[1], origin[2] + 8)
+            spin = list(turn) if any(turn) else None
             made.append(Cube((wide, tall, deep), at, texture=texture,
                              window=window, rotation=spin))
     return made
@@ -131,21 +141,22 @@ def statue(name):
 
 def main():
     print("writing the copper golem's poses")
-    shapes, uvs = {}, {}
-    for pose, name in POSES.items():
-        cubes = statue(name)
-        shapes[pose], uvs[pose] = build(cubes)
-        print("   %-8s %-24s %2d cubes, %d turned"
-              % (pose, name, len(cubes),
-                 sum(1 for cube in cubes if cube.rotation)))
-    shapes["default"] = shapes["0"]
-    uvs["default"] = uvs["0"]
-
-    lookup_writer.put(SHAPES, FAMILY, shapes, tight=True)
-    lookup_writer.put(UV, FAMILY, uvs, tight=True)
-    for name in (SHAPES, UV):
-        json.loads(io.open(name, encoding="utf-8").read())
-    print("both tables still parse; now re-run tools/blocks/simplify.py")
+    for age, sheet in AGES.items():
+        family = (age + "_" if age else "") + FAMILY
+        shapes, uvs = {}, {}
+        for pose, name in POSES.items():
+            cubes = statue(name, sheet)
+            shapes[pose], uvs[pose] = build(cubes)
+        shapes["default"] = shapes["0"]
+        uvs["default"] = uvs["0"]
+        lookup_writer.put(SHAPES, family, shapes, tight=True)
+        lookup_writer.put(UV, family, uvs, tight=True)
+        lookup_writer.rules(family, **RULES)
+        lookup_writer.turns(family, "minecraft:cardinal_direction")
+        lookup_writer.define([(age + "_" if age else "") + FAMILY,
+                              "waxed_" + (age + "_" if age else "") + FAMILY], family)
+        print("   %s" % family)
+    json.loads(io.open(lookup_writer.GEOMETRY, encoding="utf-8").read())
 
 
 if __name__ == "__main__":

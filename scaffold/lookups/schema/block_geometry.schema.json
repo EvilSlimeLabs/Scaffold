@@ -1,0 +1,409 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "block_geometry.schema.json",
+	"title": "Scaffold block geometry, format 2",
+	"description": "Every shape family's forms: their cubes, and the window and texture each face of each cube reads. In blocks from the low corner of the cell, in the coordinates a Bedrock .geo.json uses, a block resting facing north.",
+	"type": "object",
+	"required": [
+		"format",
+		"minecraft",
+		"families"
+	],
+	"additionalProperties": false,
+	"properties": {
+		"$schema": {
+			"type": "string"
+		},
+		"format": {
+			"const": 2
+		},
+		"minecraft": {
+			"type": "string",
+			"description": "The game version the tables were checked against."
+		},
+		"about": {
+			"type": "string",
+			"description": "One line on what the table holds."
+		},
+		"families": {
+			"type": "object",
+			"additionalProperties": {
+				"$ref": "#/$defs/family"
+			}
+		}
+	},
+	"$defs": {
+		"triple": {
+			"type": "array",
+			"items": {
+				"type": "number"
+			},
+			"minItems": 3,
+			"maxItems": 3
+		},
+		"pair": {
+			"type": "array",
+			"items": {
+				"type": "number"
+			},
+			"minItems": 2,
+			"maxItems": 2
+		},
+		"family": {
+			"type": "object",
+			"required": [
+				"forms"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"pick": {
+					"type": "array",
+					"description": "The block's mounting: the first rule whose states all match names it. With none, the mounting is default.",
+					"items": {
+						"type": "object",
+						"required": [
+							"when",
+							"form"
+						],
+						"additionalProperties": false,
+						"properties": {
+							"when": {
+								"$ref": "#/$defs/when"
+							},
+							"form": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"data": {
+					"type": "object",
+					"description": "Where the block's value comes from. The form drawn is the first of <mounting>-<value>, <value>, <mounting> and default the family has.",
+					"additionalProperties": false,
+					"properties": {
+						"number": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"description": "States read as a number; the last present wins."
+						},
+						"join": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"description": "States whose values are joined with -, in this order."
+						},
+						"entity": {
+							"type": "string",
+							"description": "A block entity field whose value replaces the value."
+						},
+						"entity_add": {
+							"type": "string",
+							"description": "A block entity field whose value follows the value after a -."
+						},
+						"instead": {
+							"type": "array",
+							"description": "Block entity fields that name a form outright; the first that answers wins.",
+							"items": {
+								"type": "array",
+								"prefixItems": [
+									{
+										"type": "string"
+									},
+									{
+										"oneOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "object",
+												"additionalProperties": {
+													"type": "string"
+												}
+											}
+										]
+									}
+								],
+								"minItems": 2,
+								"maxItems": 2
+							}
+						},
+						"tinted": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"minItems": 2,
+							"maxItems": 2,
+							"description": "With a CustomColor in the block entity, a value starting with the first is renamed to start with the second."
+						}
+					}
+				},
+				"turn_by": {
+					"type": "array",
+					"description": "The state the block turns by: the first present whose condition holds. Or a field of the block entity, for a block that keeps its facing there.",
+					"items": {
+						"type": "object",
+						"oneOf": [
+							{
+								"required": [
+									"state"
+								]
+							},
+							{
+								"required": [
+									"entity"
+								]
+							}
+						],
+						"additionalProperties": false,
+						"properties": {
+							"state": {
+								"type": "string"
+							},
+							"entity": {
+								"type": "string"
+							},
+							"when": {
+								"$ref": "#/$defs/when"
+							}
+						}
+					}
+				},
+				"texture_by": {
+					"type": "object",
+					"description": "The state whose value picks the entry of a texture list the faces read; without values, the value is the index.",
+					"oneOf": [
+						{
+							"required": [
+								"state"
+							]
+						},
+						{
+							"required": [
+								"join",
+								"values"
+							]
+						}
+					],
+					"additionalProperties": false,
+					"properties": {
+						"state": {
+							"type": "string"
+						},
+						"join": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"values": {
+							"type": "object",
+							"additionalProperties": {
+								"type": "integer",
+								"minimum": 0
+							}
+						}
+					}
+				},
+				"forms": {
+					"$ref": "#/$defs/forms",
+					"description": "The detailed forms; a family always has a default."
+				},
+				"low": {
+					"$ref": "#/$defs/forms",
+					"description": "The simpler forms low geometry draws, under the same names."
+				}
+			}
+		},
+		"when": {
+			"type": "object",
+			"description": "States and the value, or any of the values, each must have.",
+			"additionalProperties": {
+				"oneOf": [
+					{
+						"type": [
+							"string",
+							"integer",
+							"boolean"
+						]
+					},
+					{
+						"type": "array",
+						"items": {
+							"type": [
+								"string",
+								"integer",
+								"boolean"
+							]
+						},
+						"minItems": 1
+					}
+				]
+			}
+		},
+		"forms": {
+			"type": "object",
+			"minProperties": 1,
+			"additionalProperties": {
+				"$ref": "#/$defs/form"
+			}
+		},
+		"form": {
+			"type": "object",
+			"required": [
+				"center",
+				"cubes"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"center": {
+					"$ref": "#/$defs/triple",
+					"description": "The point the form turns about."
+				},
+				"cubes": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#/$defs/cube"
+					}
+				}
+			}
+		},
+		"cube": {
+			"type": "object",
+			"required": [
+				"size",
+				"offset",
+				"faces"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"size": {
+					"$ref": "#/$defs/triple"
+				},
+				"offset": {
+					"$ref": "#/$defs/triple",
+					"description": "The cube's low corner within the cell."
+				},
+				"rotation": {
+					"$ref": "#/$defs/triple",
+					"description": "The turn the cube takes about its own middle, as a bone applies it."
+				},
+				"faces": {
+					"type": "object",
+					"required": [
+						"north",
+						"south",
+						"east",
+						"west",
+						"up",
+						"down"
+					],
+					"additionalProperties": false,
+					"properties": {
+						"north": {
+							"$ref": "#/$defs/face"
+						},
+						"south": {
+							"$ref": "#/$defs/face"
+						},
+						"east": {
+							"$ref": "#/$defs/face"
+						},
+						"west": {
+							"$ref": "#/$defs/face"
+						},
+						"up": {
+							"$ref": "#/$defs/face"
+						},
+						"down": {
+							"$ref": "#/$defs/face"
+						}
+					}
+				}
+			}
+		},
+		"face": {
+			"type": "object",
+			"required": [
+				"uv",
+				"size"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"uv": {
+					"$ref": "#/$defs/pair",
+					"description": "The window's corner, in fractions of the tile."
+				},
+				"size": {
+					"$ref": "#/$defs/pair",
+					"description": "The window's size, in fractions of the tile; negative runs it backwards."
+				},
+				"texture": {
+					"$ref": "#/$defs/texture"
+				}
+			}
+		},
+		"texture": {
+			"type": "object",
+			"description": "What the face reads. Left out, it reads what the block declares for this face.",
+			"oneOf": [
+				{
+					"required": [
+						"slot"
+					]
+				},
+				{
+					"required": [
+						"texture"
+					]
+				}
+			],
+			"additionalProperties": false,
+			"properties": {
+				"slot": {
+					"enum": [
+						"north",
+						"south",
+						"east",
+						"west",
+						"up",
+						"down",
+						"side",
+						"item"
+					],
+					"description": "What the block declares for this face of it, or `item` for the block's inventory picture."
+				},
+				"texture": {
+					"type": "string",
+					"description": "A texture named outright, as a path in the pack with no extension."
+				},
+				"window": {
+					"type": "array",
+					"items": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "The pixel corner of the 16 by 16 piece of a larger sheet to take."
+				},
+				"turn": {
+					"enum": [
+						90,
+						180,
+						270
+					],
+					"description": "Turns that piece clockwise."
+				},
+				"tint": {
+					"const": true,
+					"description": "Multiplies it by the block's own colour."
+				}
+			}
+		}
+	}
+}

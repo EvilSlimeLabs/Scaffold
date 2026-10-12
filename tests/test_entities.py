@@ -22,6 +22,7 @@ import unittest
 from scaffold import block_list, core, paths
 from scaffold.pack import armor_stand_geo_class as asgc
 from scaffold.pack import structure_reader
+from scaffold import lookup
 
 
 STRUCTURE = os.path.join("test_structures", "All Blocks World",
@@ -29,8 +30,11 @@ STRUCTURE = os.path.join("test_structures", "All Blocks World",
 
 
 def load(name):
+    if name in ("block_shapes", "block_uv", "block_rotation"):
+        from scaffold import block_geometry
+        return block_geometry.table(name)
     with open(paths.lookup(name + ".json"), encoding="utf-8") as f:
-        return json.load(f)
+        return lookup.unwrap(name + ".json", json.load(f))
 
 
 class ModelTableTests(unittest.TestCase):
@@ -58,34 +62,51 @@ class ModelTableTests(unittest.TestCase):
             ## and a default, for an entity whose field says nothing
             self.assertIn("default", family)
 
-    def test_each_model_turns_through_the_four_quarters(self):
+    def test_an_entity_needs_no_rotation_table(self):
+        # a yaw is an angle, and the angle is the turn; a table of the angles
+        # themselves would say nothing the yaw does not
         rotation = load("block_rotation")
         defs = load("block_definition")
         for identifier, model in core.ENTITY_MODELS.items():
-            table = rotation[defs[model["block"]]]
-            for quarter in ("0", "90", "180", "270"):
-                self.assertIn(quarter, table,
-                              "%s cannot face %s" % (identifier, quarter))
+            self.assertNotIn(defs[model["block"]], rotation, identifier)
+
+    def test_each_model_is_turned_by_its_yaw(self):
+        geo = asgc.ArmorStandGeo("test", offsets=[0, 0, 0])
+        defs = load("block_definition")
+        for identifier, model in core.ENTITY_MODELS.items():
+            for yaw in (0.0, 90.0, 180.0, 270.0):
+                with self.subTest(entity=identifier, yaw=yaw):
+                    geo.blocks = {}
+                    geo.make_block(0, 0, 0, model["block"], yaw=yaw)
+                    turns = {round(c["rotation"][1] % 360, 3)
+                             for g in geo.blocks.values() for c in g.get("cubes", [])
+                             if c.get("rotation")}
+                    ## a Minecraft angle, which a bone draws the other way round
+                    self.assertEqual(turns, {(360 - yaw) % 360})
 
 
-class TurnTests(unittest.TestCase):
-    """A float yaw, rounded to the quarter a rotation table can name."""
+class YawTests(unittest.TestCase):
+    """An entity's yaw, as the angle a block is turned by.
 
-    def test_the_four_quarters_come_back_as_themselves(self):
-        for yaw in (0, 90, 180, 270):
-            self.assertEqual(core.entity_turn(yaw), str(yaw))
+    An entity's yaw is 0 facing south and 90 facing west; a block angle is 0
+    facing north, its rest pose, and 90 facing west. The two run the same way
+    round from opposite ends.
+    """
 
-    def test_a_yaw_between_two_is_rounded_to_the_nearer(self):
-        self.assertEqual(core.entity_turn(44), "0")
-        self.assertEqual(core.entity_turn(46), "90")
-        self.assertEqual(core.entity_turn(181), "180")
+    def test_each_facing_comes_back_as_the_block_angle_for_it(self):
+        for yaw, angle in ((0, 180), (90, 90), (180, 0), (270, 270),
+                           (44, 136), (181.5, 358.5)):
+            self.assertEqual(core.entity_yaw(yaw), float(angle))
 
     def test_a_full_turn_and_a_negative_one_come_back_inside_the_circle(self):
-        # 359 is a whisker short of a full turn, not three quarters of one
-        self.assertEqual(core.entity_turn(360), "0")
-        self.assertEqual(core.entity_turn(359), "0")
-        self.assertEqual(core.entity_turn(-90), "270")
-        self.assertEqual(core.entity_turn(720 + 90), "90")
+        self.assertEqual(core.entity_yaw(360), 180.0)
+        self.assertEqual(core.entity_yaw(-90), 270.0)
+        self.assertEqual(core.entity_yaw(720 + 90), 90.0)
+
+    def test_a_head_counts_from_north_the_other_way_round(self):
+        self.assertEqual(core.head_yaw(0), 0.0)
+        self.assertEqual(core.head_yaw(90), 270.0)
+        self.assertEqual(core.head_yaw(22.5), 337.5)
 
 
 class FormTests(unittest.TestCase):

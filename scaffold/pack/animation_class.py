@@ -30,13 +30,17 @@ class Animations:
         self.poses[12] = "animation.armor_stand.hero_pose"
 
     def insert_layer(self, y):
-        name = "layer_{}".format(y)
-        self.sizing["animations"][self.poses[0]]["bones"][name] = {"scale": 16}
-        for i in range(12):
-            if y % (12) != i:
-                self.sizing["animations"][self.poses[i+1]]["bones"][name] = {"scale": 1}
-            else:
-                self.sizing["animations"][self.poses[i+1]]["bones"][name] = {"scale": 16}
+        ## a layer, and the layers its planes and its water are drawn in,
+        ## which the geometry keeps apart so they are drawn after every block
+        from scaffold.pack.armor_stand_geo_class import EARLY_BONE, LAST_BONE, LIQUID_BONE
+        for prefix in ("", EARLY_BONE, LAST_BONE, LIQUID_BONE):
+            name = "{}layer_{}".format(prefix, y)
+            self.sizing["animations"][self.poses[0]]["bones"][name] = {"scale": 16}
+            for i in range(12):
+                if y % (12) != i:
+                    self.sizing["animations"][self.poses[i+1]]["bones"][name] = {"scale": 1}
+                else:
+                    self.sizing["animations"][self.poses[i+1]]["bones"][name] = {"scale": 16}
 
     def export(self, pack_name):
         path_to_ani = "{}/animations/armor_stand.animation.json".format(

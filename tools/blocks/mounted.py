@@ -57,11 +57,18 @@ as if it were a single picture, which puts the decorated pot's shoulder on the
 unwrap of its neck and takes the flower pot's wall from the rim. `on_sheet`
 turns a region of a sheet into the reference and the window a face needs.
 
-The families here own their entries in `lookups/block_shapes.json` and
-`lookups/block_uv.json` outright: re-running this replaces them. Nothing here is
+**Every family here rests facing north**, as Minecraft's blocks do: a wall
+mounting sits against the south side of its block. The cubes are written
+`behind`: their tops and bottoms read the tile backwards, and a side reading its
+own place in the block measures it from the far side, which is how these blocks
+have always been painted.
+
+The families here own their entries in `lookups/block_geometry.json`
+outright: re-running this replaces them. Nothing here is
 needed at run time. Re-run `tools/blocks/simplify.py` afterwards, or the
 simplified forms still outline the old shapes.
 """
+import copy
 import math
 import os
 import sys
@@ -69,130 +76,77 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
 
-from tools.blocks.geometry import Cube, FACES, on_sheet, spun
-from tools.blocks.tables import define, turns, write
+from tools.blocks.geometry import Cube, FACES, on_sheet, spun, unwrap
+from tools.blocks import java
+from tools.blocks.tables import define, forms, rules, turns, unturn, write
 
 
 # --- hanging signs ----------------------------------------------------------
 #
-# A hanging sign's texture is an entity sized sheet, 64x32, not a terrain tile,
-# and it carries three things stacked up the left of it: the bar it hangs from
-# at the top, the chains under that, and the board itself from y12 down. Only
-# the top left 16x16 of a texture becomes a tile, so each part names the window
-# it needs and gets a tile of its own.
-BOARD = "@north#0,12"
-CHAIN = "@north#0,6"
-BAR = "@north#4,0"
+# A hanging sign's texture is an entity sheet, 64x32, laid out the way the
+# entity model reads it: the plank a wall sign hangs from, 16 by 2 by 4, at the
+# corner; the two crossed planes of one chain at (0,6) and (6,6); the single V
+# shaped plane of chain an attached sign hangs from at (14,6); and the board, 14
+# by 10 by 2, at (0,12). Each piece is a box of that model and reads its faces
+# where the model would, through `unwrap`.
+#
+# Which pieces a sign shows depends on how it is mounted, and the form is named
+# by `attached_bit` and `hanging`. Swinging under a block, two chains each made
+# of two crossed planes. Attached to the block above, the V of chain. On a wall,
+# the plank running out from the wall with the two chains under it.
+HANGING_SHEET = "@north"
+HANGING_WIDE = 64
 
-## the board, hanging under whatever holds it. 14 wide and 10 deep on the sheet,
-## with its edge strip to the left of it and its top edge above.
-board = Cube((14, 10, 2), (1, 0, 7), BOARD, window={
-    "north": (2, 2, 14, 10), "south": (2, 2, 14, 10),
-    "east": (0, 2, 2, 10), "west": (0, 2, 2, 10),
-    "up": (2, 0, 14, 2), "down": (2, 0, 14, 2)})
 
-## two chains, reading the chain art rather than the plank art
-CHAIN_ART = {face: (0, 0, 2, 6) for face in ("north", "south", "east", "west")}
-CHAIN_ART.update({"up": (0, 0, 2, 2), "down": (0, 0, 2, 2)})
-chains = [Cube((2, 6, 2), (3, 10, 7), CHAIN, window=CHAIN_ART),
-          Cube((2, 6, 2), (11, 10, 7), CHAIN, window=CHAIN_ART)]
+def sign_piece(size, at, uv, rotation=None):
+    """One box of the sign's entity model, reading its faces off the sheet.
 
-## the same two, shortened to make room for a bar above them
-STUB_ART = {face: (0, 4, 2, 2) for face in FACES}
-stubs = [Cube((2, 4, 2), (3, 10, 7), BAR, window=STUB_ART),
-         Cube((2, 4, 2), (11, 10, 7), BAR, window=STUB_ART)]
+    A face with no area, the edges of a plane, reads nothing. The entity draws
+    a plane from both sides with only its front painted on the sheet, so the
+    back of a plane reads the front's picture, which a back face shows mirrored.
+    """
+    wide, tall, deep = size
+    texture, window = {}, {}
+    regions = unwrap(uv, size)
+    if deep == 0:
+        regions["south"] = regions["north"]
+    for face, region in regions.items():
+        flat = {"up": wide * deep, "down": wide * deep,
+                "north": wide * tall, "south": wide * tall,
+                "east": deep * tall, "west": deep * tall}[face] == 0
+        if flat:
+            texture[face], window[face] = HANGING_SHEET, (0, 0, 0, 0)
+        else:
+            texture[face], window[face] = on_sheet(HANGING_SHEET, region,
+                                                   HANGING_WIDE)
+    return Cube(size, at, texture=texture, window=window, rotation=rotation)
 
-## the bar a sign is attached to when it hangs straight off the block above
-bar = Cube((14, 2, 2), (1, 14, 7), BAR, window={
-    "north": (0, 4, 14, 2), "south": (0, 4, 14, 2),
-    "east": (0, 4, 2, 2), "west": (0, 4, 2, 2),
-    "up": (0, 0, 14, 2), "down": (0, 0, 14, 2)})
 
-## the same bar, run out to the edges of the block so that it reaches the wall
-## it is fixed to. The form under a block has nothing to reach and stays 14.
-wall_bar = Cube((16, 2, 2), (0, 14, 7), BAR, window={
-    "north": (0, 4, 14, 2), "south": (0, 4, 14, 2),
-    "east": (0, 4, 2, 2), "west": (0, 4, 2, 2),
-    "up": (0, 0, 14, 2), "down": (0, 0, 14, 2)})
+board = sign_piece((14, 10, 2), (1, 0, 7), (0, 12))
+plank = sign_piece((16, 2, 4), (0, 14, 6), (0, 0))
+## each chain is two planes crossed at a right angle, standing over a point
+## five pixels either side of the middle
+chains = [sign_piece((3, 6, 0), (x - 1.5, 10, 8), uv, [0, turn, 0])
+          for x in (3, 13) for uv, turn in (((0, 6), -45), ((6, 6), 45))]
+v_chain = sign_piece((12, 6, 0), (2, 10, 8), (14, 6))
+
+## Fixed to a chain it turns in sixteen steps with `ground_sign_direction`;
+## every other mounting turns with `facing_direction`, read through a key of
+## its own form. Facing up or down is not a way a sign hangs, and the game
+## draws those as facing north.
+HANGING_SIGN_TURNS = {str(step): [0, (180 - 22.5 * step) % 360, 0] for step in range(16)}
+for form in ("0-1", "0-0", "1-0", "default"):
+    HANGING_SIGN_TURNS.update({"%s:%d" % (form, facing): turn for facing, turn in (
+        (0, [0, 0, 0]), (1, [0, 0, 0]), (2, [0, 0, 0]), (3, [0, 180, 0]),
+        (4, [0, 90, 0]), (5, [0, 270, 0]))})
 
 ## Named by attached_bit and hanging, joined the way core.py joins shape states.
-## Hanging from a block: chains when it swings free, a bar when it is attached
-## to the block. Not hanging: mounted on a wall, where the bar itself reaches
-## the wall, the way a bell's beam spans two of them. A second piece running
-## back into the wall reads as a post nobody asked for.
 HANGING_SIGNS = {
     "0-1": [board] + chains,
-    "1-1": [board] + stubs + [bar],
-    "0-0": [board] + stubs + [wall_bar],
-    "1-0": [board] + stubs + [wall_bar],
+    "1-1": [board, v_chain],
+    "0-0": [board, plank] + chains,
+    "1-0": [board, plank] + chains,
     "default": [board] + chains,
-}
-
-
-# --- bells ------------------------------------------------------------------
-#
-# The bell itself never changes. Everything above it does. A bell declares four
-# different things on its six faces, which is how one entry serves every
-# mounting without naming a texture: the bell on north and south, its crown on
-# up, its rim on down, the beam's planks on east and the posts' stone on west.
-BELL_SIDE = "@north"        # bell_side
-BELL_TOP = "@up"            # bell_top
-BELL_RIM = "@down"          # bell_bottom
-BELL_WOOD = "@east"         # dark oak planks, whatever holds the bell up
-BELL_STONE = "@west"        # the posts a standing bell hangs between
-
-## `bell_side` draws the whole bell down one column of its tile: the narrow
-## body, six across and seven down, over the flared lip, eight across and two
-## down. `bell_top` and `bell_bottom` are the eight by eight faces at each end.
-## Faces left to work their own window out read the middle of the tile, which
-## for an eight by eight picture in a sixteen by sixteen file is mostly nothing,
-## and the bell comes out as a flat plate.
-BODY_WIDE, BODY_TALL = 6, 7
-LIP_WIDE, LIP_TALL = 8, 2
-BELL_FLOOR = 4              # so the bell's crown meets the beam at 13
-
-
-def bell_piece(size, at, side_window, cap_window):
-    """One of the bell's two parts, reading its own rows of the side tile."""
-    wide, tall, _deep = size
-    return Cube(size, at, texture={
-        "north": BELL_SIDE, "south": BELL_SIDE,
-        "east": BELL_SIDE, "west": BELL_SIDE,
-        "up": BELL_TOP, "down": BELL_RIM}, window={
-        "north": side_window, "south": side_window,
-        "east": side_window, "west": side_window,
-        "up": cap_window, "down": cap_window})
-
-
-bell_lip = bell_piece(
-    (LIP_WIDE, LIP_TALL, LIP_WIDE),
-    ((16 - LIP_WIDE) // 2, BELL_FLOOR, (16 - LIP_WIDE) // 2),
-    (0, BODY_TALL, LIP_WIDE, LIP_TALL), (0, 0, LIP_WIDE, LIP_WIDE))
-bell_body = bell_piece(
-    (BODY_WIDE, BODY_TALL, BODY_WIDE),
-    ((16 - BODY_WIDE) // 2, BELL_FLOOR + LIP_TALL, (16 - BODY_WIDE) // 2),
-    (1, 0, BODY_WIDE, BODY_TALL), (1, 1, BODY_WIDE, BODY_WIDE))
-
-## and what carries it. The short bar under a ceiling is the same dark oak as
-## every beam; it wore the bell's own crown texture and came out gold.
-bell_stub = Cube((2, 3, 2), (7, 13, 7), BELL_WOOD)
-bell_beam = Cube((2, 2, 16), (7, 13, 0), BELL_WOOD)
-bell_arm = Cube((2, 2, 8), (7, 13, 0), BELL_WOOD)
-bell_posts = [Cube((2, 13, 2), (7, 0, 1), BELL_STONE),
-              Cube((2, 13, 2), (7, 0, 13), BELL_STONE)]
-
-BELL = [bell_lip, bell_body]
-
-BELLS = {
-    ## on the floor: a beam across two stone posts
-    "standing": BELL + [bell_beam] + bell_posts,
-    ## between two walls: the same beam, carried by them instead
-    "multiple": BELL + [bell_beam],
-    ## on one wall: half a beam, out of the wall behind it
-    "side": BELL + [bell_arm],
-    ## straight off the block above: no beam at all, just the mount
-    "hanging": BELL + [bell_stub],
-    "default": BELL + [bell_beam] + bell_posts,
 }
 
 
@@ -251,32 +205,35 @@ def grindstone(floor, legs):
                          "north": (0, 0, WHEEL_WIDE, WHEEL_TALL),
                          "south": (0, 0, WHEEL_WIDE, WHEEL_TALL),
                          "up": (0, 0, WHEEL_WIDE, WHEEL_DEEP),
-                         "down": (0, 0, WHEEL_WIDE, WHEEL_DEEP)})
+                         "down": (0, 0, WHEEL_WIDE, WHEEL_DEEP)}, behind=True)
     ## the stand runs across the block the way it always did; only the wheel
     ## between its two pivots turned
     pivots = [Cube((2, PIVOT_TALL, 4), (at, axle - PIVOT_TALL // 2, 6), PIVOT,
-                   window={face: PIVOT_ART for face in FACES})
-              for at in (WHEEL_AT - 2, WHEEL_AT + WHEEL_WIDE)]
+                   window={face: PIVOT_ART for face in FACES}, behind=True)
+              for at in (WHEEL_AT + WHEEL_WIDE, WHEEL_AT - 2)]
     return legs(floor, axle) + pivots + [wheel]
 
 
-LEG_AT = (2, 12)
+## the two legs, west one first
+LEG_AT = (12, 2)
 
 
 def legs_down(floor, axle):
     ## up to the pivot, not up to the wheel: a post that stopped at the stone
     ## left a gap under the square it is meant to carry
-    return [Cube((2, axle - PIVOT_TALL // 2, 2), (at, 0, 7), LEG)
+    return [Cube((2, axle - PIVOT_TALL // 2, 2), (at, 0, 7), LEG, behind=True)
             for at in LEG_AT]
 
 
 def legs_up(floor, axle):
     top = axle + PIVOT_TALL // 2
-    return [Cube((2, 16 - top, 2), (at, top, 7), LEG) for at in LEG_AT]
+    return [Cube((2, 16 - top, 2), (at, top, 7), LEG, behind=True)
+            for at in LEG_AT]
 
 
-def legs_back(_floor, axle, sides=(0,)):
-    return [Cube((2, 2, 6), (at, axle - 1, z), LEG)
+## back into the wall it is fixed to, the south side of the block
+def legs_back(_floor, axle, sides=(10,)):
+    return [Cube((2, 2, 6), (at, axle - 1, z), LEG, behind=True)
             for z in sides for at in LEG_AT]
 
 
@@ -288,170 +245,203 @@ GRINDSTONES = {
     ## on a wall, so the wheel sits in the middle and the legs run into it
     "side": grindstone(LEG_ROOM // 2, legs_back),
     "multiple": grindstone(LEG_ROOM // 2,
-                           lambda floor, axle: legs_back(floor, axle, (0, 10))),
+                           lambda floor, axle: legs_back(floor, axle, (10, 0))),
     "default": grindstone(LEG_ROOM, legs_down),
 }
 
 
 # --- campfires --------------------------------------------------------------
 #
-# Four logs, and the fire above them when it is lit. The fire is two quads
-# crossed through the middle of the block, the way vanilla draws every flame,
-# and it reads `@up`, which is campfire_fire on a campfire and soul_campfire_fire
-# on a soul campfire.
+# Java's `template_campfire`, turned to rest facing north: four logs, a strip of
+# ash between the lower pair, and the fire crossed through the middle when it
+# is lit. `campfire_log` is the bark across its top rows, a cut end under it and
+# the ash below; a burning campfire's logs show `campfire_log_lit` on the faces
+# that glow, which Bedrock declares on the side slot, and an extinguished one
+# shows the plain log there. The fire reads the up slot, so a soul campfire
+# burns blue without naming it here.
 #
-# The log tile is three pictures stacked, not one: the bark across the top four
-# rows, the cut end of a log beside it in the next four, and the ash the fire
-# sits in across the bottom half. A face taking the whole tile wears all three.
-#
-# The ash is a plate one pixel deep across the floor of the block, and the logs
-# stand on it rather than above it: the pair underneath is four across at x1 and
-# x11 running the depth of the block, and the pair over them is four deep at z1
-# and z11 running the width, so the ash shows through the square between them.
-LOG_LIT = "@north"
-LOG_OUT = "@down"
-FLAME = "@up"
-
-FLAME_ART = {"north": (0, 0, 16, 16), "south": (0, 0, 16, 16),
-             "east": (0, 0, 1, 16), "west": (0, 0, 1, 16),
-             "up": (0, 0, 16, 1), "down": (0, 0, 16, 1)}
-
-LOG_BARK = (0, 0, 16, 4)        # the length of a log
-LOG_END = (0, 4, 4, 4)          # its cut face
-ASH = (0, 8, 16, 8)             # what the logs sit in
-LOG_THICK = 4
-ASH_DEEP = 1
-
-
-def log(size, at, texture):
-    """One log, its ends reading the cut face and its length the bark.
-
-    A log lying along z has a top four across and sixteen deep, and the bark is
-    drawn the other way round; there is no turning a window, so it takes the
-    bark as it is. That face is under the pair above it or on the floor.
-    """
-    wide, _tall, deep = size
-    along_x = wide > deep
-    return Cube(size, at, texture, window={
-        "north": LOG_BARK if along_x else LOG_END,
-        "south": LOG_BARK if along_x else LOG_END,
-        "east": LOG_END if along_x else LOG_BARK,
-        "west": LOG_END if along_x else LOG_BARK,
-        "up": LOG_BARK, "down": LOG_BARK})
-
-
-def logs(texture):
-    """The ash, the pair of logs in it, and the pair across those."""
-    return [
-        Cube((16, ASH_DEEP, 16), (0, 0, 0), texture, window={
-            "up": ASH, "down": ASH,
-            "north": (0, 15, 16, ASH_DEEP), "south": (0, 15, 16, ASH_DEEP),
-            "east": (0, 15, 16, ASH_DEEP), "west": (0, 15, 16, ASH_DEEP)}),
-        log((LOG_THICK, LOG_THICK, 16), (1, 0, 0), texture),
-        log((LOG_THICK, LOG_THICK, 16), (16 - 1 - LOG_THICK, 0, 0), texture),
-        log((16, LOG_THICK, LOG_THICK), (0, LOG_THICK, 1), texture),
-        log((16, LOG_THICK, LOG_THICK), (0, LOG_THICK, 16 - 1 - LOG_THICK),
-            texture),
-    ]
+# **The underside is the two lower logs and the ash between them**, each
+# reading the same picture underneath as on top: the bark for a log, the ash for
+# the strip. Java draws none of them, since a campfire sits on a block.
+CAMPFIRE = [
+    {"from": [1, 0, 0], "to": [5, 4, 16], "faces": {
+        "north": {"uv": [0, 4, 4, 8], "texture": "#log"},
+        "east": {"uv": [0, 1, 16, 5], "texture": "#lit_log"},
+        "south": {"uv": [0, 4, 4, 8], "texture": "#log"},
+        "west": {"uv": [16, 0, 0, 4], "texture": "#log"},
+        "up": {"uv": [0, 0, 16, 4], "rotation": 90, "texture": "#log"},
+        "down": {"uv": [0, 0, 16, 4], "rotation": 90, "texture": "#log"}}},
+    {"from": [0, 3, 11], "to": [16, 7, 15], "faces": {
+        "north": {"uv": [16, 0, 0, 4], "texture": "#lit_log"},
+        "east": {"uv": [0, 4, 4, 8], "texture": "#log"},
+        "south": {"uv": [0, 0, 16, 4], "texture": "#lit_log"},
+        "west": {"uv": [0, 4, 4, 8], "texture": "#log"},
+        "up": {"uv": [0, 0, 16, 4], "rotation": 180, "texture": "#log"},
+        "down": {"uv": [0, 4, 16, 8], "texture": "#lit_log"}}},
+    {"from": [11, 0, 0], "to": [15, 4, 16], "faces": {
+        "north": {"uv": [0, 4, 4, 8], "texture": "#log"},
+        "east": {"uv": [0, 0, 16, 4], "texture": "#log"},
+        "south": {"uv": [0, 4, 4, 8], "texture": "#log"},
+        "west": {"uv": [16, 1, 0, 5], "texture": "#lit_log"},
+        "up": {"uv": [0, 0, 16, 4], "rotation": 90, "texture": "#log"},
+        "down": {"uv": [0, 0, 16, 4], "rotation": 90, "texture": "#log"}}},
+    {"from": [0, 3, 1], "to": [16, 7, 5], "faces": {
+        "north": {"uv": [0, 0, 16, 4], "texture": "#lit_log"},
+        "east": {"uv": [0, 4, 4, 8], "texture": "#log"},
+        "south": {"uv": [16, 0, 0, 4], "texture": "#lit_log"},
+        "west": {"uv": [0, 4, 4, 8], "texture": "#log"},
+        "up": {"uv": [0, 0, 16, 4], "rotation": 180, "texture": "#log"},
+        "down": {"uv": [0, 4, 16, 8], "texture": "#lit_log"}}},
+    {"from": [5, 0, 0], "to": [11, 1, 16], "faces": {
+        "north": {"uv": [0, 15, 6, 16], "texture": "#log"},
+        "south": {"uv": [10, 15, 16, 16], "texture": "#log"},
+        "up": {"uv": [0, 8, 16, 14], "rotation": 90, "texture": "#lit_log"},
+        "down": {"uv": [0, 8, 16, 14], "rotation": 90, "texture": "#log"}}},
+]
+CAMPFIRE_FLAMES = [
+    {"from": [0.8, 1, 8], "to": [15.2, 17, 8],
+     "rotation": {"origin": [8, 8, 8], "axis": "y", "angle": 45, "rescale": True},
+     "faces": {"north": {"uv": [0, 0, 16, 16], "texture": "#fire"},
+               "south": {"uv": [0, 0, 16, 16], "texture": "#fire"}}},
+    {"from": [8, 1, 0.8], "to": [8, 17, 15.2],
+     "rotation": {"origin": [8, 8, 8], "axis": "y", "angle": 45, "rescale": True},
+     "faces": {"west": {"uv": [0, 0, 16, 16], "texture": "#fire"},
+               "east": {"uv": [0, 0, 16, 16], "texture": "#fire"}}},
+]
 
 
-flames = [Cube((12, 10, 1), (2, 6, 7.5), FLAME, window=FLAME_ART,
-               rotation=(0, 45, 0)),
-          Cube((12, 10, 1), (2, 6, 7.5), FLAME, window=FLAME_ART,
-               rotation=(0, -45, 0))]
+def campfire(lit):
+    read = {"log": java.slot("down"), "fire": java.slot("up"),
+            "lit_log": java.slot("north") if lit else java.slot("down")}
+    elements = java.half_turned(CAMPFIRE + (CAMPFIRE_FLAMES if lit else []))
+    return java.form(elements, read.get)
 
-CAMPFIRES = {
-    "0": logs(LOG_LIT) + flames,        # burning
-    "1": logs(LOG_OUT),                 # out
-    "default": logs(LOG_LIT) + flames,
-}
+
+CAMPFIRES = {"0": campfire(True), "1": campfire(False), "default": campfire(True)}
 
 
 # --- doors ------------------------------------------------------------------
 #
-# A door is a panel three pixels thick, and every one of its six faces was
-# reading the whole of the door's picture. On the two big faces that is right.
-# On the four thin ones it squeezes the whole door into three pixels, which is
-# what put a row of panels down each edge and across the top. An edge is the
-# frame down the side of the tile, three across and the height of the door.
+# A door is a panel three pixels thick standing at one edge of its block, and
+# the game paints it the way its old block renderer painted any box: **every
+# face reads the part of the picture under it**, the columns its own edge of the
+# block spans, as seen from outside, and a few faces are flipped. So a door's
+# edges read different strips depending on where in the world they face, which
+# no turned shape can do: each facing, open or shut, hinged or not, is a form of
+# its own, written unturned.
 #
-# **The panel sits on the side the door faces**, the way it does in the game:
-# placed from the south, a door faces south and its panel is at z13. It was at
-# z0, so every door was drawn against the far side of its own block.
+# The panel's place and the flipped face are the legacy door's, by its
+# numbered direction: 0 south, 1 west, 2 north, 3 east, as Mojang's upgrade
+# reads the old numbers. Shut, one side is flipped, and the hinge flips every
+# side; open, the hinge moves the panel instead. The top and the bottom read
+# the picture straight through, unflipped.
 #
-# **And it turns about the middle of the block**, like everything else. The
-# pivot was on the panel's own plane, so a door turned a quarter of the way
-# round swung out of its block entirely.
-DOOR_THICK = 3
-DOOR_LOWER = "@down"            # door_lower, the half nearest the floor
-DOOR_UPPER = "@north"           # door_upper, declared on `side`
-DOOR_WHOLE = (0, 0, 16, 16)
-## **The two long edges are not the same edge.** A door's picture carries its
-## hinge down the left of the tile and its handle down the right, so an edge
-## that reads the left strip for both sides puts hinges on the handle side and
-## a door that opens from nowhere. These are the two, and `door_half` gives one
-## to each.
-DOOR_HINGE = (0, 0, DOOR_THICK, 16)
-DOOR_HANDLE = (16 - DOOR_THICK, 0, DOOR_THICK, 16)
-## and the two short edges, which carry no ornament at all: the top and bottom
-## of the picture are plain, and reading a vertical strip there was what put a
-## hinge across the head and foot of every door in the pack
-DOOR_TOP = (0, 0, 16, DOOR_THICK)
-DOOR_FOOT = (0, 16 - DOOR_THICK, 16, DOOR_THICK)
-
-
-## The whole family stands a quarter turn from where it started, and the two
-## states turn opposite ways: open wanted a quarter anticlockwise and shut a
-## quarter clockwise. One rotation table cannot hold both, so the turn is in the
-## cubes. Shut also wanted mirroring, which is not a turn at all: a door panel
-## is the same box either way round and only its picture has a side to it, so
-## the mirror is a negative window on the two faces that carry the picture.
-def door_half(at, texture, along_x, mirror=False):
-    """One block of a door, its edges reading the frame and not the panel."""
-    ## a window that starts at the far edge and runs back is how Bedrock reads
-    ## a picture the other way round
-    ## only the face on the outside of the panel: the two faces of a box read
-    ## their windows in opposite directions, so mirroring both puts the picture
-    ## right on the inside and wrong on the outside again
-    panel = (16, 0, -16, 16) if mirror else DOOR_WHOLE
-    if along_x:
-        size = (16, 16, DOOR_THICK)
-        ## the picture's u runs along x here, so its left edge -- the hinge --
-        ## is at x0, which is the west face
-        window = {"north": panel, "south": DOOR_WHOLE,
-                  "west": DOOR_HINGE, "east": DOOR_HANDLE,
-                  ## a top face sixteen across and three deep cannot read a
-                  ## strip three across and sixteen down without turning it, so
-                  ## it takes the plain top of the door's own picture instead
-                  "up": DOOR_TOP, "down": DOOR_FOOT}
-    else:
-        size = (DOOR_THICK, 16, 16)
-        ## and here u runs along z, so the hinge is at z0, the north face
-        window = {"east": panel, "west": DOOR_WHOLE,
-                  "north": DOOR_HINGE, "south": DOOR_HANDLE,
-                  "up": DOOR_TOP, "down": DOOR_FOOT}
-    return Cube(size, at, texture, window=window)
-
-
-def door(x, z, along_x, mirror=False):
-    """Both halves of a door. The lower block draws them; the upper draws
-    nothing, which is what the `top` variant is for."""
-    return [door_half((x, 0, z), DOOR_LOWER, along_x, mirror),
-            door_half((x, 16, z), DOOR_UPPER, along_x, mirror)]
-
-
-DOORS = {
-    ## shut: a quarter turn clockwise from the side it used to sit on, and the
-    ## picture mirrored
-    "default": door(16 - DOOR_THICK, 0, False, mirror=True),
-    ## open, folded back against the wall on whichever side the hinge is, a
-    ## quarter turn anticlockwise from the sides those used to sit on
-    "open": door(0, 0, True, mirror=True),
-    "open_hinged": door(0, 16 - DOOR_THICK, True, mirror=True),
-    ## the upper block of a door draws nothing at all: a cube of nothing rather
-    ## than no cube, because the tables are read by the variant existing
-    "top": [Cube((0.016, 0.016, 0.016), (0, 0, 0))],
+# **The two narrow edges are what a world showed**, state by state, in
+# `DOOR_EDGES`: each shows the three columns at the end of the picture it
+# borders, the two edges taking opposite ends, as columns seen left to right
+# from outside.
+DOOR_LOWER = "down"             # door_lower, the half nearest the floor
+DOOR_UPPER = "north"            # door_upper, declared on `side`
+DOOR_T = 3 / 16.0
+DOOR_DIRECTION = {"south": 0, "west": 1, "north": 2, "east": 3}
+DOOR_EDGES = {
+    "east-0-0": {"east": (13, 16), "west": (3, 0)},
+    "east-0-1": {"east": (3, 0), "west": (13, 16)},
+    "east-1-0": {"north": (16, 13), "south": (0, 3)},
+    "east-1-1": {"north": (13, 16), "south": (3, 0)},
+    "north-0-0": {"north": (13, 16), "south": (3, 0)},
+    "north-0-1": {"north": (3, 0), "south": (13, 16)},
+    "north-1-0": {"east": (3, 0), "west": (13, 16)},
+    "north-1-1": {"east": (0, 3), "west": (16, 13)},
+    "south-0-0": {"north": (0, 3), "south": (16, 13)},
+    "south-0-1": {"north": (16, 13), "south": (0, 3)},
+    "south-1-0": {"east": (16, 13), "west": (0, 3)},
+    "south-1-1": {"east": (13, 16), "west": (3, 0)},
+    "west-0-0": {"east": (0, 3), "west": (16, 13)},
+    "west-0-1": {"east": (16, 13), "west": (0, 3)},
+    "west-1-0": {"north": (3, 0), "south": (13, 16)},
+    "west-1-1": {"north": (0, 3), "south": (16, 13)},
 }
+
+
+def door_bounds(direction, open_, hinged):
+    """(min x, min z, max x, max z) of the panel, in blocks, x east and z south."""
+    t = DOOR_T
+    if open_:
+        return {(0, False): (0, 0, 1, t), (0, True): (0, 1 - t, 1, 1),
+                (1, False): (1 - t, 0, 1, 1), (1, True): (0, 0, t, 1),
+                (2, False): (0, 1 - t, 1, 1), (2, True): (0, 0, 1, t),
+                (3, False): (0, 0, t, 1), (3, True): (1 - t, 0, 1, 1)}[(direction, hinged)]
+    return {0: (0, 0, t, 1), 1: (0, 0, 1, t), 2: (1 - t, 0, 1, 1), 3: (0, 1 - t, 1, 1)}[direction]
+
+
+def door_flipped(direction, open_, hinged):
+    """The sides that read their picture the other way round."""
+    if open_:
+        flipped = {{0: "north", 1: "east", 2: "south", 3: "west"}[direction]}
+    else:
+        flipped = {{0: "east", 1: "south", 2: "west", 3: "north"}[direction]}
+        if hinged:
+            flipped = {"north", "south", "east", "west"} - flipped
+    return flipped
+
+
+def door_half(bounds, flipped, slot, y, edges):
+    x0, z0, x1, z1 = bounds
+    ## the columns a side spans, along x for north and south, z for east and
+    ## west, read left to right as seen from outside
+    spans = {"north": (x0, x1), "south": (x0, x1), "east": (z0, z1), "west": (z0, z1)}
+    faces = {}
+    for face, (low, high) in spans.items():
+        if face in edges:
+            left, right = edges[face]
+            faces[face] = {"uv": [left / 16.0, 0], "size": [(right - left) / 16.0, 1]}
+        elif face in flipped:
+            faces[face] = {"uv": [high, 0], "size": [low - high, 1]}
+        else:
+            faces[face] = {"uv": [low, 0], "size": [high - low, 1]}
+    for face in faces.values():
+        face["texture"] = {"slot": slot}
+    ## **The ends are the same plain strip on every door**: the bottom three
+    ## rows of the lower picture under the door, the top three of the upper one
+    ## over it, laid along the panel. A panel running north to south reads its
+    ## strip turned a quarter, where the bottom rows become the left columns and
+    ## the top rows the right. The two ends where the halves meet are inside
+    ## the door and are not drawn.
+    along_x = (x1 - x0) > (z1 - z0)
+    rows = (13 / 16.0, 3 / 16.0) if y == 0 else (0, 3 / 16.0)
+    end = "down" if y == 0 else "up"
+    inner = "up" if y == 0 else "down"
+    if along_x:
+        faces[end] = {"uv": [0, rows[0]], "size": [1, rows[1]], "texture": {"slot": slot}}
+    else:
+        across = 0 if y == 0 else 13 / 16.0
+        faces[end] = {"uv": [across, 0], "size": [3 / 16.0, 1],
+                      "texture": {"slot": slot, "turn": 90}}
+    faces[inner] = {"uv": [0, 0], "size": [0, 0]}
+    return {"size": [x1 - x0, 1, z1 - z0], "offset": [1 - x1, y, z0], "faces": faces}
+
+
+def door_form(facing, open_, hinged):
+    direction = DOOR_DIRECTION[facing]
+    bounds = door_bounds(direction, open_, hinged)
+    flipped = door_flipped(direction, open_, hinged)
+    edges = DOOR_EDGES["%s-%d-%d" % (facing, open_, hinged)]
+    return {"center": [0.5, 0.5, 0.5], "cubes": [
+        door_half(bounds, flipped, DOOR_LOWER, 0, edges),
+        door_half(bounds, flipped, DOOR_UPPER, 1, edges)]}
+
+
+## The lower block's forms are named `lower-<facing>-<open>-<hinge>`. A form is
+## read by mounting and value before value alone, so a name of the value alone
+## would be drawn by the upper block too, which has no form of its own value.
+DOOR_FORMS = {"lower-%s-%d-%d" % (facing, open_, hinged): door_form(facing, open_, hinged)
+              for facing in DOOR_DIRECTION for open_ in (0, 1) for hinged in (0, 1)}
+DOOR_FORMS["default"] = copy.deepcopy(DOOR_FORMS["lower-north-0-0"])
+## the upper block of a door draws nothing; the lower one draws both halves
+DOOR_FORMS["top"] = {"center": [0.5, 0.5, 0.5], "cubes": [{
+    "size": [0, 0, 0], "offset": [0, 0, 0],
+    "faces": {face: {"uv": [0, 0], "size": [0, 0]} for face in FACES}}]}
 
 
 # --- shelves ----------------------------------------------------------------
@@ -475,8 +465,8 @@ DOORS = {
 # parting the compartments at x5 and at x10. Those dividers are painted on: the
 # voxel shape has nothing standing in the opening and neither does this.
 #
-# It hangs on the wall behind it, so at no rotation it runs z 0 to 5, the same
-# way a wall sign sits at z 0 to 2.
+# It hangs on the wall behind it, the south side of its block, so at no
+# rotation it runs z 11 to 16, the same way a wall sign sits at z 14 to 16.
 SHELF_FRONT = "@north#0,0"      # the compartments, painted
 SHELF_OUTER = "@north#16,0"     # planks, for every face that looks outward
 SHELF_INNER = "@north#0,16"     # the shaded interior, rows 8 to 15 of the tile
@@ -497,12 +487,14 @@ def shelf_piece(size, at, front, inner=()):
     """
     wide, tall, deep = size
     across, _, over = at
+    ## measured from the far side, which is how the sheet is laid out
+    across, over = 16 - across - wide, 16 - over - deep
     paint = {}
     window = {}
     for face in FACES:
         if face in inner:
             paint[face] = SHELF_INNER
-        elif face == "south":
+        elif face == "north":
             paint[face] = SHELF_FRONT
         else:
             paint[face] = SHELF_OUTER
@@ -518,7 +510,7 @@ def shelf_piece(size, at, front, inner=()):
         wide_, tall_ = window[face][2], window[face][3]
         window[face] = (0, INSIDE + (0 if face != "up" else 8 - tall_),
                         wide_, tall_)
-    return Cube(size, at, texture=paint, window=window)
+    return Cube(size, at, texture=paint, window=window, behind=True)
 
 
 def shelf():
@@ -528,14 +520,14 @@ def shelf():
     made = [
         ## the two boards, the full depth of the case. The compartment side of
         ## each is shaded: the floor lit along its front lip, the ceiling not
-        shelf_piece((16, BOARD, SHELF_DEEP), (0, 0, 0),
+        shelf_piece((16, BOARD, SHELF_DEEP), (0, 0, 16 - SHELF_DEEP),
                     (0, high, 16, BOARD), inner=("up",)),
-        shelf_piece((16, BOARD, SHELF_DEEP), (0, high, 0),
+        shelf_piece((16, BOARD, SHELF_DEEP), (0, high, 16 - SHELF_DEEP),
                     (0, 0, 16, BOARD), inner=("down",)),
         ## the back, between them and three deep, so the opening it closes is
         ## two deep
-        shelf_piece((16, open_tall, SHELF_BACK_DEEP), (0, low, 0),
-                    (0, low, 16, open_tall)),
+        shelf_piece((16, open_tall, SHELF_BACK_DEEP),
+                    (0, low, 16 - SHELF_BACK_DEEP), (0, low, 16, open_tall)),
     ]
     ## Nothing stands in the opening. Seen from the end a shelf is a C -- a
     ## ceiling and a floor out of a back, open at the front -- and the lit pixels
@@ -555,14 +547,57 @@ SHELVES = {"default": shelf()}
 # throat. Drawn as a full cube from the terrain tiles, a shrieker is a block of
 # sculk with a transparent lid.
 SHRIEKER_TALL = 8
-SHRIEKER_INNER = "textures/blocks/sculk_shrieker_inner_top"
+## The lid is the throat: the bony corners of `sculk_shrieker_top` are the
+## tops of the prongs, drawn where the prongs end.
+SHRIEKER_THROAT = "textures/blocks/sculk_shrieker_inner_top"
+SHRIEKER_CAPS = "textures/blocks/sculk_shrieker_top"
 
-SHRIEKERS = {"default": [
-    Cube((16, SHRIEKER_TALL, 16), (0, 0, 0)),
-    ## the throat, a hair under the lid so the two do not fight over the plane
-    Cube((16, 1, 16), (0, SHRIEKER_TALL - 1.5, 0), texture=SHRIEKER_INNER,
-         window={face: (0, 0, 16, 16) for face in FACES}),
-]}
+## The prongs stand on the lid, a pixel in from each side and seven tall, and
+## are the top rows of the side picture: a prong at each end and a low bump
+## between them. Each is a plane of its own, reading the picture where it
+## stands, so each is cut down to what it shows and drawn after the lid.
+PRONG_TALL = 7
+## (from, to) across each side, in pixels: the two prongs, and the bump, which
+## is only the bottom two rows
+PRONGS = ((1, 6, PRONG_TALL), (10, 15, PRONG_TALL), (6, 10, 2))
+## the corners the prongs' caps cover, five pixels square
+CAP = 5
+
+
+def plane(size, at, faces, texture="default", art=None):
+    """A plane drawing only `faces`, each reading the picture where it stands,
+    or `art`, a window per face, where it is given."""
+    window = {face: (0, 0, 0, 0) for face in FACES if face not in faces}
+    window.update(art or {})
+    return Cube(size, at, texture, window=window)
+
+
+def shrieker():
+    made = [Cube((16, SHRIEKER_TALL, 16), (0, 0, 0),
+                 texture={"north": "default", "south": "default", "east": "default",
+                          "west": "default", "up": SHRIEKER_THROAT, "down": "default"})]
+    ## A face looking north or west has the low end of the block on its left
+    ## and reads the picture where it stands. One looking south or east has it
+    ## on its right, so it reads the picture from the other end, or the prong
+    ## shows with its tip toward the middle; that holds for the inside faces as
+    ## much as the outside ones.
+    for low, high, tall in PRONGS:
+        row = 16 - SHRIEKER_TALL - tall
+        turned = (16 - high, row, high - low, tall)
+        for z in (1, 15):
+            made.append(plane((high - low, tall, 0), (low, SHRIEKER_TALL, z),
+                              ("north", "south"), art={"south": turned}))
+        for x in (1, 15):
+            made.append(plane((0, tall, high - low), (x, SHRIEKER_TALL, low),
+                              ("east", "west"), art={"east": turned}))
+    top = SHRIEKER_TALL + PRONG_TALL
+    for x in (1, 16 - 1 - CAP):
+        for z in (1, 16 - 1 - CAP):
+            made.append(plane((CAP, 0, CAP), (x, top, z), ("up", "down"), SHRIEKER_CAPS))
+    return made
+
+
+SHRIEKERS = {"default": shrieker()}
 
 
 # --- string -----------------------------------------------------------------
@@ -588,8 +623,8 @@ STRINGS = {"default": [
 # is tied to. That is a different arrangement of the same three pieces rather
 # than one shape turned, so each gets its own list.
 #
-# It hangs on the wall behind it, so the plate sits at z 0 to 2, the same way a
-# wall sign does, and the hook reaches out towards +z.
+# It hangs on the wall behind it, the south side of its block, so the plate sits
+# at z 14 to 16, the same way a wall sign does, and the hook reaches out north.
 #
 # `blocks.json` gives the block three textures and the pieces take two of them:
 # `@down` is trip_wire_base, which is oak planks, and `@north` is
@@ -632,23 +667,25 @@ SHAFT_IN = 1
 RING_LIFT = 2
 RING_OUT = SHAFT_IN + 1
 
+## against the wall behind it, the south side of the block
 plate = Cube((PLATE_WIDE, PLATE_TALL, PLATE_DEEP),
-             ((16 - PLATE_WIDE) // 2, (16 - PLATE_TALL) // 2, 0),
-             texture="@down")
+             ((16 - PLATE_WIDE) // 2, (16 - PLATE_TALL) // 2, 16 - PLATE_DEEP),
+             texture="@down", behind=True)
 
 
 def leaning(angle, along, up):
     """Where a point `along` the shaft and `up` from its middle line ends up.
 
-    The shaft leaves the plate at `SHAFT_AT`, and Bedrock's angles run the other
-    way round from the usual ones, so a positive angle lifts the far end.
+    The shaft leaves the plate at `SHAFT_AT` and runs out of the wall to the
+    north, and a positive angle lifts its far end; the cube carries the angle
+    negated, which is the same lift seen from the north.
     """
     lean = math.radians(angle)
     out = (math.cos(lean), math.sin(lean))          # along the shaft
     over = (-math.sin(lean), math.cos(lean))        # square across it
     return (8,
             SHAFT_AT + along * out[1] + up * over[1],
-            PLATE_DEEP - SHAFT_IN + along * out[0] + up * over[0])
+            16 - (PLATE_DEEP - SHAFT_IN + along * out[0] + up * over[0]))
 
 
 def hook(angle, high, ring_angle=None, ring_out=0, ring_lift=0):
@@ -665,10 +702,10 @@ def hook(angle, high, ring_angle=None, ring_out=0, ring_lift=0):
                  (middle[0] - SHAFT_THICK / 2.0,
                   middle[1] - SHAFT_THICK / 2.0,
                   middle[2] - SHAFT_LONG / 2.0),
-                 texture=HOOK, rotation=(angle, 0, 0), window={
+                 texture=HOOK, rotation=(-angle, 0, 0), window={
                      "north": HOOK_END, "south": HOOK_END,
                      "east": HOOK_SHAFT, "west": HOOK_SHAFT,
-                     "up": HOOK_END, "down": HOOK_END})
+                     "up": HOOK_END, "down": HOOK_END}, behind=True)
     ## the ring hangs from the end of the shaft, off one half of its face, and
     ## reaches back across it: its own middle is that much further down again
     edge = 0.5 if high else -0.5
@@ -677,10 +714,10 @@ def hook(angle, high, ring_angle=None, ring_out=0, ring_lift=0):
     ring = Cube((RING_WIDE, RING_WIDE, RING_THICK),
                 (at[0] - RING_WIDE / 2.0, at[1] - RING_WIDE / 2.0,
                  at[2] - RING_THICK / 2.0),
-                texture=HOOK, rotation=(ring_angle, 0, 0), window={
+                texture=HOOK, rotation=(-ring_angle, 0, 0), window={
                     "north": HOOK_RING, "south": HOOK_RING,
                     "east": (5, 3, 6, 6), "west": (5, 3, 6, 6),
-                    "up": (5, 3, 6, 6), "down": (5, 3, 6, 6)})
+                    "up": (5, 3, 6, 6), "down": (5, 3, 6, 6)}, behind=True)
     return [plate, shaft, ring]
 
 
@@ -716,12 +753,16 @@ POT_FLOOR = 3
 ## colour of wherever the cauldron is. Untinted it is white.
 WATER_BLUE = "~3f76e4"
 LIQUID = {"water": "textures/blocks/cauldron_water" + WATER_BLUE,
-          "lava": "textures/blocks/cauldron_lava",
+          "lava": "textures/blocks/lava_still",
           "powder_snow": "textures/blocks/powder_snow",
           ## the same water, asking for the block's own colour. `~tint` is put
           ## aside for the colour the block entity carries, and a cauldron with
           ## no colour reads the plain tile.
           "dyed": "textures/blocks/cauldron_water~tint"}
+## where each liquid's picture starts on its tile. Lava is the still lava's
+## first frame, the lava alone: `cauldron_lava` has the cauldron's rim drawn
+## round it, which showed inside the pot.
+LIQUID_AT = {}
 ## how high each fill level stands, in pixels off the floor of the block
 CAULDRON_FILL = {level: POT_FLOOR + 2 * level for level in range(1, 7)}
 
@@ -766,7 +807,8 @@ def cauldron(liquid, level):
     return cauldron_pot + [
         Cube((INSIDE, 0.2, INSIDE),
              (POT_WALL, CAULDRON_FILL[level], POT_WALL), LIQUID[liquid],
-             window={face: (0, 0, INSIDE, INSIDE) for face in FACES})]
+             window={face: LIQUID_AT.get(liquid, (0, 0)) + (INSIDE, INSIDE)
+                     for face in FACES})]
 
 
 CAULDRONS = {"%s-%d" % (liquid, level): cauldron(liquid, level)
@@ -817,7 +859,7 @@ def tentacle(at, along_x):
         "north": (across, down, wide, tall),
         "south": (across, down, wide, tall),
         "east": (across, down, deep, tall),
-        "west": (across, down, deep, tall)})
+        "west": (across, down, deep, tall)}, behind=True)
 
 
 def dried_ghast():
@@ -826,15 +868,15 @@ def dried_ghast():
     spread = (GHAST_AT + TENTACLE_IN,
               far - TENTACLE_IN - TENTACLE_WIDE)
     tentacles = []
-    for near in spread:
+    for near in reversed(spread):
         ## out of the west side and the east side
-        tentacles.append(tentacle((GHAST_AT - TENTACLE_LONG, 0, near), True))
         tentacles.append(tentacle((far, 0, near), True))
-        ## and out of the back, which is north; the face is south and has none
-        tentacles.append(tentacle((near, 0, GHAST_AT - TENTACLE_LONG), False))
+        tentacles.append(tentacle((GHAST_AT - TENTACLE_LONG, 0, near), True))
+        ## and out of the back, which is south; the face is north and has none
+        tentacles.append(tentacle((near, 0, far), False))
     body = Cube((GHAST_WIDE, GHAST_WIDE, GHAST_WIDE),
                 (GHAST_AT, 0, GHAST_AT),
-                window={face: GHAST_ART for face in FACES})
+                window={face: GHAST_ART for face in FACES}, behind=True)
     return [body] + tentacles
 
 
@@ -1179,14 +1221,7 @@ NECK_TALL = 4
 
 ## the neck's unwrap on the sheet, in the order Bedrock lays a box out: the two
 ## square faces along the top, then the four walls in a strip under them
-NECK_FACES = {
-    "up": (NECK_WIDE, 0, NECK_WIDE, NECK_WIDE),
-    "down": (NECK_WIDE * 2, 0, NECK_WIDE, NECK_WIDE),
-    "west": (0, NECK_WIDE, NECK_WIDE, NECK_TALL),
-    "south": (NECK_WIDE, NECK_WIDE, NECK_WIDE, NECK_TALL),
-    "east": (NECK_WIDE * 2, NECK_WIDE, NECK_WIDE, NECK_TALL),
-    "north": (NECK_WIDE * 3, NECK_WIDE, NECK_WIDE, NECK_TALL),
-}
+NECK_FACES = unwrap((0, 0), (NECK_WIDE, NECK_TALL, NECK_WIDE))
 ## and the body's two square faces, side by side under the neck's strip
 BODY_FACES = {
     "up": (0, 13, BODY_WIDE, BODY_WIDE),
@@ -1216,7 +1251,7 @@ def pot_body():
         texture[face], window[face] = on_sheet(POT_BASE, region,
                                                POT_SHEET)
     return Cube((BODY_WIDE, BODY_TALL, BODY_WIDE), (1, 0, 1),
-                texture=texture, window=window)
+                texture=texture, window=window, behind=True)
 
 
 DECORATED_POTS = {"default": [
@@ -1235,9 +1270,8 @@ DECORATED_POTS = {"default": [
 # that is in the block's own textures: `blocks.json` gives the whole block
 # `itemframe_background`, so the wood has to be named outright.
 #
-# The rotation table already turns the block onto all six faces and reads `1`,
-# facing up, as no turn at all, so this is written lying on the block's floor
-# looking up and the table carries it to a wall.
+# It rests against the south side of its block looking north, the way a block
+# at rest faces, and the rotation table carries it to the other five faces.
 FRAME_WOOD = "textures/blocks/planks_birch"
 FRAME_ACROSS = 12           # the surround, outer edge to outer edge
 FRAME_BAR = 1               # how wide each of the four bars is
@@ -1254,58 +1288,80 @@ FRAME_TUCK = 0.2            # how far it reaches under each bar
 FRAME_SUNK = 0.1            # and how far off the wall, so nothing is coplanar
 FRAME_DEEP = 0.5            # the canvas is half the thickness of the surround
 
-## **The canvas reads the inside of its tile, not the whole of it.** The outer
-## ring of both `itemframe_background` and `glow_item_frame` is the dark border
-## the game draws round the picture, and the frame here is drawn as wood rather
-## than painted, so reading the whole tile put a second border inside the first.
-## Fourteen across stretched over the panel is the picture and nothing else.
-FRAME_EDGE = 1
+## **The canvas reads the middle of its tile, at its own size.** It is ten
+## across inside the surround, and reads the ten pixels in the middle of the
+## tile, as Java's `template_item_frame` does; reading more stretches the
+## picture onto the panel squashed.
+FRAME_EDGE = 3
 FRAME_PICTURE = 16 - 2 * FRAME_EDGE
 
 ## **And the plain frame's picture is turned half round; the glow frame's is
 ## not.** A window with both sizes negative is a half turn, the same way one
 ## negative size is a mirror. That is the only difference between the two
 ## families, and it is why they are two rather than one reading `@up`.
-FRAME_ART = {face: (FRAME_EDGE, FRAME_EDGE, FRAME_PICTURE, FRAME_PICTURE)
-             for face in FACES}
-FRAME_TURNED = {face: (FRAME_EDGE + FRAME_PICTURE, FRAME_EDGE + FRAME_PICTURE,
-                       -FRAME_PICTURE, -FRAME_PICTURE) for face in FACES}
+FRAME_ART = (FRAME_EDGE, FRAME_EDGE, FRAME_PICTURE, FRAME_PICTURE)
+FRAME_TURNED = (FRAME_EDGE + FRAME_PICTURE, FRAME_EDGE + FRAME_PICTURE,
+                -FRAME_PICTURE, -FRAME_PICTURE)
 
 _bar_at = FRAME_AT
 _bar_end = FRAME_AT + FRAME_ACROSS - FRAME_BAR
 _inner = FRAME_AT + FRAME_BAR
+## the wall the frame hangs on is the south side of its block
+_wall = 16 - FRAME_THICK
 
 
-def item_frame(window):
+def frame_bar(size, at):
+    """One bar of the surround, the planks' grain running along it.
+
+    Each face reads the planks the way they lie across the frame's own face:
+    the front and the back square on, the ends and the edges stood on their
+    sides a quarter turn.
+    """
+    wide, tall, _deep = size
+    x, y, _z = at
+    return Cube(size, at, FRAME_WOOD, window={
+        "north": (x, 16 - y - tall, wide, tall),
+        "south": (x + wide, y + tall, -wide, -tall),
+        "east": (0, y, FRAME_THICK, tall, 90),
+        "west": (16 - FRAME_THICK, 16 - y - tall, FRAME_THICK, tall, 270),
+        "up": (x + wide, 16, -wide, -FRAME_THICK),
+        "down": (x, 16 - FRAME_THICK, wide, FRAME_THICK)})
+
+
+def item_frame(turned):
     """The birch surround, and the canvas recessed inside it."""
+    picture, other = (FRAME_TURNED, FRAME_ART) if turned else (FRAME_ART, FRAME_TURNED)
     return [
         ## the four bars of the surround, birch, running round the edge
-        Cube((FRAME_ACROSS, FRAME_THICK, FRAME_BAR),
-             (_bar_at, 0, _bar_at), FRAME_WOOD),
-        Cube((FRAME_ACROSS, FRAME_THICK, FRAME_BAR),
-             (_bar_at, 0, _bar_end), FRAME_WOOD),
-        Cube((FRAME_BAR, FRAME_THICK, FRAME_CANVAS),
-             (_bar_at, 0, _inner), FRAME_WOOD),
-        Cube((FRAME_BAR, FRAME_THICK, FRAME_CANVAS),
-             (_bar_end, 0, _inner), FRAME_WOOD),
+        frame_bar((FRAME_ACROSS, FRAME_BAR, FRAME_THICK), (_bar_at, _bar_at, _wall)),
+        frame_bar((FRAME_ACROSS, FRAME_BAR, FRAME_THICK), (_bar_at, _bar_end, _wall)),
+        frame_bar((FRAME_BAR, FRAME_CANVAS, FRAME_THICK), (_bar_at, _inner, _wall)),
+        frame_bar((FRAME_BAR, FRAME_CANVAS, FRAME_THICK), (_bar_end, _inner, _wall)),
         ## and the canvas, which reads whatever the block declares, so that a
-        ## glow frame wears its own picture without naming it here
-        Cube((FRAME_CANVAS + 2 * FRAME_TUCK, FRAME_DEEP,
-              FRAME_CANVAS + 2 * FRAME_TUCK),
-             (_inner - FRAME_TUCK, FRAME_SUNK, _inner - FRAME_TUCK),
-             "@up", window=window),
+        ## glow frame wears its own picture without naming it here. The front
+        ## is north and the back is against the wall; the four edges read the
+        ## picture stood on its side.
+        Cube((FRAME_CANVAS + 2 * FRAME_TUCK, FRAME_CANVAS + 2 * FRAME_TUCK,
+              FRAME_DEEP),
+             (_inner - FRAME_TUCK, _inner - FRAME_TUCK,
+              16 - FRAME_SUNK - FRAME_DEEP),
+             dict({face: "@up" for face in FACES}, up="default"),
+             window={"north": picture, "down": picture,
+                     "south": other, "up": other,
+                     "east": FRAME_ART + (270 if turned else 90,),
+                     "west": FRAME_ART + (90 if turned else 270,)}),
     ]
 
 
-FRAMES = {"default": item_frame(FRAME_TURNED)}
-GLOW_FRAMES = {"default": item_frame(FRAME_ART)}
+FRAMES = {"default": item_frame(turned=True)}
+GLOW_FRAMES = {"default": item_frame(turned=False)}
 
-## `facing_direction`, where 1 is the wall the frame is fixed to being the floor.
-## Both families carry it: a rotation table is keyed by shape family, so
-## splitting the glow frame off left it with none and it faced whichever way it
-## was placed.
-FRAME_TURNS = {"0": [180, 0, 0], "1": [0, 0, 0], "2": [90, 0, 0],
-               "3": [270, 0, 0], "4": [0, 0, 90], "5": [0, 0, 270]}
+## `facing_direction`, in Minecraft's angles. Both families carry it: a
+## rotation table is keyed by shape family, so splitting the glow frame off
+## left it with none and it faced whichever way it was placed. A frame on a
+## wall is only turned about y, so its picture stays upright.
+FRAME_TURNS = {"0": [90, 0, 0], "1": [270, 0, 0], "2": [0, 0, 0],
+               "3": [0, 180, 0], "4": [0, 90, 0], "5": [0, 270, 0]}
 
 
 # --- shelf mushrooms --------------------------------------------------------
@@ -1322,11 +1378,10 @@ FRAME_TURNS = {"0": [180, 0, 0], "1": [0, 0, 0], "2": [90, 0, 0],
 # rectangles themselves, so the four of them stack down the sheet without
 # overlapping, which is the check that the doubling is right.
 #
-# **Mojang's model faces north and this table's default faces south**, the way
-# every other wall mounting here does, so both boxes and their north and south
-# and east and west rectangles are carried round half a turn by `wall_turn`.
-# The block's own `minecraft:transformation` permutations turn the other three
-# facings from north, and MOUNTED_TURNS says the same thing from south.
+# **Mojang's model faces north, as a block at rest does**, so each box and the
+# rectangle each of its faces reads are taken as the model gives them. The
+# block's own `minecraft:transformation` permutations turn the other three
+# facings from north, the way `minecraft:cardinal_direction` does.
 MUSHROOM_SHEET = 32
 
 ## (size, where it sits with the wall at z16, the rectangle each face reads)
@@ -1355,39 +1410,18 @@ MUSHROOM_FORMS = {
     ]),
 }
 
-## a half turn about y swaps the face a rectangle belongs to, front for back and
-## side for side; up and down keep theirs
-MUSHROOM_OPPOSITE = {"north": "south", "south": "north",
-                     "east": "west", "west": "east",
-                     "up": "up", "down": "down"}
-
-
-def wall_turn(size, at, faces, sheet):
-    """Mojang's north facing box, carried half a turn round to face south.
-
-    The four side faces trade places in pairs, which is all a half turn does to
-    them. The top and the bottom keep theirs and turn within it, so the window
-    is turned inside its own tile and the tile is turned on the way into the
-    atlas -- without that the cap's pale front lip ends up against the wall,
-    which the up view shows plainly.
-    """
-    wide, _, deep = size
-    across, up, over = at
+def mushroom_box(size, at, faces, sheet):
+    """One of Mojang's boxes, each face reading its own rectangle."""
     texture, window = {}, {}
     for face in FACES:
-        region = faces[MUSHROOM_OPPOSITE[face]]
-        texture[face], window[face] = on_sheet(sheet, region, MUSHROOM_SHEET)
-        if face in ("up", "down"):
-            x, y, w, h = window[face]
-            window[face] = (16 - x - w, 16 - y - h, w, h, 180)
-    return Cube(size, (16 - across - wide, up, 16 - over - deep),
-                texture=texture, window=window)
+        texture[face], window[face] = on_sheet(sheet, faces[face], MUSHROOM_SHEET)
+    return Cube(size, at, texture=texture, window=window)
 
 
 def shelf_mushrooms():
     forms = {}
     for growth, (sheet, boxes) in MUSHROOM_FORMS.items():
-        forms[growth] = [wall_turn(size, at, faces, sheet)
+        forms[growth] = [mushroom_box(size, at, faces, sheet)
                          for size, at, faces in boxes]
     ## a mushroom with no growth state is the small one, which is what a block
     ## placed by a command with no states comes up as
@@ -1398,179 +1432,7 @@ def shelf_mushrooms():
 SHELF_MUSHROOMS = shelf_mushrooms()
 
 ## the four facings, the same way a shelf reads them
-MOUNTED_TURNS = {"south": [0, 0, 0], "west": [0, 90, 0],
-                 "north": [0, 180, 0], "east": [0, 270, 0]}
-
-
-# --- fence gates ------------------------------------------------------------
-#
-# **A gate standing open is a different shape, not the closed one turned.** The
-# two posts stay where they are and each half swings a quarter turn about its
-# own post, so the bars end up running along x instead of along z. Without an
-# open form every gate in a build was drawn shut, which is the one thing a
-# ghost block of a gate has to get right: an open gate marks a doorway and a
-# closed one marks a wall.
-#
-# The closed form is what the table has always held, written out here so the
-# family has one generator rather than half of one. The numbers are unchanged.
-GATE_POST = (2, 11, 2)              # the two uprights, at each end
-GATE_BAR = (1.6, 3, 14)             # the long rails between them, closed
-GATE_LATCH = (1.2, 4, 4)            # the block where the two halves meet
-GATE_HALF = 7                       # how far one half reaches, open
-
-
-def fence_gate_closed():
-    return [Cube(GATE_POST, (7, 5, 0)),
-            Cube(GATE_POST, (7, 5, 14)),
-            Cube(GATE_LATCH, (7.4, 8.5, 6)),
-            Cube(GATE_BAR, (7.2, 12, 1)),
-            Cube(GATE_BAR, (7.2, 6, 1))]
-
-
-def fence_gate_open():
-    """The posts, and four half rails swung back against them.
-
-    Both halves swing the same way, which is what an open gate looks like from
-    either side; the latch goes with them and is left off, because open there
-    is nothing for the two halves to latch to.
-    """
-    made = [Cube(GATE_POST, (7, 5, 0)), Cube(GATE_POST, (7, 5, 14))]
-    thick = GATE_BAR[0]
-    ## each pair hinges on its own post, so it keeps that post's z and runs
-    ## out along x from the post's edge
-    for at_z in (0, 14):
-        middle = at_z + (GATE_POST[2] - thick) / 2.0
-        for at_y in (12, 6):
-            made.append(Cube((GATE_HALF, GATE_BAR[1], thick),
-                             (9, at_y, middle)))
-    return made
-
-
-FENCE_GATES = {"default": fence_gate_closed(), "open": fence_gate_open()}
-
-## **All four facings, not two.** A closed gate is symmetric about its own
-## plane, so north and south were given the same turn and east and west the
-## same turn, and nothing ever showed it. An open gate is not symmetric: it
-## swings to the side its facing names, and a gate opened from the other side
-## records that by flipping its facing. Sharing a turn between opposite
-## facings therefore swung half the gates in a build the wrong way.
-##
-## The numbers and the words disagreed as well -- east and west read 180 as
-## words and 0 as numbers -- so the numbers are set to Bedrock's own gate
-## order, 0 south, 1 west, 2 north, 3 east, and now say the same as the words.
-GATE_FACING = {"south": [0, 270, 0], "west": [0, 0, 0],
-               "north": [0, 90, 0], "east": [0, 180, 0]}
-GATE_FACING.update({"0": GATE_FACING["south"], "1": GATE_FACING["west"],
-                    "2": GATE_FACING["north"], "3": GATE_FACING["east"]})
-
-
-# --- trapdoors --------------------------------------------------------------
-#
-# A trapdoor is a panel three pixels thick and, like a door, every one of its
-# six faces was left to work its own window out from where the cube sits. On
-# the two big faces that is right -- they read the whole picture. On the four
-# thin ones it reads whatever three rows of the picture happen to line up with
-# the panel's position, which for a trapdoor lying on the floor is the *bottom*
-# three rows, and that is where the handle is drawn. So every closed trapdoor
-# wore a handle down all four of its edges.
-#
-# **The edges are plain.** The top three rows of a trapdoor's picture carry no
-# ornament, which is what the upside-down form has always read and why that one
-# looked right.
-#
-# **And the handle belongs at the far edge.** A trapdoor is hinged along the
-# side its `direction` names and opens away from it, so the handle is on the
-# opposite edge; the picture draws it at the bottom, and the face reads it a
-# half turn round.
-TRAP_THICK = 3
-TRAP_FACE = (0, 0, 16, 16, 180)             # the whole picture, turned
-TRAP_EDGE_WIDE = (0, 0, 16, TRAP_THICK)     # a plain strip, sixteen across
-TRAP_EDGE_TALL = (0, 0, TRAP_THICK, 16)     # and the same standing up
-
-
-def trapdoor(at, along_y):
-    """One trapdoor panel, its edges reading the plain part of the picture."""
-    if along_y:
-        ## lying flat: the big faces are up and down
-        size = (16, TRAP_THICK, 16)
-        window = {"up": TRAP_FACE, "down": TRAP_FACE,
-                  "north": TRAP_EDGE_WIDE, "south": TRAP_EDGE_WIDE,
-                  "east": TRAP_EDGE_WIDE, "west": TRAP_EDGE_WIDE}
-    else:
-        ## standing open: the big faces are north and south
-        size = (16, 16, TRAP_THICK)
-        window = {"north": TRAP_FACE, "south": TRAP_FACE,
-                  "up": TRAP_EDGE_WIDE, "down": TRAP_EDGE_WIDE,
-                  "east": TRAP_EDGE_TALL, "west": TRAP_EDGE_TALL}
-    return Cube(size, at, "default", window=window)
-
-
-TRAPDOORS = {
-    "default": [trapdoor((0, 0, 0), True)],
-    "top": [trapdoor((0, 16 - TRAP_THICK, 0), True)],
-    "open": [trapdoor((0, 0, 0), False)],
-}
-
-
-# --- the arm of an extended piston ------------------------------------------
-#
-# An extended piston is two blocks. The base keeps its own block and the head
-# and the rod stand in the block in front of it, which the game calls
-# `piston_arm_collision`, or `sticky_piston_arm_collision` for the sticky one.
-# Neither id had a family -- only the legacy spelling `pistonArmCollision` did,
-# and that one was a bare plate with no rotation table -- so an extended piston
-# was drawn as its base alone with nothing in front of it.
-#
-# Neither id has a `blocks.json` entry, because neither is a block anyone
-# places, so every face here is named outright.
-#
-# `piston_side` holds the whole side of a retracted piston: the head band is
-# its top four rows and the body is the twelve below. The plate reads the band
-# and the rod reads the body.
-PISTON_HEAD = 4                             # how thick the head plate is
-PISTON_ROD = 4                              # and how wide the shaft behind it
-PISTON_INSET = 0.4                          # the ghost block's shade under size
-PISTON_SIDE = "textures/blocks/piston_side"
-PISTON_BAND = (0, 0, 16, PISTON_HEAD)       # the head's own band on that tile
-PISTON_BODY = (0, PISTON_HEAD, PISTON_ROD, 16 - PISTON_HEAD)
-PISTON_END = (0, PISTON_HEAD, PISTON_ROD, PISTON_ROD)
-PISTON_FACE = {"normal": "textures/blocks/piston_top_normal",
-               "sticky": "textures/blocks/piston_top_sticky"}
-
-
-def piston_arm(kind):
-    """The head plate and the rod behind it, pointing up.
-
-    Up is the unturned form because the piston's own rotation table is written
-    that way, and the arm has to be turned by exactly the table its base is.
-    """
-    skin = {face: PISTON_SIDE for face in FACES}
-    skin["up"] = PISTON_FACE[kind]
-    ## the underside of the plate is up against the rod and never seen
-    skin["down"] = "textures/blocks/piston_inner"
-    window = {face: PISTON_BAND for face in FACES}
-    window["up"] = window["down"] = (0, 0, 16, 16)
-    plate = Cube((16 - 2 * PISTON_INSET, PISTON_HEAD - PISTON_INSET,
-                  16 - 2 * PISTON_INSET),
-                 (PISTON_INSET, 16 - PISTON_HEAD, PISTON_INSET),
-                 texture=skin, window=window)
-    ## the rod, square in section, reaching from the base up to the plate
-    at = (16 - PISTON_ROD) / 2.0
-    rod = Cube((PISTON_ROD, 16 - PISTON_HEAD, PISTON_ROD), (at, 0, at),
-               texture=PISTON_SIDE,
-               window={face: PISTON_END if face in ("up", "down")
-                       else PISTON_BODY for face in FACES})
-    return [plate, rod]
-
-
-PISTON_ARMS = {"default": piston_arm("normal")}
-STICKY_PISTON_ARMS = {"default": piston_arm("sticky")}
-
-## `facing_direction`, and the same table the `piston` and `sticky_piston`
-## families carry. An arm points the way its base does, so the two have to be
-## turned identically or the head leaves the block the base pushed it into.
-PISTON_TURNS = {"0": [180, 0, 0], "1": [0, 0, 0], "2": [270, 0, 0],
-                "3": [90, 0, 0], "4": [0, 0, 270], "5": [0, 0, 90]}
+MOUNTED_TURNS = "minecraft:cardinal_direction"
 
 
 def main():
@@ -1581,13 +1443,18 @@ def main():
     turns("glow_frame", FRAME_TURNS)
     define(["glow_frame"], "glow_frame")
     write("hanging_sign", HANGING_SIGNS)
-    write("bell", BELLS)
+    turns("hanging_sign", HANGING_SIGN_TURNS)
     ## the grindstone turns about the wheel's own height rather than the middle
     ## of the block, which is where its entry has always put the pivot
     write("grindstone", GRINDSTONES, center=(8, 7.04, 8))
-    write("campfire", CAMPFIRES, center=(8, 4, 8))
+    forms("campfire", CAMPFIRES)
     write("shelf", SHELVES)
-    write("door", DOORS)
+    forms("door", DOOR_FORMS)
+    rules("door", pick=[{"when": {"upper_block_bit": True}, "form": "top"},
+                        {"when": {"upper_block_bit": False}, "form": "lower"}],
+          data={"join": ["minecraft:cardinal_direction", "open_bit", "door_hinge_bit"]},
+          turn_by=None)
+    unturn("door")
     write("tripwire_hook", TRIPWIRE_HOOKS)
     write("sculk_shrieker", SHRIEKERS)
     write("tripwire", STRINGS)
@@ -1596,7 +1463,7 @@ def main():
     ## the rod turns about the middle of the block, not the middle of the base
     write("brewing_stand", BREWING_STANDS, center=(8, 6.4, 8))
     write("cauldron", CAULDRONS)
-    define(["cauldron", "lava_cauldron"], "cauldron")
+    define(["cauldron"], "cauldron")
     write("heavy_core", HEAVY_CORES, center=(8, 4, 8))
     write("dried_ghast", DRIED_GHASTS)
     ## a shrieker was drawn from the plain cube family, so it needs pointing at
@@ -1604,16 +1471,8 @@ def main():
     define(["sculk_shrieker"], "sculk_shrieker")
     ## the closed form is byte for byte what the table already held; "open" is
     ## the one that was missing
-    write("fence_gate", FENCE_GATES)
-    turns("fence_gate", GATE_FACING)
-    write("piston_arm", PISTON_ARMS)
-    turns("piston_arm", PISTON_TURNS)
-    write("sticky_piston_arm", STICKY_PISTON_ARMS)
-    turns("sticky_piston_arm", PISTON_TURNS)
-    define(["piston_arm_collision", "pistonArmCollision"], "piston_arm")
-    define(["sticky_piston_arm_collision", "stickyPistonArmCollision"],
-           "sticky_piston_arm")
-    write("trapdoor", TRAPDOORS)
+    define(["piston_arm_collision"], "piston_arm")
+    define(["sticky_piston_arm_collision"], "sticky_piston_arm")
     write("shelf_mushroom", SHELF_MUSHROOMS)
     turns("shelf_mushroom", MOUNTED_TURNS)
     define(["shelf_mushroom"], "shelf_mushroom")

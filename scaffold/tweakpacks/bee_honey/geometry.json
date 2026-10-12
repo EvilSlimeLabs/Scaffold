@@ -1,0 +1,1446 @@
+{
+	"families": {
+		"clearer_beehive": {
+			"turn_by": [
+				{
+					"state": "direction"
+				}
+			],
+			"forms": {
+				"0": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_front_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_top_0"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_end"
+									}
+								}
+							}
+						}
+					]
+				},
+				"1": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_front_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_top_1"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_end"
+									}
+								}
+							}
+						}
+					]
+				},
+				"2": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_front_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_top_2"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_end"
+									}
+								}
+							}
+						}
+					]
+				},
+				"3": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_front_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_top_3"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_end"
+									}
+								}
+							}
+						}
+					]
+				},
+				"4": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_front_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_top_4"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_end"
+									}
+								}
+							}
+						}
+					]
+				},
+				"5": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_front_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_top_5"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_end"
+									}
+								}
+							}
+						}
+					]
+				},
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_front_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_top_0"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/beehive_end"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			"data": {
+				"number": [
+					"honey_level"
+				]
+			}
+		},
+		"clearer_bee_nest": {
+			"turn_by": [
+				{
+					"state": "direction"
+				}
+			],
+			"forms": {
+				"0": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_front_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_top_0"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"1": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_front_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_top_1"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"2": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_front_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_top_2"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"3": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_front_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_top_3"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"4": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_front_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_top_4"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"5": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_front_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_top_5"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_front_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_top_0"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/bee_honey/bee_nest_bottom"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			"data": {
+				"number": [
+					"honey_level"
+				]
+			}
+		}
+	}
+}

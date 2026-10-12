@@ -16,6 +16,10 @@ alone when it dyes a sheet.
 to, the way the game draws it and the way a dragon head and a copper golem
 statue do here.
 
+**It rests facing north**, the way every block does: the cloth hangs on the
+north side of a standing banner's post, and a wall banner hangs against the
+south side of its block with its cloth to the north.
+
 **A banner is drawn in its colour but without its patterns.** The colour is in
 the block entity, as `Base`, and `tools/textures/banners.py` dyes the sheet once
 per colour so that each has a texture to read: vanilla tints one white sheet at
@@ -48,10 +52,17 @@ def _middle(region, tile=16):
     down against thirty in the block.
     """
     x, y, wide, tall = region
-    if wide > tile:
-        x, wide = x + (wide - tile) // 2, tile
-    if tall > tile:
-        y, tall = y + (tall - tile) // 2, tile
+
+    def middle(start, length):
+        ## a region read backwards starts at its far edge, so the cut is taken
+        ## off that end the other way
+        if abs(length) <= tile:
+            return start, length
+        cut = (abs(length) - tile) // 2
+        return (start + cut, tile) if length > 0 else (start - cut, -tile)
+
+    x, wide = middle(x, wide)
+    y, tall = middle(y, tall)
     return x, y, wide, tall
 
 
@@ -101,9 +112,27 @@ POLE_BOX = ((44, 0), (2, 42, 2))
 BAR_BOX = ((0, 42), (20, 2, 2))
 
 POLE_ART, POLE = _windows(POLE_BOX)
+
+
+def pole_piece(rows, tall):
+    """A length of the post reading `tall` rows of its sides from `rows` down.
+
+    The post's sides are forty-two rows on the sheet with a pale band at the
+    top, where it meets the bar. A quad reads at most sixteen of them, so the
+    post is drawn in pieces, each reading its own rows at the sheet's own scale,
+    and the top piece starts at the band.
+    """
+    art, window = {}, {}
+    for face, region in unwrap(*POLE_BOX).items():
+        x, y, wide, high = region
+        if face not in ("up", "down"):
+            region = (x, y + rows, wide, tall)
+        mark, fitted = on_sheet("", region, SHEET)
+        art[face], window[face] = mark, fitted
+    return art, window
 BAR_ART, BAR = _windows(BAR_BOX)
 
-## **The cloth reads one corner well inside itself.** Its south face runs from
+## **The cloth reads one corner well inside itself.** Its front face runs from
 ## 1,1 to 21,41 on the sheet, so a window starting at the sheet's own corner
 ## takes the transparent pixel above the cloth's top left and the strip the box
 ## unwrap puts along the top -- a hole in the corner of every banner. The middle
@@ -113,9 +142,10 @@ BAR_ART, BAR = _windows(BAR_BOX)
 ## twenty-four shades in it are all within a few units of each other, and no
 ## grid of quads would show a difference. The two marked forms are the
 ## exception and hang their design as a grid, below.
-CLOTH_ART = "#%d,%d" % _middle(unwrap(*CLOTH_BOX)["south"])[:2]
-CLOTH = {face: (0, 0, TILE, TILE) for face in
-         ("up", "down", "north", "south", "east", "west")}
+CLOTH_ART = "#%d,%d" % _middle(unwrap(*CLOTH_BOX)["north"])[:2]
+## the top and the bottom read the tile backwards both ways, as a box's do
+CLOTH = {face: (0, 0, TILE, TILE) for face in ("north", "south", "east", "west")}
+CLOTH.update({face: (TILE, TILE, -TILE, -TILE) for face in ("up", "down")})
 
 POLE_TALL = 30              # nearly two blocks, which is where vanilla stops
 BAR_TALL = 2                # the bar the cloth hangs from, across the top
@@ -133,8 +163,8 @@ CLOTH_WIDE = CLOTH_TALL / 2.0
 CLOTH_INSET = (16 - CLOTH_WIDE) / 2.0
 CLOTH_DEEP = 1              # a banner is a pixel thick, and vanilla draws it so
 
-## The colour is in the block entity, as `Base`, and `core.BLOCK_ENTITY_SHAPES` hands
-## it over as the form to draw. Each form names the sheet
+## The colour is in the block entity, as `Base`, and the family's `entity` rule
+## reads it as the form to draw. Each form names the sheet
 ## `tools/textures/banners.py` dyed for that colour, because the game tints
 ## one white sheet at run time and a ghost block cannot tint.
 ##
@@ -149,7 +179,7 @@ BANNER_COLOURS = ["white", "orange", "magenta", "light_blue", "yellow", "lime",
 ## The two banners that are not a dye at all. An ominous banner has a sheet of
 ## its own in the vanilla pack and a banner carrying patterns gets a stand-in,
 ## since a ghost block cannot composite six patterns and their colours as a pack
-## is built. `core.BLOCK_ENTITY_INSTEAD` is what names these forms.
+## is built. The family's `instead` rule is what names these forms.
 BANNER_MARKED = ("illager", "designed")
 
 ## **Which sheet a marked banner takes its edges from.** An edge is plain cloth
@@ -193,14 +223,15 @@ TILE = 16
 ##
 ## A cloth of flat colour has nothing to gain from any of this, so the sixteen
 ## dyed banners stay one quad apiece and read their tile as it comes.
-CLOTH_DESIGN = dict(CLOTH, south=(TILE, 0, -TILE, TILE))
+CLOTH_DESIGN = dict(CLOTH, north=(TILE, 0, -TILE, TILE))
 
 ## **The joins between the quads have to overlap, or they tear.** Four across by
 ## four down puts nine seams across the cloth, each of them a pair of edges that
 ## land on the same line and neither of which is guaranteed to cover it. Each
-## quad reaches a twentieth of a pixel past its slot so its neighbour is always
-## underneath it somewhere, and alternate rows sit a thousandth of a pixel
-## forward so the strip they share is not two faces on one plane.
+## quad reaches a twentieth of a pixel past its slot, toward the east, so its
+## neighbour is always underneath it somewhere, and alternate rows sit a
+## thousandth of a pixel forward, toward the north, so the strip they share is
+## not two faces on one plane.
 SEAM = 0.05
 SEAM_DEPTH = 0.002
 
@@ -235,10 +266,12 @@ def cloth(sheet, at, design=False, edge=None):
         return "%s#%d,%d" % (sheet, DESIGN_AT[0] + column * TILE,
                              DESIGN_AT[1] + row * TILE)
 
+    ## `across` counts the columns from the west, the high side of x, which is
+    ## the order the design's columns come out of the sheet in
     return [Cube((wide + SEAM, tall + SEAM, CLOTH_DEEP),
-                 (at[0] + across * wide,
+                 (at[0] + (DESIGN_ACROSS - 1 - across) * wide - SEAM,
                   at[1] + (DESIGN_DOWN - 1 - down) * tall,
-                  at[2] + (down % 2) * SEAM_DEPTH),
+                  at[2] - (down % 2) * SEAM_DEPTH),
                  texture=design_faces(
                      sheet, edge=edge,
                      ## **Both faces read the column where the quad stands, and
@@ -287,13 +320,14 @@ def design_faces(sheet, tile, back=None, edge=None):
     """
     plain = (edge or sheet) + CLOTH_ART
     faces = {face: plain for face in CLOTH}
-    faces["south"] = tile
-    faces["north"] = back if back is not None else tile
+    faces["north"] = tile
+    faces["south"] = back if back is not None else tile
     return faces
 
 
 def standing(sheet, design=False, edge=None):
-    """On the floor: a post up the middle with the cloth hanging in front.
+    """On the floor: a post up the middle with the cloth hanging in front,
+    to the north.
 
     It stands out of its own block, the way the game draws one. A ghost block is
     read as a mark on the place a block goes, and a banner that stopped at the
@@ -316,24 +350,31 @@ def standing(sheet, design=False, edge=None):
     ## the cloth hangs the whole depth of the bar, its top edge level with the
     ## bar's own, rather than starting under it and leaving a seam
     top = hangs + BAR_TALL
-    return ([Cube((2, hangs, 2), (7, 0, 7), art(sheet, POLE_ART), window=POLE),
+    upper = hangs // 2
+    lower = hangs - upper
+    top_art, top_window = pole_piece(0, upper)
+    low_art, low_window = pole_piece(upper, lower)
+    return ([Cube((2, lower, 2), (7, 0, 7), art(sheet, low_art),
+                  window=low_window),
+             Cube((2, upper, 2), (7, lower, 7), art(sheet, top_art),
+                  window=top_window),
              Cube((CLOTH_WIDE, BAR_TALL, 2), (CLOTH_INSET, hangs, 7),
                   art(sheet, BAR_ART), window=BAR)]
-            + cloth(sheet, (CLOTH_INSET, top - CLOTH_TALL, 9), design, edge))
+            + cloth(sheet, (CLOTH_INSET, top - CLOTH_TALL, 6), design, edge))
 
 
 def wall(sheet, design=False, edge=None):
     """On a wall: the bar lies across the top and the cloth hangs below it.
 
-    Against the block behind it, at z 0, the way a wall sign sits, and the cloth
-    hangs down past the block's own floor.
+    Against the block behind it, the south side, the way a wall sign sits, and
+    the cloth hangs down past the block's own floor.
     """
     hangs = 16 - BAR_TALL
     top = hangs + BAR_TALL
-    return ([Cube((CLOTH_WIDE, BAR_TALL, 2), (CLOTH_INSET, hangs, 0),
+    return ([Cube((CLOTH_WIDE, BAR_TALL, 2), (CLOTH_INSET, hangs, 14),
                   art(sheet, BAR_ART), window=BAR)]
             ## and out of the wall far enough to clear the bar
-            + cloth(sheet, (CLOTH_INSET, top - CLOTH_TALL, 2), design, edge))
+            + cloth(sheet, (CLOTH_INSET, top - CLOTH_TALL, 13), design, edge))
 
 
 def dyed(shape):
@@ -352,11 +393,11 @@ def dyed(shape):
 STANDING = dyed(standing)
 WALL = dyed(wall)
 
-## a standing banner turns in sixteen steps, a wall banner in four
-SIXTEEN = {str(n): [0, round(n * 22.5, 1), 0] for n in range(16)}
-FOUR = {"2": [0, 180, 0], "3": [0, 0, 0], "4": [0, 90, 0], "5": [0, 270, 0],
-        "south": [0, 0, 0], "west": [0, 90, 0], "north": [0, 180, 0],
-        "east": [0, 270, 0]}
+## a standing banner turns in sixteen steps of `ground_sign_direction`, a wall
+## banner in the four walls `facing_direction` names, 2 to 5, with Minecraft's
+## angle for each
+SIXTEEN = "ground_sign_direction"
+FOUR = {"2": [0, 0, 0], "3": [0, 180, 0], "4": [0, 90, 0], "5": [0, 270, 0]}
 
 
 def main():

@@ -1,47 +1,127 @@
 {
-	"suspicious_sand_and_gravel_borders": {
-		"from": "utility/suspicious_sand_and_gravel_borders",
-		"control": "sand_and_gravel",
-		"conflicts": ["sus_sand_and_gravel"]
-	},
-	"sus_sand_and_gravel": {
-		"from": "fun/sus_sand_and_gravel",
-		"control": "sand_and_gravel",
-		"conflicts": ["suspicious_sand_and_gravel_borders"]
-	},
-	"ore_borders": {
-		"from": "utility/ore_borders"
-	},
-	"visual_infested_stone": {
-		"from": "utility/visual_infested_stone_items",
-		"carried": true
-	},
-	"visual_waxed_copper": {
-		"from": "utility/visual_waxed_copper_items",
-		"carried": true
-	},
-	"budding_amethyst_borders": {
-		"from": "utility/budding_amethyst_borders"
-	},
-	"different_stems": {
-		"from": "utility/different_stems"
-	},
-	"age_25_kelp": {
-		"from": "utility/age_25_kelp"
-	},
-	"darker_dark_oak_leaves": {
-		"from": "terrain/darker_dark_oak_leaves"
-	},
-	"clean_redstone_dust": {
-		"from": "utility/clean_redstone_dust"
-	},
-	"directional_observers": {
-		"from": "utility/directional_observers"
-	},
-	"directional_hoppers": {
-		"from": "utility/directional_hoppers"
-	},
-	"sticky_piston_sides": {
-		"from": "utility/sticky_piston_sides"
+	"format": 2,
+	"about": "Every tweak the Tweaks menu offers: where it is staged from, its tab, the switch it shares and what it cannot be on with.",
+	"tweaks": {
+		"suspicious_sand_and_gravel_borders": {
+			"from": "utility/suspicious_sand_and_gravel_borders",
+			"control": "sand_and_gravel",
+			"conflicts": [
+				"sus_sand_and_gravel"
+			]
+		},
+		"sus_sand_and_gravel": {
+			"from": "fun/sus_sand_and_gravel",
+			"control": "sand_and_gravel",
+			"conflicts": [
+				"suspicious_sand_and_gravel_borders"
+			]
+		},
+		"ore_borders": {
+			"from": "utility/ore_borders"
+		},
+		"visual_infested_stone": {
+			"from": "utility/visual_infested_stone_items",
+			"carried": true
+		},
+		"visual_waxed_copper": {
+			"from": "utility/visual_waxed_copper_items",
+			"carried": true
+		},
+		"budding_amethyst_borders": {
+			"from": "utility/budding_amethyst_borders"
+		},
+		"different_stems": {
+			"from": "utility/different_stems"
+		},
+		"age_25_kelp": {
+			"from": "utility/age_25_kelp"
+		},
+		"darker_dark_oak_leaves": {
+			"from": "terrain/darker_dark_oak_leaves"
+		},
+		"clean_redstone_dust": {
+			"from": "utility/clean_redstone_dust"
+		},
+		"directional_observers": {
+			"from": "utility/directional_observers"
+		},
+		"directional_hoppers": {
+			"from": "utility/directional_hoppers"
+		},
+		"sticky_piston_sides": {
+			"from": "utility/sticky_piston_sides"
+		},
+		"redstone_dust_shades": {
+			"tab": "redstone",
+			"from": "redstone_tweaks",
+			"control": "redstone_dust",
+			"conflicts": [
+				"redstone_dust_numbers"
+			]
+		},
+		"redstone_dust_numbers": {
+			"tab": "redstone",
+			"from": "redstone_tweaks",
+			"control": "redstone_dust",
+			"conflicts": [
+				"redstone_dust_shades"
+			]
+		},
+		"composter_numbers": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"cauldron_levels": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"snow_layers": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"observer_unpowered": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"hopper_directions": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"dispenser_directions": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"piston_corners": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"lever": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"respawn_anchor_charges": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"bee_honey": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"note_block_pitch": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"jukebox_record": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"crafter_slots": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		},
+		"container_fill": {
+			"tab": "redstone",
+			"from": "redstone_tweaks"
+		}
 	}
 }

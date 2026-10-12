@@ -1,6 +1,6 @@
 # Editing blocks
 
-The reference for the five lookup tables a block is described by. For the
+The reference for the lookup tables a block is described by. For the
 knowledge that is not obvious from the formats, such as why a door faced the
 wrong way, which textures are lists and where a copper golem keeps its pose, read
 [Block Notes](Block%20Notes.md) instead.
@@ -11,15 +11,27 @@ hundred kinds of stair share one description.
 | File | Keyed by | Says |
 | --- | --- | --- |
 | `block_definition.json` | block id | which family draws it |
-| `block_rotation.json` | family | how each rotation state turns it |
-| `block_shapes.json` | family, then variant | the cubes |
-| `block_uv.json` | family, then variant | the texture window per cube per face |
-| `nbt_defs.json` | block state name | what that state means |
-| `variants.json` | state name | which entry of a texture list a value picks |
+| `block_geometry.json` | family, then form | the cubes, the window and texture of each face, and how a block's states choose a form |
+| `block_rotation.json` | family | which state turns it, or a table of its own |
+| `state_rotations.json` | state name | Minecraft's own turn for each value of a facing state |
+| `block_upgrades.json` | old block id or state | what the current game calls it |
 
-`block_shapes.json` and `block_uv.json` **must agree**. A variant in one and not
-the other silently falls back to `default`, which is how a half-height cube ends
-up wearing a full-height texture.
+**Every table describes current blocks only.** An older structure's blocks are
+translated to the names the game uses today as the structure is read, by
+`block_upgrades.json`, so nothing here needs an old id or an old state beside
+the new one.
+
+**The geometry tables are format 2**, and say so in a header:
+
+```json
+{"$schema": "schema/block_geometry.schema.json", "format": 2, "minecraft": "26.50", "families": {...}}
+```
+
+Format 2 means the tables are in Minecraft's frame: coordinates the way a
+Bedrock `.geo.json` writes them, in blocks from the low corner of the cell, and
+a block at rest facing north. `minecraft` is the game version they were last
+checked against. Each file has a JSON schema beside it in `lookups/schema/`,
+and `tests/test_lookup_format.py` validates all three against them.
 
 ---
 
@@ -34,124 +46,179 @@ tables.
 **An id here need not be a block.** An entity is drawn as one, under a pseudo id
 that `scaffold.core.ENTITY_MODELS` names -- `cushion` is the first. It is an
 ordinary entry in every table, and the only thing that marks it out is that no
-vanilla `blocks.json` declares it, so its family names all six faces outright in
-`overwrite` rather than leaning on the block's own declared textures. See
+vanilla `blocks.json` declares it, so its family names all six faces' textures
+outright rather than leaning on the block's own declared ones. See
 [Block Notes](Block%20Notes.md) for how one reaches the tables at all.
 
 ---
 
 ## block_rotation.json
 
-A family maps each rotation state to a turn about X, Y and Z in degrees.
+A family names the state it turns by, or carries a table of its own:
 
 ```json
-"repeater": {"0": [0, 180, 0], "1": [0, -90, 0],
-             "2": [0, 0, 0], "3": [0, 90, 0]}
+"anvil": "minecraft:cardinal_direction",
+"button": {"0": [90, 0, 0], "1": [270, 0, 0], "2": [0, 0, 0], ...}
 ```
 
-Keys are strings. **Give both the numbers and the compass words**, because
-Bedrock uses
-a numeric `direction` on some blocks and a `minecraft:cardinal_direction` string
-on others, and a value the table has no key for is drawn unrotated with no
-warning. The numbering differs between blocks; see
-[Block Notes](Block%20Notes.md).
+A name is looked up in `state_rotations.json`, which holds **Minecraft's own
+turns**: the shape is drawn facing north at rest, and each value is given the
+angle Minecraft gives it. `minecraft:cardinal_direction` is north 0, west 90,
+south 180, east 270. `facing_direction` is the same four with down as
+`[90, 0, 0]` and up as `[270, 0, 0]`, numbered 0 down, 1 up, 2 north, 3 south,
+4 west, 5 east. A numbered `direction` is 0 south, 1 west, 2 north, 3 east, and
+a trapdoor's is `weirdo_direction`'s numbering, 0 east, 1 west, 2 south,
+3 north. `make_block` turns these into what a bone needs; a table never holds a
+bone's turn.
+
+A family carries a table of its own only when its turns are not exactly one
+state's: a button lies on its back where `facing_direction` would stand it up.
+`tools/blocks/tables.put` writes the state's name whenever a table it is handed
+is exactly one of them.
+
+**Every generator writes in these terms**, facing north and with Minecraft's
+angles, so what a generator says and what the file holds are the same thing.
+Many of the families in `tools/blocks/mounted.py` and its neighbours build their
+cubes `behind=True`, which reads the top and bottom backwards and measures a
+side's window from the far side of the block: that is how those blocks have
+always been painted, and it is a property of the picture, not of the frame.
+
+Keys are strings. **Give every value the family's blocks carry today.** A value
+the table has no key for is drawn unrotated with no warning. A key written
+`"<form>:<value>"` is read before the plain value, for a form that numbers its
+turns differently from the rest of its family.
 
 ---
 
-## block_shapes.json
+## block_geometry.json
 
-A family holds one entry per variant, and always a `default`.
+A family holds its forms, always with a `default`, and optionally the simpler
+forms low geometry draws, under the same names:
 
 ```json
-"heavy_core": {"default": {"size": [[0.5, 0.5, 0.5]],
-                           "offsets": [[0.25, 0, 0.25]],
-                           "center": [0.5, 0.25, 0.5]}}
+"heavy_core": {
+    "forms": {"default": {"center": [0.5, 0.25, 0.5], "cubes": [
+        {"size": [0.5, 0.5, 0.5], "offset": [0.25, 0.0, 0.25], "faces": {
+            "up":    {"uv": [0.0, 0.0], "size": [0.5, 0.5], "texture": {"slot": "up"}},
+            "north": {"uv": [0.0, 0.5], "size": [0.5, 0.5], "texture": {"slot": "up"}},
+            ...}}]}},
+    "low": {...}}
 ```
 
 | Key | | |
 | --- | --- | --- |
-| `size` | required | one `[x, y, z]` per cube, as a fraction of a block |
-| `offsets` | optional | one `[x, y, z]` per cube; where each starts. Omitted means the origin |
-| `rotation` | optional | one `[x, y, z]` per cube, in degrees, turning that cube alone |
 | `center` | required | the point the family's own rotation is applied about |
+| `cubes` | required | the cubes, each with a `size`, an `offset` (its low corner) and six `faces` |
+| `rotation` | optional, per cube | `[x, y, z]` in degrees, turning that cube alone, as a bone applies it |
 
-A variant name comes from the block's states, described under `nbt_defs.json`
-below. The
-names `top`, `open`, `open_hinged` and `side` are used by the code itself for
-upper halves, open doors and trapdoors, and side-fed hoppers.
+Every face has a window and a texture:
 
----
-
-## block_uv.json
-
-The same variants, describing where on the texture each cube's faces are cut
-from. All six directions must be present, and each must have one entry per cube.
-
-```json
-"heavy_core": {"default": {
-    "uv_sizes": {"up": [[0.5, 0.5]], "down": [[0.5, 0.5]], "north": [[0.5, 0.5]],
-                 "south": [[0.5, 0.5]], "east": [[0.5, 0.5]], "west": [[0.5, 0.5]]},
-    "offset":   {"up": [[0.25, 0.25]], "down": [[0.25, 0.25]], "north": [[0.25, 0.5]],
-                 "south": [[0.25, 0.5]], "east": [[0.25, 0.5]], "west": [[0.25, 0.5]]}}}
-```
-
-- `uv_sizes`: how much of the tile that face takes, as a fraction
-- `offset`: where on the tile it starts, from the **upper left**
+- `uv`: where on the tile the window starts, from the **upper left**, as a fraction
+- `size`: how much of the tile it takes; negative runs it backwards
+- `texture`: what it reads. Left out, the block's own texture for that face.
 
 **V grows downward.** A block sitting on the floor of its cell takes the lower
 part of the tile, so its `v` offset is one minus the top of the box.
 
-### overwrite
+### texture
 
-Optional, and the only way to give the parts of a multi-cube block different
-textures. Without it every cube gets the block's same six faces.
+A texture is either a slot or a file, and may carry three things more:
 
-```json
-"overwrite": {"up": ["@down", "@up", "@north"], "north": ["@down", "@up", "@north"]}
-```
-
-One entry per cube, per face:
-
-- a literal path such as `textures/blocks/obsidian` is used as given
-- `"default"` leaves that cube's face alone
-- `"@up"`, `"@down"`, `"@north"` … mean **whatever this block declares for that
-  face**
-
-Prefer the `@` form. It survives a family gaining variants and works for a family
-shared by many block ids, so one entry serves every wood a sign comes in.
-
----
-
-## nbt_defs.json
-
-What a block state means. A state that is not listed is ignored entirely, which
-is the usual reason a block looks the same however it is placed.
-
-| Value | Effect |
+| Key | Says |
 | --- | --- |
-| `rot` | picks a rotation from `block_rotation.json` |
-| `variant` | picks an entry from a texture **list**, through `variants.json` |
-| `top` | selects the `top` shape variant |
-| `data` | the state's **number** names the shape variant |
-| `shape` | the state's **value** names the shape variant |
-| `open_bit`, `hinge` | door and trapdoor flags |
+| `slot` | whatever this block declares for that face in `blocks.json`: `up`, `down`, `north` ... |
+| `texture` | a path under the pack, such as `textures/blocks/obsidian` |
+| `window` | `[x, y]` in pixels: the corner of the 16x16 region of a larger sheet to read |
+| `turn` | quarter turns clockwise, in degrees, applied to the tile |
+| `tint` | `true`: multiply by the colour the block's entity carries |
 
-`data` is for numbers and `shape` for words. Several `shape` states on one block
-are joined with `-` in the order the state names sort, so `attached_bit` before
-`hanging` gives `"0-1"`.
+Prefer a slot. It survives a family gaining forms and works for a family shared
+by many block ids, so one entry serves every wood a sign comes in.
+
+### Choosing a form
+
+A family may say, beside its forms, how a block's states and block entity choose
+between them. The rules come first in the entry, a line each:
+
+```json
+"door": {
+    "pick": [{"when": {"upper_block_bit": true}, "form": "top"},
+             {"when": {"open_bit": true, "door_hinge_bit": true}, "form": "open_hinged"},
+             {"when": {"open_bit": true}, "form": "open"}],
+    "turn_by": [{"state": "minecraft:cardinal_direction"}],
+    "forms": {...}}
+```
+
+| Rule | Says |
+| --- | --- |
+| `pick` | the block's **mounting**: the first rule all of whose states match names it, and with none it is `default`. A state may match any of a list of values |
+| `data` | the block's **value**, from its states or its block entity; see below. With none it is `"0"` |
+| `turn_by` | which state turns it: the first present whose `when` holds |
+| `texture_by` | which entry of a texture list its faces read: the state's own number, or its value through `values` |
+
+The form drawn is the first of `"<mounting>-<value>"`, `"<value>"`,
+`"<mounting>"` and `default` the family has. So a hopper's `side` mounting and
+its lock's `1` make `side-1`, and an unlocked side hopper falls back to `side`.
+
+`data` takes any of:
+
+| Key | The value is |
+| --- | --- |
+| `number` | the last of these states present, as a number |
+| `join` | the values of these states present, joined with `-` in this order |
+| `entity` | a field of the block entity, instead: a banner's `Base` |
+| `entity_add` | a field of the block entity, after a `-`: a bed's `color` |
+| `instead` | `[[field, form or {value: form}], ...]`, a block entity field that names a form outright; the first that answers wins |
+| `tinted` | `[from, to]`: with a `CustomColor` in the block entity, a value starting `from` starts `to` instead |
+
+`scaffold/block_geometry.py` is the engine, and its functions are what
+`make_block` calls; `ArmorStandGeo.choose` gives the form, the turn and the
+texture index a block would be drawn with, which is what a test should ask.
 
 ---
 
-## variants.json
+### What else reads the rules
 
-For textures that are declared as a list. Maps a state's value to the index that
-picks one.
+Nothing else says what a block state means. A block list names a block's
+variant by the state its family's `texture_by` reads, a turtle egg's
+`cracked_state`, and so does the skipped report; the gallery shows every value
+of every state a family's rules name.
+
+---
+
+## block_upgrades.json
+
+How an older structure's blocks are named today, read by
+`scaffold/block_upgrade.py` for every palette entry as the structure is read.
+The rules run top to bottom, and each sees the block as the rules above it left
+it.
 
 ```json
-"rehydration_level": {"0": 0, "1": 1, "2": 2, "3": 3}
+{"id": "minecraft:seaLantern", "becomes": "minecraft:sea_lantern"}
+{"id": "minecraft:wool", "by": ["color"], "into": {"silver": "minecraft:light_gray_wool", ...}}
+{"id": ["minecraft:wooden_door", ...], "state": "direction",
+ "becomes": "minecraft:cardinal_direction", "values": {"0": "south", ...}}
+{"id": "minecraft:bamboo_sapling", "state": "sapling_type", "drop": true}
 ```
 
-Keys are strings even when the state is a number.
+| Key | |
+| --- | --- |
+| `id` | a block id or a list of them. A state rule without one applies to every block |
+| `becomes` | on an id rule, the new id; on a state rule, the state's new name |
+| `by`, `into` | split one id into several by the value of the states in `by`, joined with `/` when there are two. The states are removed unless `keep` is set |
+| `state`, `values`, `drop` | rename a state, map its values, or remove it |
+| `set` | states an id rule adds, for a new id that carries one the old did not |
+| `before` | a block data version; the rule applies only to entries saved below it. For rules that remap values, where one number meant different things either side of a change |
+
+Ids are renamed and split before states are, so a state rule names the id a
+block has become. A new value is written with its JSON type, which becomes the
+NBT type: a string, a number, or `true`/`false` for a byte. A value a rule does
+not name leaves the block as it was.
+
+**Add a rule when Mojang renames something**, by hand, and check it with
+`python -m tools.checks.upgrades --schema <clone>` against a local clone of
+PocketMine's `BedrockBlockUpgradeSchema`, which is generated from Mojang's own
+server. That schema is LGPL and is read only to check; it is never copied here.
 
 ---
 
@@ -190,11 +257,10 @@ python -m tools.find block "Raw Iron"
 python -m tools.find block '*_slab'
 ```
 
-**The list a block shows is `--data`, not `--variant`.** `make_block` picks a
-form by matching `str(data)` against the shape family's own keys, so those are
-what `--data` takes. `--variant` is a different axis -- which texture to take out
-of a `terrain_texture` list -- and handing it one of these draws the default
-without complaining. `find` labels the list `--data` for that reason.
+**The list a block shows is `--data`.** Given no states, `make_block` draws the
+form `--data` names, so those are what it takes. `--state` is the other way in:
+the block's own states, which the family's rules turn into a form, a turn and a
+texture the way a build does. `find` labels the list `--data` for that reason.
 
 It looks in all three at once -- the block id, the name a block list shows, and
 the shape family -- and prints the id, the variants the family has, and the
@@ -261,7 +327,7 @@ tables do not carry stops with the nearest few rather than a traceback.
 
 That writes `renders/lectern.png`: the block drawn six ways round, one view per
 face, and a three quarter view on the end. A flat view is named for the face it
-puts in front of you, so the picture under **south** is what `block_uv.json`
+puts in front of you, so the picture under **south** is what `block_geometry.json`
 painted on `south`, square on and at full scale.
 
 The flat views are for reading pixels and the corner views are for reading
@@ -297,9 +363,9 @@ state it was drawn in, so `--rot 3 --data 5` leaves
 | Option | What it does |
 | --- | --- |
 | `--rot N` | the rotation state, as `block_rotation.json` numbers them |
-| `-v`, `--variant` | which texture out of a `terrain_texture` list, for a block whose state indexes one. **Not** the form -- that is `--data` |
+| `-s`, `--state NAME=VALUE` | a block state, given again for several; the family's rules then choose the form, the turn and the texture |
 | `--data STATE` | which form to draw. Numbers and words alike: a banner is `0`-`15` for its dyes and `illager` or `designed` for the two that are not |
-| `--top` | the upper half state, for slabs and doors |
+| `--top` | the `top` form: the upper half of a slab, a door or a tall plant |
 | `--scale N` | screen pixels per texture pixel; 8 by default |
 | `--bg`, `--background` | what to draw it against: a name like `skyblue` or a hex code like `18181c`, with or without the `#` |
 | `--iso`, `--no-iso`, `--all` | which views the sheet holds; see above |
@@ -314,7 +380,7 @@ source file and say which pixel is wrong rather than that something looks off.
 **It draws what the pack ships.** The cubes come from
 `armor_stand_geo_class.make_block` and the pixels from the atlas that same
 object builds, so what you are looking at is what a player would install. It
-never reads `block_shapes.json` or `block_uv.json` itself, and a test enforces
+never reads `block_geometry.json` itself, and a test enforces
 that: a renderer that translated the tables would agree with the tables and tell
 you nothing about the translation.
 

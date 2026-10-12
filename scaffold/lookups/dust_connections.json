@@ -1,0 +1,143 @@
+{
+	"format": 2,
+	"minecraft": "26.50",
+	"about": "Which way redstone dust runs: Bedrock saves no joins for dust, so scaffold/dust.py works them out from the blocks round it with these rules. See docs/Block Notes.md, Redstone dust.",
+	"dust": [
+		"minecraft:redstone_wire"
+	],
+	"directions": {
+		"words": {
+			"down": "down",
+			"up": "up",
+			"north": "north",
+			"south": "south",
+			"west": "west",
+			"east": "east"
+		},
+		"facing_direction": {
+			"0": "down",
+			"1": "up",
+			"2": "north",
+			"3": "south",
+			"4": "west",
+			"5": "east"
+		},
+		"piston": {
+			"0": "down",
+			"1": "up",
+			"2": "south",
+			"3": "north",
+			"4": "east",
+			"5": "west"
+		}
+	},
+	"attract": [
+		{
+			"blocks": [
+				"minecraft:redstone_wire",
+				"minecraft:redstone_block",
+				"minecraft:redstone_torch",
+				"minecraft:unlit_redstone_torch",
+				"minecraft:lever",
+				"*_button",
+				"*pressure_plate",
+				"minecraft:tripwire_hook",
+				"minecraft:daylight_detector",
+				"minecraft:daylight_detector_inverted",
+				"minecraft:detector_rail",
+				"minecraft:trapped_chest",
+				"minecraft:target",
+				"minecraft:lectern",
+				"*lightning_rod",
+				"minecraft:sculk_sensor",
+				"minecraft:calibrated_sculk_sensor",
+				"minecraft:jukebox",
+				"minecraft:unpowered_comparator",
+				"minecraft:powered_comparator"
+			],
+			"faces": "all"
+		},
+		{
+			"blocks": [
+				"minecraft:unpowered_repeater",
+				"minecraft:powered_repeater"
+			],
+			"faces": [
+				"front",
+				"back"
+			],
+			"facing": {
+				"state": "minecraft:cardinal_direction",
+				"by": "words"
+			}
+		},
+		{
+			"blocks": [
+				"minecraft:observer"
+			],
+			"faces": [
+				"back"
+			],
+			"facing": {
+				"state": "minecraft:facing_direction",
+				"by": "words"
+			}
+		},
+		{
+			"_bedrock": "Bedrock draws dust toward a piston's back and sides; Java draws it toward neither",
+			"blocks": [
+				"minecraft:piston",
+				"minecraft:sticky_piston"
+			],
+			"faces": [
+				"back",
+				"sides"
+			],
+			"facing": {
+				"state": "facing_direction",
+				"by": "piston"
+			}
+		}
+	],
+	"not_conductors": [
+		"*glass",
+		"*glass_pane",
+		"minecraft:glass*",
+		"*leaves",
+		"minecraft:glowstone",
+		"minecraft:ice",
+		"minecraft:sea_lantern",
+		"minecraft:beacon",
+		"minecraft:redstone_block",
+		"minecraft:observer",
+		"minecraft:piston",
+		"minecraft:sticky_piston",
+		"*shulker_box",
+		"minecraft:slime",
+		"minecraft:honey_block",
+		"minecraft:barrier"
+	],
+	"holds_dust": [
+		"*glass",
+		"minecraft:glass*",
+		"minecraft:glowstone",
+		"minecraft:hopper",
+		{
+			"block": "*_slab",
+			"when": {
+				"minecraft:vertical_half": [
+					"top"
+				]
+			}
+		},
+		{
+			"block": "*_stairs",
+			"when": {
+				"upside_down_bit": [
+					true,
+					1
+				]
+			}
+		}
+	]
+}

@@ -2,8 +2,8 @@ import unittest
 
 from nbtlib import Byte, String
 
+from scaffold import block_upgrade
 from scaffold.pack import armor_stand_geo_class as asgc
-from scaffold.core import scaffold
 
 
 class SlabGeometryTests(unittest.TestCase):
@@ -11,16 +11,15 @@ class SlabGeometryTests(unittest.TestCase):
     plain cube every other block is built from."""
 
     def setUp(self):
-        self.processor = scaffold.__new__(scaffold)
         self.geo = asgc.ArmorStandGeo("test", alpha=1.0, size=[1, 4, 1], offsets=[0, 0, 0])
 
     def build(self, name, states, y=0):
-        block = {"name": "minecraft:" + name, "states": states}
-        properties = self.processor._process_block(block)
-        rot, top, variant, open_bit, data, _hinge, tint = properties
+        ## the way a structure hands a block over: translated first, so an old
+        ## `wooden_slab` with `top_slot_bit` arrives as the slab it is today
+        block = block_upgrade.upgrade({"name": "minecraft:" + name, "states": states})
+        name = str(block["name"]).replace("minecraft:", "")
         self.geo.blocks = {}
-        self.geo.make_block(0, y, 0, name, rot=rot, top=top, variant=variant,
-                            trap_open=open_bit, data=data, tint=tint)
+        self.geo.make_block(0, y, 0, name, states=block["states"])
         cubes = [c for bone in self.geo.blocks.values() for c in bone["cubes"]]
         self.assertEqual(len(cubes), 1)
         return cubes[0]
@@ -39,10 +38,11 @@ class SlabGeometryTests(unittest.TestCase):
                 self.assertEqual(slab["size"][1], 0.5)
 
     def test_a_top_slab_finishes_flush_with_a_full_block(self):
-        """A ghost block is drawn 0.95 tall, not 1.0, so that neighbours do not
-        z-fight. A top slab placed at 0.5 therefore reached 1.0 and stood a
-        pixel proud of every full block beside it. It starts at 0.45 instead, so
-        the two finish level and the slab keeps a bottom slab's thickness."""
+        """A ghost block is drawn 0.95 tall and centred in its cell, so that
+        neighbours do not z-fight: it reaches 0.975. A top slab placed at 0.5
+        would stand proud of every full block beside it, so it starts at 0.475
+        and the two finish level, and the slab keeps a bottom slab's
+        thickness."""
         cube = self.build("stone", {}, y=2)
         top = self.build("spruce_slab", {"minecraft:vertical_half": String("top")}, y=2)
         bottom = self.build("spruce_slab", {"minecraft:vertical_half": String("bottom")}, y=2)

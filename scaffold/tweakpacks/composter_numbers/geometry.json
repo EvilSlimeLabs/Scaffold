@@ -1,0 +1,10327 @@
+{
+	"families": {
+		"composter": {
+			"data": {
+				"number": [
+					"composter_fill_level"
+				]
+			},
+			"forms": {
+				"0": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						}
+					]
+				},
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						}
+					]
+				},
+				"1": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.0625,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.8125
+									],
+									"size": [
+										0.75,
+										0.0625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.8125
+									],
+									"size": [
+										0.75,
+										0.0625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.8125
+									],
+									"size": [
+										0.75,
+										0.0625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.8125
+									],
+									"size": [
+										0.75,
+										0.0625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"2": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.1875,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.6875
+									],
+									"size": [
+										0.75,
+										0.1875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.6875
+									],
+									"size": [
+										0.75,
+										0.1875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.6875
+									],
+									"size": [
+										0.75,
+										0.1875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.6875
+									],
+									"size": [
+										0.75,
+										0.1875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"3": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.3125,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.5625
+									],
+									"size": [
+										0.75,
+										0.3125
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.5625
+									],
+									"size": [
+										0.75,
+										0.3125
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.5625
+									],
+									"size": [
+										0.75,
+										0.3125
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.5625
+									],
+									"size": [
+										0.75,
+										0.3125
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"4": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.375,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.5
+									],
+									"size": [
+										0.75,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.5
+									],
+									"size": [
+										0.75,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.5
+									],
+									"size": [
+										0.75,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.5
+									],
+									"size": [
+										0.75,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"5": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.5,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.375
+									],
+									"size": [
+										0.75,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.375
+									],
+									"size": [
+										0.75,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.375
+									],
+									"size": [
+										0.75,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.375
+									],
+									"size": [
+										0.75,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"6": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.625,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.25
+									],
+									"size": [
+										0.75,
+										0.625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.25
+									],
+									"size": [
+										0.75,
+										0.625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.25
+									],
+									"size": [
+										0.75,
+										0.625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.25
+									],
+									"size": [
+										0.75,
+										0.625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"7": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.6875,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"8": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.125,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.0,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0.125
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.875
+									],
+									"size": [
+										1.0,
+										0.125
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.125,
+								0.875,
+								0.75
+							],
+							"offset": [
+								0.875,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0.875,
+										0.0
+									],
+									"size": [
+										0.125,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								},
+								"down": {
+									"uv": [
+										0.875,
+										0.125
+									],
+									"size": [
+										0.125,
+										0.75
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.6875,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			"low": {
+				"0": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						}
+					]
+				},
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_0"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						}
+					]
+				},
+				"1": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_1"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.0625,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.8125
+									],
+									"size": [
+										0.75,
+										0.0625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.8125
+									],
+									"size": [
+										0.75,
+										0.0625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.8125
+									],
+									"size": [
+										0.75,
+										0.0625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.8125
+									],
+									"size": [
+										0.75,
+										0.0625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"2": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_2"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.1875,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.6875
+									],
+									"size": [
+										0.75,
+										0.1875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.6875
+									],
+									"size": [
+										0.75,
+										0.1875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.6875
+									],
+									"size": [
+										0.75,
+										0.1875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.6875
+									],
+									"size": [
+										0.75,
+										0.1875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"3": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_3"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.3125,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.5625
+									],
+									"size": [
+										0.75,
+										0.3125
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.5625
+									],
+									"size": [
+										0.75,
+										0.3125
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.5625
+									],
+									"size": [
+										0.75,
+										0.3125
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.5625
+									],
+									"size": [
+										0.75,
+										0.3125
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"4": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_4"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.375,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.5
+									],
+									"size": [
+										0.75,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.5
+									],
+									"size": [
+										0.75,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.5
+									],
+									"size": [
+										0.75,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.5
+									],
+									"size": [
+										0.75,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"5": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_5"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.5,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.375
+									],
+									"size": [
+										0.75,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.375
+									],
+									"size": [
+										0.75,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.375
+									],
+									"size": [
+										0.75,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.375
+									],
+									"size": [
+										0.75,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"6": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_6"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.625,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.25
+									],
+									"size": [
+										0.75,
+										0.625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.25
+									],
+									"size": [
+										0.75,
+										0.625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.25
+									],
+									"size": [
+										0.75,
+										0.625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.25
+									],
+									"size": [
+										0.75,
+										0.625
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"7": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_7"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.6875,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost"
+									}
+								}
+							}
+						}
+					]
+				},
+				"8": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0.875,
+								0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0,
+								0.875,
+								1.0
+							],
+							"offset": [
+								1.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.0
+									],
+									"size": [
+										0.75,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.875
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								1.0,
+								0,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.125,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/composter_numbers/composter_8"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"slot": "down"
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									]
+								}
+							}
+						},
+						{
+							"size": [
+								0.75,
+								0.6875,
+								0.75
+							],
+							"offset": [
+								0.125,
+								0.125,
+								0.125
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"south": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"east": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"west": {
+									"uv": [
+										0.125,
+										0.1875
+									],
+									"size": [
+										0.75,
+										0.6875
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"up": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								},
+								"down": {
+									"uv": [
+										0.125,
+										0.125
+									],
+									"size": [
+										0.75,
+										0.75
+									],
+									"texture": {
+										"texture": "textures/blocks/compost_ready"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

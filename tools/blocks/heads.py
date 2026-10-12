@@ -11,20 +11,20 @@ own, because the sheet it wears is the only thing that tells them apart and
 `blocks.json` gives every one of them the same name for it, `skull`, which the
 vanilla pack points at soul sand.
 
-**The shapes come from the game's own entity geometry.** The community submodule
+**The shapes come from the game's own entity geometry.** The game's resource pack
 ships `models/entity/*.geo.json`, so a piglin's snout, its tusks and its ears,
 and every one of the dragon's seven pieces, are the cubes and the UV corners
 Mojang drew rather than something measured off a picture. `convert()` turns one
 of those cubes into a Scaffold cube: it lays out the six faces the way Bedrock
-unwraps a box, and turns the model half a turn about its own middle, because an
-entity faces -z and a block faces +z.
+unwraps a box, and moves the model half a block, because a model is measured
+from the middle of the floor and a block from its corner. Both face north.
 
 The four skulls and the player have no geometry file, being drawn by the engine
 rather than by a model, so they take the head box every humanoid skin has in the
 top left corner of its sheet.
 
 Only the top left 16x16 of a texture becomes a tile, so each face names the
-window it reads. The sheets are copied out of the community submodule into
+window it reads. The sheets are copied out of the game's resource pack into
 `textures/entity/`.
 
 Nothing here is needed at run time.
@@ -37,19 +37,22 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
 
+from tools import sources
+
 from tools.blocks import tables as lookup_writer
-from tools.blocks.geometry import Cube, build, on_sheet, spun
+from tools.blocks.geometry import Cube, build, on_sheet, spun, unwrap
 from scaffold import jsonc
+from tools.blocks import tables as _tables
 
 LOOKUPS = os.path.join(ROOT, "scaffold", "lookups")
-SHAPES = os.path.join(LOOKUPS, "block_shapes.json")
-UV = os.path.join(LOOKUPS, "block_uv.json")
+SHAPES = lookup_writer.SHAPES
+UV = lookup_writer.UV
 DEFINITION = os.path.join(LOOKUPS, "block_definition.json")
 ROTATION = os.path.join(LOOKUPS, "block_rotation.json")
-COMMUNITY = os.path.join(ROOT, "CommunityVanillaResourcePack", "models")
-GEOMETRY = os.path.join(COMMUNITY, "entity")
+GAME = sources.resource_pack("models")
+GEOMETRY = os.path.join(GAME, "entity")
 ## the heads the game draws a skull block with, all four in one file
-MOBS = os.path.join(COMMUNITY, "mobs.json")
+MOBS = os.path.join(GAME, "mobs.json")
 
 ## A head is drawn about its pivot, which sits at the middle of the block's
 ## floor: a mob head's cube runs from y24 to y32 and appears in the bottom half
@@ -100,29 +103,20 @@ def convert(sheet, cube, lift, back, scale=1.0):
     """One cube of an entity's head, as a cube of a block.
 
     Bedrock unwraps a box from its UV corner as two faces in a row above four
-    in a strip: up and down across the top, then east, north, west and south.
-    Each of those is a rectangle of the sheet, and each becomes the window its
-    face reads.
+    in a strip, `geometry.unwrap`. Each of those is a rectangle of the sheet,
+    and each becomes the window its face reads.
 
-    An entity faces -z and a block faces +z, so the model is turned half a turn
-    about its middle on the way in: what was its front ends up on the block's
-    south face, which is where the rotation tables put a block at rest.
+    A model faces north the way a block at rest does, so its front stays on
+    the north face and nothing turns; it only moves, because a model is
+    measured from the middle of the block's floor.
     """
     ox, oy, oz = cube["origin"]
     w, h, d = cube["size"]
-    u, v = cube.get("uv", [0, 0])
 
     ## The six rectangles of the sheet. Each becomes a tile of its own, named by
     ## the corner it starts at, because only a 16x16 window of a texture becomes
     ## one: a face of an entity sheet is nowhere near the top left of it.
-    rectangles = {
-        "south": (u + d, v + d, w, h),
-        "north": (u + d + w + d, v + d, w, h),
-        "west": (u, v + d, d, h),
-        "east": (u + d + w, v + d, d, h),
-        "up": (u + d, v, w, d),
-        "down": (u + d + w, v, w, d),
-    }
+    rectangles = unwrap(cube.get("uv", [0, 0]), (w, h, d))
     ## The corner is pulled back far enough that the tile fits inside the
     ## sheet. A tile that runs off the edge is not cropped short: the loader
     ## drops the corner altogether and reads the sheet's own top left, which is
@@ -141,14 +135,11 @@ def convert(sheet, cube, lift, back, scale=1.0):
         oy = (oy - PIVOT_Y) * scale + PIVOT_Y
         w, h, d = w * scale, h * scale, d * scale
 
-    ## turned half about the middle of the block
-    at = (8 - ox - w, oy - PIVOT_Y + lift, 8 - oz - d - back)
-    ## a turn the cube carries has to be turned along with the model: after a
-    ## half turn about Y its X and Z axes both run the other way
-    spin = cube.get("rotation")
-    if spin:
-        spin = [-spin[0], spin[1], -spin[2]]
-    return Cube((w, h, d), at, texture=texture, window=window, rotation=spin)
+    ## from the middle of the floor to the corner of the block, and a head on
+    ## a wall back against the wall behind it, which is the south
+    at = (ox + 8, oy - PIVOT_Y + lift, oz + 8 + back)
+    return Cube((w, h, d), at, texture=texture, window=window,
+                rotation=cube.get("rotation"))
 
 
 def from_mobs(identifier, bones=None):
@@ -184,8 +175,10 @@ def from_mobs(identifier, bones=None):
 def heads():
     mob = from_mobs("geometry.mob_head")
     return {
+        ## an older structure's `skull` is renamed to skeleton_skull as it is
+        ## read, by `block_upgrade`
         "skull_skeleton": ("textures/entity/skulls/skeleton", mob,
-                           ["skeleton_skull", "skull"]),
+                           ["skeleton_skull"]),
         "skull_wither": ("textures/entity/skulls/wither_skeleton", mob,
                          ["wither_skeleton_skull"]),
         "skull_zombie": ("textures/entity/skulls/zombie", mob, ["zombie_head"]),
@@ -248,30 +241,21 @@ def head(sheet, cubes, scale=1.0):
 ## something different in the two numberings.
 ##
 ## A head on the floor can face any of sixteen ways, and that is in the block
-## entity rather than the states, so `core.py` hands it over as `spinN`. Named
-## apart from the facings so that the second step round is not read as the north
-## wall. A floor head with no entity beside it keeps the plain 1.
+## entity rather than the states: `core.py` hands its `Rotation` over as a yaw,
+## which `make_block` adds to the floor's own turn.
 ##
-## The entity's own numbering starts half a turn from the block convention: a
-## block at rest faces south, and a skull whose Rotation is zero faces north, so
-## every floor turn carries the extra half. The wall facings do not: those come
-## from facing_direction, which names the way the head looks, and the wall form
-## is already built sitting against the wall behind it.
-FLOOR = 180
-TURNS = {"1": [0, FLOOR, 0],
-         "wall:2": [0, 180, 0], "wall:3": [0, 0, 0],
+## A skull whose Rotation is zero faces north, which is a block's rest pose, so
+## the floor needs no turn of its own. The wall facings are Minecraft's angles
+## for the way the head looks, with the wall form sitting against the south
+## side of its block.
+TURNS = {"1": [0, 0, 0],
+         "wall:2": [0, 0, 0], "wall:3": [0, 180, 0],
          "wall:4": [0, 90, 0], "wall:5": [0, 270, 0]}
-TURNS.update({"spin%d" % n: [0, round((n * 22.5 + FLOOR) % 360, 1), 0]
-              for n in range(16)})
 
 
 def define(blocks, family):
-    table = json.load(io.open(DEFINITION, encoding="utf-8"))
-    for block in blocks:
-        table[block] = family
-    io.open(DEFINITION, "w", encoding="utf-8", newline="").write(
-        json.dumps(table, indent="\t", ensure_ascii=False,
-                   separators=(",", ":")) + "\n")
+    """Point block ids at a shape family."""
+    _tables.define(blocks, family)
 
 
 def main():

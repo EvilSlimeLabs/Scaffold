@@ -1,0 +1,218 @@
+{
+	"families": {
+		"clearer_jukebox": {
+			"data": {
+				"instead": [
+					[
+						"RecordItem",
+						"record"
+					]
+				]
+			},
+			"forms": {
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/top"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side"
+									}
+								}
+							}
+						}
+					]
+				},
+				"record": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side_record"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side_record"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side_record"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side_record"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/top_record"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/jukebox_record/side_record"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

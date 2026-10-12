@@ -2,8 +2,8 @@
 
 A block is a list of cubes, and a cube is where it sits, how big it is, and what
 each of its six faces is painted with. `Cube` holds one and `build` turns a list
-of them into the pair of entries a shape family has in `block_shapes.json` and
-`block_uv.json`.
+of them into the two columns, shapes and windows, that `tables.put` writes into
+`block_geometry.json`.
 
 The rest are the measurements that keep coming up. `spun` moves a point the way
 a bone's rotation would have moved it, which is how a piece of a model that
@@ -28,6 +28,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
 from scaffold.pack.armor_stand_geo_class import TURN_MARK, TURNS
 
 FACES = ("up", "down", "north", "south", "east", "west")
+
+## the side across the block from each side
+OPPOSITE = {"north": "south", "south": "north", "east": "west", "west": "east"}
 
 PX = 1.0 / 16
 
@@ -63,12 +66,22 @@ class Cube:
     half of the tile turned, not the bottom half of the tile it started as.
     """
 
-    def __init__(self, size, at, texture="default", window=None, rotation=None):
+    def __init__(self, size, at, texture="default", window=None, rotation=None,
+                 turns=None, behind=False):
         self.size = list(size)
         self.at = list(at)
         self.texture = texture
         self.window = window or {}
         self.rotation = rotation
+        ## a quarter turn per face for a face whose window is its own place in
+        ## the block, which has no window to carry a fifth number
+        self.turns = turns or {}
+        ## **Read as if from behind.** The top and the bottom read their windows
+        ## backwards both ways, and a side whose window is its own place in the
+        ## block measures that place from the far side of the block. It is how
+        ## the families that rest with their front on the north face were first
+        ## painted, and they are kept reading the same pictures.
+        self.behind = behind
 
     def paint(self, face):
         """The texture this face takes, which may differ from face to face.
@@ -80,6 +93,13 @@ class Cube:
             texture = self.texture[face]
         else:
             texture = self.texture
+        ## a face reading the slot of its own name reads what it would have
+        ## read anyway, and a cube read from behind writes it that way; a side
+        ## left to its own declared texture reads the opposite side's instead
+        if self.behind and texture == "@" + face:
+            texture = "default"
+        elif self.behind and texture == "default" and face in OPPOSITE:
+            texture = "@" + OPPOSITE[face]
         turn = self.turn(face)
         ## "default" is "leave the block's own face alone", which is read before
         ## a name is ever built, so a turn on it would go nowhere
@@ -91,8 +111,9 @@ class Cube:
         """The quarter turn this face's window asks for, in degrees."""
         window = self.window.get(face)
         if not window or len(window) < 5:
-            return 0
-        degrees = int(window[4]) % 360
+            degrees = int(self.turns.get(face, 0)) % 360
+        else:
+            degrees = int(window[4]) % 360
         if degrees not in TURNS:
             raise ValueError(
                 "a window turns by a right angle, not %s" % window[4])
@@ -103,6 +124,13 @@ class Cube:
 
     def uv(self, face):
         """The window this face reads, as (offset, size) in tile fractions."""
+        offset, size = self._uv(face)
+        if self.behind and face in ("up", "down"):
+            offset = [round(o + s, 6) for o, s in zip(offset, size)]
+            size = [-s for s in size]
+        return offset, size
+
+    def _uv(self, face):
         if face in self.window:
             ## a fifth number is the turn, which rides on the texture's name
             ## rather than in the numbers a face reads
@@ -110,6 +138,8 @@ class Cube:
             return [px(across), px(down)], [px(wide), px(tall)]
         wide, tall, deep = self.size
         across, up, over = self.at
+        if self.behind:
+            across, over = 16 - across - wide, 16 - over - deep
         ## **An up face's v runs toward -z, and a down face's runs with it.** So
         ## the top of a tile lands at the block's *south* edge on an up face and
         ## at its north edge on a down one. A cube that does not fill the block
@@ -169,10 +199,26 @@ def unwrap(uv, size):
     """The six rectangles of the sheet a box of an entity model reads.
 
     Bedrock lays a box out from its UV corner as two faces in a row above four
-    in a strip: up and down across the top, then west, the front, east and the
-    back. The front is named south here because the model is turned half a turn
-    on the way into a block, which is what puts it on the block's south face.
+    in a strip: up and down across the top, then east, the front, west and the
+    back. The front is the north face, which is where a block at rest faces.
+    The top and the bottom are read backwards both ways, from their far corner,
+    which is how the game puts them on a box facing north.
     """
+    wide, tall, deep = size
+    u, v = uv
+    return {
+        "up": (u + deep + wide, v + deep, -wide, -deep),
+        "down": (u + deep + 2 * wide, v + deep, -wide, -deep),
+        "east": (u, v + deep, deep, tall),
+        "north": (u + deep, v + deep, wide, tall),
+        "west": (u + deep + wide, v + deep, deep, tall),
+        "south": (u + deep + wide + deep, v + deep, wide, tall),
+    }
+
+
+def unwrap_south(uv, size):
+    """`unwrap` for a box whose front is its south face and whose top and
+    bottom read forwards: what the shulker box's lid and base are drawn with."""
     wide, tall, deep = size
     u, v = uv
     return {
@@ -197,6 +243,9 @@ def on_sheet(name, region, sheet):
     size it is taken for puts every window on the wrong pixel.
     """
     x, y, wide, tall = region
-    at = [max(0, min(n, sheet - 16)) for n in (x, y)]
+    ## a region read backwards starts at its far edge, and the tile has to
+    ## hold it from its near one
+    low = (min(x, x + wide), min(y, y + tall))
+    at = [max(0, min(n, sheet - 16)) for n in low]
     return ("%s#%d,%d" % (name, at[0], at[1]),
             (x - at[0], y - at[1], wide, tall))

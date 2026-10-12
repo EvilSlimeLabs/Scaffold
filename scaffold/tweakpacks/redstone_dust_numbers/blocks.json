@@ -1,0 +1,11 @@
+{
+	"format_version": "1.21.40",
+	"redstone_wire": {
+		"sound": "stone",
+		"textures": {
+			"up": "redstone_dust_numbers_dust",
+			"side": "redstone_dust_numbers_line",
+			"down": "redstone_dust_numbers_number"
+		}
+	}
+}

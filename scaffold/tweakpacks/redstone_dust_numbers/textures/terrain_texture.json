@@ -1,0 +1,66 @@
+{
+	"resource_pack_name": "vanilla",
+	"texture_name": "atlas.terrain",
+	"texture_data": {
+		"redstone_dust_numbers_dust": {
+			"textures": [
+				"textures/clearer_redstone/redstone_dust_numbers/dust_0",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_1",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_2",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_3",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_4",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_5",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_6",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_7",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_8",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_9",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_10",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_11",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_12",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_13",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_14",
+				"textures/clearer_redstone/redstone_dust_numbers/dust_15"
+			]
+		},
+		"redstone_dust_numbers_line": {
+			"textures": [
+				"textures/clearer_redstone/redstone_dust_numbers/line_0",
+				"textures/clearer_redstone/redstone_dust_numbers/line_1",
+				"textures/clearer_redstone/redstone_dust_numbers/line_2",
+				"textures/clearer_redstone/redstone_dust_numbers/line_3",
+				"textures/clearer_redstone/redstone_dust_numbers/line_4",
+				"textures/clearer_redstone/redstone_dust_numbers/line_5",
+				"textures/clearer_redstone/redstone_dust_numbers/line_6",
+				"textures/clearer_redstone/redstone_dust_numbers/line_7",
+				"textures/clearer_redstone/redstone_dust_numbers/line_8",
+				"textures/clearer_redstone/redstone_dust_numbers/line_9",
+				"textures/clearer_redstone/redstone_dust_numbers/line_10",
+				"textures/clearer_redstone/redstone_dust_numbers/line_11",
+				"textures/clearer_redstone/redstone_dust_numbers/line_12",
+				"textures/clearer_redstone/redstone_dust_numbers/line_13",
+				"textures/clearer_redstone/redstone_dust_numbers/line_14",
+				"textures/clearer_redstone/redstone_dust_numbers/line_15"
+			]
+		},
+		"redstone_dust_numbers_number": {
+			"textures": [
+				"textures/clearer_redstone/redstone_dust_numbers/number_0",
+				"textures/clearer_redstone/redstone_dust_numbers/number_1",
+				"textures/clearer_redstone/redstone_dust_numbers/number_2",
+				"textures/clearer_redstone/redstone_dust_numbers/number_3",
+				"textures/clearer_redstone/redstone_dust_numbers/number_4",
+				"textures/clearer_redstone/redstone_dust_numbers/number_5",
+				"textures/clearer_redstone/redstone_dust_numbers/number_6",
+				"textures/clearer_redstone/redstone_dust_numbers/number_7",
+				"textures/clearer_redstone/redstone_dust_numbers/number_8",
+				"textures/clearer_redstone/redstone_dust_numbers/number_9",
+				"textures/clearer_redstone/redstone_dust_numbers/number_10",
+				"textures/clearer_redstone/redstone_dust_numbers/number_11",
+				"textures/clearer_redstone/redstone_dust_numbers/number_12",
+				"textures/clearer_redstone/redstone_dust_numbers/number_13",
+				"textures/clearer_redstone/redstone_dust_numbers/number_14",
+				"textures/clearer_redstone/redstone_dust_numbers/number_15"
+			]
+		}
+	}
+}

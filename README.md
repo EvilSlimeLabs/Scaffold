@@ -1,8 +1,15 @@
-![Scaffold: holographic blueprints for survival builds](art/readme_header.png)
+![Scaffold: holographic blueprints for survival builds](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/art/readme_header.png)
+
+[![Block coverage](https://img.shields.io/endpoint?url=https://evilslimelabs.github.io/Scaffold/badges/coverage.json)](https://github.com/EvilSlimeLabs/Scaffold/blob/master/tools/checks/game_pack.py)
+[![Tests at release](https://img.shields.io/endpoint?url=https://evilslimelabs.github.io/Scaffold/badges/tests.json)](https://github.com/EvilSlimeLabs/Scaffold/tree/master/tests)
+[![Latest release](https://img.shields.io/github/v/release/EvilSlimeLabs/Scaffold)](https://github.com/EvilSlimeLabs/Scaffold/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/EvilSlimeLabs/Scaffold/total)](https://github.com/EvilSlimeLabs/Scaffold/releases)
+[![PyPI](https://img.shields.io/pypi/v/mcpe-scaffold)](https://pypi.org/project/mcpe-scaffold/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)](https://github.com/EvilSlimeLabs/Scaffold/blob/master/pyproject.toml)
 
 # Scaffold launched with massive updates from Structura!
 
-- **Fully updated to Minecraft 26.45!** Every block the vanilla resource pack defines now has a shape and a texture, and all 108 bundled test structures build with nothing skipped at all.
+- **Up to date with the current Minecraft!** Every block the vanilla resource pack defines has a shape and a texture, and every one of the 100+ bundled test structures builds with nothing skipped at all. The badge at the top says which version that is.
 - **Increased geometry! (Optionally!)** Complex blocks now have the option for higher detail! But also unnecessary geometry has been reduced for better performance.
 - **So many block fixes!** Many small issues with block rendering and orientation have been resolved, ensuring that your builds look exactly as intended.
 - **Mob heads!** built from the game's own models: player, zombie, skeleton, wither skeleton, creeper, piglin and dragon, on the floor or on a wall, through all sixteen rotations.
@@ -46,17 +53,25 @@ For anyone working on the source rather than using it: everything importable is 
 Get a structure block. In a creative world with cheats on, run
 `/give @s structure_block`.
 
-![Giving yourself a structure block](docs/give_structure.png)
+![Giving yourself a structure block](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/give_structure.png)
 
 Set the structure block over your build and select every block you want in the ghost model. A single structure block covers at most **64×64×64** without editing your world's NBT data.
 
-![Configuring the structure block](docs/select_structure.PNG)
+![Configuring the structure block](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/select_structure.PNG)
 
 Press **Export** at the bottom to save it to a file. Note where it goes; you need it in a moment.
 
-![Exporting the structure](docs/export_structure.PNG)
+![Exporting the structure](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/export_structure.PNG)
 
-![The exported structure file](docs/exported.PNG)
+![The exported structure file](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/exported.PNG)
+
+**Stair corners and joined fences need a structure saved by Minecraft 26.50 or
+newer.** Before 26.50 the game did not save which way a fence, a glass pane,
+iron bars or string joins its neighbours, or which corner a stair makes, so a
+structure saved by an older version has nothing to read. Those blocks then show
+on their own: a fence as a post, a pane as a pillar, every stair straight.
+Re-export the structure from 26.50 or later to get them. Walls have saved their
+joins for much longer and are not affected.
 
 ---
 
@@ -64,7 +79,7 @@ Press **Export** at the bottom to save it to a file. Note where it goes; you nee
 
 Download `Scaffold.exe` and run it. That is the whole install, because it is a single self-contained file with everything inside it, so there is no folder to keep together and nothing to extract. A zip of the same executable is published alongside it, for browsers and chat clients that refuse a bare `.exe`.
 
-![The Scaffold window](docs/window_dark.png)
+![The Scaffold window](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/window_dark.png)
 
 Drop your `.mcstructure` file onto the window, or click the add area to browse for it. Give the pack a name, and press **Make Pack**.
 
@@ -89,7 +104,7 @@ That is the whole flow. Everything else is optional:
 
 **Name tags.** With a single structure the name tag is optional. Add a second and it becomes required, because the tag is how you tell the armor stands apart: name an armor stand `north wing` and it shows that structure. The window says so as you type.
 
-![Name tags become required with more than one structure](docs/window_validation.png)
+![Name tags become required with more than one structure](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/window_validation.png)
 
 **Big Build Mode** is for builds too large for one structure block. Export the build in pieces, add them all, and Scaffold assembles them into one model spread across the armor stand's layers.
 
@@ -97,15 +112,15 @@ The name tag fields step aside while it is on, because big build mode names its 
 
 Turning it off gives you your name tags and per-structure offsets back exactly as they were.
 
-![Big build mode](docs/window_big_build.png)
+![Big build mode](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/window_big_build.png)
 
 When the pack is written you get told, with the path and anything that had to be skipped:
 
-![The pack built dialog](docs/pack_built.png)
+![The pack built dialog](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/pack_built.png)
 
 **Theme and language** sit in the bottom right, alongside a **?** that opens the issue tracker and an **i** that says who made this. The theme follows your desktop by default; light and dark are there if you would rather pin it.
 
-![The window in light mode](docs/window_light.png)
+![The window in light mode](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/window_light.png)
 
 **Updates.** Scaffold checks for a newer build when it starts, and offers to install it. Taking it replaces the executable you are running and starts the new one; your settings and your structures are untouched. The check, and a switch to stop it happening at launch, are in **About**. It is the only thing Scaffold sends anywhere, and turning the switch off stops it entirely.
 
@@ -155,7 +170,9 @@ What it finds is merged over what ships, so a rename is a four-line file:
 ] }
 ```
 
-A pattern can also match a block's variant, written after a slash, which is how the stone slabs from before Minecraft flattened its block names land with the stone they are cut from: `*/quartz` is "a quartz one of anything". A `*` never crosses that slash.
+A pattern can also match a block's variant, written after a slash: `*/cracked` is "a cracked one of anything". A `*` never crosses that slash.
+
+Blocks from structures saved in older versions of Minecraft are listed under the names the game uses today, so an old quartz stone slab is a Quartz Slab and sorts with the quartz. A names file written for the old names still applies to the blocks they became.
 
 Anything no category matches goes under **Other** rather than being dropped.
 
@@ -163,10 +180,10 @@ Anything no category matches goes under **Other** rather than being dropped.
 
 English, Українська, Español, 简体中文, Tagalog and Cebuano, plus five that are not serious about it: Pirate Speak, LOLCAT, Shakespearean, upside-down English and the enchanting table alphabet.
 
-Each is labelled by its language code rather than a flag, because a flag is a country and several countries share a language. Adding one is a file named for its locale, the way Minecraft names its own, and nothing else: see the [Translation Guide](docs/TRANSLATION.md).
+Each is labelled by its language code rather than a flag, because a flag is a country and several countries share a language. Adding one is a file named for its locale, the way Minecraft names its own, and nothing else: see the [Translation Guide](https://github.com/EvilSlimeLabs/Scaffold/blob/master/docs/TRANSLATION.md).
 
 
-![About](docs/about.png)
+![About](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/about.png)
 
 ---
 
@@ -174,15 +191,17 @@ Each is labelled by its language code rather than a flag, because a flag is a co
 
 Apply the `.mcpack` like any resource pack. Enabling it in your **global resources** works well.
 
-![Making the pack active](docs/make_pack_active.PNG)
+![Making the pack active](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/make_pack_active.PNG)
 
 Your structure now appears around **every armor stand** in the worlds you load. That is how it works without a behaviour pack. Place an armor stand where the build should go.
 
-![Ghost blocks around an armor stand](docs/example_full.png)
+**The build turns with the armor stand.** To see it facing the way you saved it, place the stand facing north: stand on the north side of the spot, looking south, and place it so it faces you. North is the direction of negative Z with **Show Coordinates** turned on. Place it facing another way to build the structure turned that way. Big Build Mode is the exception: there the build stays lined up with the world whichever way the stand faces.
+
+![Ghost blocks around an armor stand](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/example_full.png)
 
 **Shift-right-click** the armor stand to step through the build a layer at a time. Layers 12 blocks apart share a step, so a tall build shows more than one layer at once.
 
-![One layer at a time](docs/example_layer.png)
+![One layer at a time](https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/docs/example_layer.png)
 
 ---
 
@@ -220,7 +239,7 @@ The bundled copy is whatever version of TechPack shipped with your Scaffold buil
 
 ## Tweaks
 
-[Bedrock Tweaks](https://bedrocktweaks.net) publishes small texture changes that make a build easier to read: a border round ores so you can pick them out, an observer whose front you can tell, redstone dust without the clutter. Switch **Tweaks** on and press **Choose** to pick which of them your pack is built with, or pass `--tweaks` on the command line. `--tweaks` with no names after it lists what your build offers. Each one shows its own icon, so you can see what it does without reading a word, and **Enable all** turns the lot on or off at once.
+[Bedrock Tweaks](https://bedrocktweaks.net) publishes small texture changes that make a build easier to read: a border round ores so you can pick them out, an observer whose front you can tell, redstone dust without the clutter. Switch **Tweaks** on and press **Choose** to pick which of them your pack is built with, on the menu's **Bedrock Tweaks** tab, or pass `--tweaks` on the command line. `--tweaks` with no names after it lists what your build offers. Each one shows its own icon, so you can see what it does without reading a word, and **Enable all** turns the lot on or off at once.
 
 Thirteen are offered, in twelve controls:
 
@@ -247,6 +266,36 @@ Textures by [Bedrock Tweaks](https://bedrocktweaks.net) and [Vanilla Tweaks](htt
 
 ---
 
+## Clearer Redstone
+
+The **Tweaks** menu has a second tab, **Clearer Redstone**, for reading a circuit the way it was saved. Its art is [Redstone Tweaks](https://modrinth.com/resourcepack/redstone-tweaks) by RexxStone, converted for Bedrock ghost blocks, with a few things drawn for Scaffold in the same style. Each is a switch of its own, picked and remembered the same way the tweaks on the first tab are, and passed to `--tweaks` by the same names.
+
+| Option | What it shows |
+| --- | --- |
+| **Dust** | A three-way slider: off, dust shaded by the strength of its signal, or shaded with the number on it, 0 included |
+| **Composters** | How full a composter is, as a number on its sides |
+| **Cauldrons** | The level of a cauldron, all six of Bedrock's, in the colour of what is in it |
+| **Snow** | How many layers a snow layer is, on its top |
+| **Observers** | The pack's observer, so its front and back are plain |
+| **Hoppers** | A hopper's lock on its rim and in its bowl, and a chevron in the bowl pointing at its spout |
+| **Dispensers** | An arrow on top of a dispenser or dropper pointing at its front, and a mark on its back |
+| **Pistons** | Corner marks on the back of a piston and a sticky piston |
+| **Levers** | A lever whose base says whether it is on |
+| **Anchors** | A respawn anchor's charge |
+| **Honey** | How much honey a bee nest or beehive holds |
+| **Note Blocks** | A note block's pitch, its click count and note, on every side |
+| **Jukeboxes** | Whether a jukebox holds a record |
+| **Crafters** | Which of a crafter's slots are locked, in red on its top |
+| **Containers** | How full a chest, double chest, barrel, dispenser, dropper or hopper is, as what to put in it |
+
+**Containers** need a word. A comparator reads a container as how many stacks it holds, so the count is written as the fewest items that give the same signal: `5+37` is five full slots and thirty-seven loose items of something that stacks to 64. A full slot is a whole stack or one item that does not stack, such as a sword. The count sits in the far left corner of the top as you stand in front, and on all four sides of a hopper's rim. A double chest is counted once, across both halves.
+
+Where a Clearer Redstone option and a tweak on the first tab both change a block, the Clearer Redstone one is drawn.
+
+Redstone Tweaks is licensed [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), and so is everything on this tab. A pack built with any of it credits RexxStone in its description and its `credits.txt`, and **must not be sold or put behind a paywall.**
+
+---
+
 ## Command line
 
 **`Scaffold.exe` is both programs.** Double-click it and the window opens; give it arguments in a terminal and it builds a pack there instead and prints where it landed.
@@ -257,7 +306,16 @@ Scaffold.exe --structure path/to/build.mcstructure --pack_name "CLI Pack" --over
 
 `Scaffold-cli.exe` is the same command line with the window left out of the build, a smaller download for scripts, servers and batch jobs. It takes exactly the same arguments. The only difference is that running it with nothing to build tells you so instead of opening a window.
 
-`--opacity` (1–100, the inverse of the window's transparency slider), `--description`, `--icon`, `--output`, `--offset x,y,z`, `--low_geometry`, `--tech_pack none|compatibility|full`, `--tweaks NAME ...` and `--overwrite` are all available. `--help` lists them, and `--tweaks` with no names after it lists the tweaks. Without `--output` the pack lands in the folder you ran the command in.
+`--opacity` (1–100, the inverse of the window's transparency slider), `--description`, `--icon`, `--output`, `--offset x,y,z`, `--low_geometry`, `--tech_pack none|compatibility|full`, `--tweaks NAME ...` and `--overwrite` are all available. `--help` lists them, `--version` says which Scaffold you have, and `--tweaks` with no names after it lists the tweaks. Without `--output` the pack lands in the folder you ran the command in.
+
+`--settings FILE` reads any of those from a JSON file, by the name of the flag, so a build you repeat is one file:
+
+```json
+{"structure": "house.mcstructure", "pack_name": "House", "opacity": 40,
+ "offset": [0, 0, 0], "tweaks": ["ore_borders", "container_fill"]}
+```
+
+A path in the file is read from the file's own folder, and anything also given on the command line takes the command line's value. The window's own `.scaffold` settings file works too, so a build from the command line can match what the window would have made.
 
 A pack that is already there stops the build and names the file, because the command line has nobody to ask. `--overwrite` is how you say to write over it.
 
@@ -272,7 +330,7 @@ scaffold-cli --structure build.mcstructure --pack_name "My Pack"
 
 Everything travels with it, including the lookup tables, the vanilla textures, the fonts and TechPack's assets, so `--tech_pack full` works from an install exactly as it does from the executable. Packs built this way are identical to packs built by the executable.
 
-**The window is Windows only.** It is written on CustomTkinter, which is Tk underneath, and Tk on macOS and Linux has not been tested and is not supported. A `scaffold[gui]` extra exists and will install its dependencies anywhere, but only Windows is claimed to work. Tkinter itself is never on PyPI: it comes with CPython on Windows and macOS, and is a system package on Linux (`python3-tk` on Debian and Ubuntu, `python3-tkinter` on Fedora).
+**The window is Windows only.** It is written on CustomTkinter, which is Tk underneath, and Tk on macOS and Linux has not been tested and is not supported. A `mcpe-scaffold[gui]` extra exists and will install its dependencies anywhere, but only Windows is claimed to work. Tkinter itself is never on PyPI: it comes with CPython on Windows and macOS, and is a system package on Linux (`python3-tk` on Debian and Ubuntu, `python3-tkinter` on Fedora).
 
 If you do install the extra on Windows, `scaffold` with no arguments opens the window. It is a console script rather than a windowed one, so a console flashes up first, which is the one thing `Scaffold.exe` does better.
 
@@ -289,7 +347,7 @@ git clone https://github.com/EvilSlimeLabs/Scaffold.git
 cd Scaffold
 ```
 
-**Skip `--recurse-submodules`.** `CommunityVanillaResourcePack`, `bedrock-samples`, `bedrock_tweaks` and `be_tech_pack` are reference material for `tools/vendor/`, not something an ordinary build reads: what they produce is already staged and committed under `scaffold/Vanilla_Resource_Pack`, `scaffold/techpack` and `scaffold/tweakpacks`. Only clone them (`git submodule update --init`) if you are updating the vendored assets themselves, with `python -m tools.vendor.vanilla_pack`, `python -m tools.vendor.tech_pack` or `python -m tools.vendor.tweaks`.
+**Skip `--recurse-submodules`.** `bedrock-samples`, `bedrock_tweaks` and `be_tech_pack` are reference material for `tools/vendor/`, not something an ordinary build reads: what they produce is already staged and committed under `scaffold/Vanilla_Resource_Pack`, `scaffold/techpack` and `scaffold/tweakpacks`. Only clone them (`git submodule update --init`) if you are updating the vendored assets themselves, with `python -m tools.vendor.vanilla_pack`, `python -m tools.vendor.tech_pack` or `python -m tools.vendor.tweaks`.
 
 ### 2. Install Python and the build dependencies
 
@@ -337,7 +395,7 @@ python build.py
 
 Regenerating the data first is the default, so a release can never ship a table produced by an older version of the script that writes it. `--skip-tools`, `--skip-tests` and `--skip-freeze` exist for iterating on one step at a time.
 
-**Upload `SHA256SUMS.txt` with the binaries.** It is what somebody downloading the zip by hand checks against. Scaffold's own updates do not read it; they check signatures instead.
+`SHA256SUMS.txt` is what somebody downloading the zip by hand checks against, and a published release carries it. Scaffold's own updates do not read it; they check signatures instead.
 
 ### Publishing an update
 
@@ -355,7 +413,9 @@ That writes the four signing keys to `~/.scaffold-keys` and the public root meta
 python build.py --publish
 ```
 
-which signs the build into `pages/` and prints the git commands that push it to the `gh-pages` branch. Nothing is published until you run those: a release is not something to put into the world as a side effect of a build.
+which signs the build into `pages/`, commits and pushes both `master` and `gh-pages`, and makes the GitHub release with [`gh`](https://cli.github.com): the version as its tag, its `CHANGELOG.md` section as its text, and the zip, both executables and `SHA256SUMS.txt` as its files. Publishing that release runs `.github/workflows/pypi.yml`, the one workflow, which puts the Python package on PyPI as `mcpe-scaffold`. A plain `python build.py` publishes nothing.
+
+Before it compiles anything, `--publish` checks that everything is committed, that `gh` is installed and signed in (`gh auth login`), and that the version has no release yet. PyPI trusts the workflow without a token: the project's trusted publisher names `pypi.yml` and the repository's `pypi` environment.
 
 Everything the program reads is packed **inside** the executable: the lookup tables, the trimmed vanilla pack, the TechPack assets, `pyproject.toml` and the branding. A copy of any of those folders placed *beside* the executable still wins, which lets you override a lookup table by dropping an edited folder next to the exe.
 
@@ -371,7 +431,7 @@ Run it after any interface change and the documentation comes back in step. The 
 
 ## Updating blocks
 
-You can add block support yourself and contribute it back. [Here is a write-up on how that works](docs/Editing%20Blocks.md).
+You can add block support yourself and contribute it back. [Here is a write-up on how that works](https://github.com/EvilSlimeLabs/Scaffold/blob/master/docs/Editing%20Blocks.md).
 
 Two tools report where the coverage stands:
 
@@ -382,19 +442,19 @@ python -m tools.checks.coverage   # what the bundled test structures still drop
 
 ## Contributing
 
-**Contributions are welcome.** Block support is the most useful kind. Scaffold covers every block the community vanilla resource pack defines, but Minecraft keeps adding them, and a block with no entry is quietly left out of the model rather than reported as an error, so gaps are easy to miss and easy to close. Most of the time adding one is an edit to a lookup table rather than a code change: [Editing Blocks](docs/Editing%20Blocks.md) is the write-up, and `docs/Block Notes.md` is what to read before touching a block that already exists.
+**Contributions are welcome.** Block support is the most useful kind. Scaffold covers every block Mojang's own resource pack defines, but Minecraft keeps adding them, and a block with no entry is quietly left out of the model rather than reported as an error, so gaps are easy to miss and easy to close. Most of the time adding one is an edit to a lookup table rather than a code change: [Editing Blocks](https://github.com/EvilSlimeLabs/Scaffold/blob/master/docs/Editing%20Blocks.md) is the write-up, and `docs/Block Notes.md` is what to read before touching a block that already exists.
 
-A translation is one file named for its locale and nothing else. The [Translation Guide](docs/TRANSLATION.md) covers it, and no code has to change to add a language.
+A translation is one file named for its locale and nothing else. The [Translation Guide](https://github.com/EvilSlimeLabs/Scaffold/blob/master/docs/TRANSLATION.md) covers it, and no code has to change to add a language.
 
-Bug reports, test structures that expose a wrong shape, and better textures are all welcome too. Read the [Contribution Guidelines](docs/CONTRIBUTING.md) before opening a pull request. Two rules there will save you a rewrite: nothing in `scaffold/cli/` may import `scaffold/ui/`, and a new shape family carrying three or more cubes needs a simplified form for Low Geometry.
+Bug reports, test structures that expose a wrong shape, and better textures are all welcome too. Read the [Contribution Guidelines](https://github.com/EvilSlimeLabs/Scaffold/blob/master/docs/CONTRIBUTING.md) before opening a pull request. Two rules there will save you a rewrite: nothing in `scaffold/cli/` may import `scaffold/ui/`, and a new shape family carrying three or more cubes needs a simplified form for Low Geometry.
 
 ## Coverage
 
-Every block in all 108 bundled test structures builds, and every block the community vanilla resource pack defines has a Scaffold definition. `docs/Block Notes.md` records how the awkward blocks are described and which shapes are still approximations. Re-check at any time with `python -m tools.checks.coverage`.
+Every block in the 100+ bundled test structures builds, and every block Mojang's own resource pack defines has a Scaffold definition. `docs/Block Notes.md` records how the awkward blocks are described and which shapes are still approximations. Re-check at any time with `python -m tools.checks.coverage`.
 
 ## Credits
 
-<img src="scaffold/images/evilslimelabs-logo3.png" alt="Evil Slime Labs" width="110" align="left" style="margin-right:10px;">
+<img src="https://raw.githubusercontent.com/EvilSlimeLabs/Scaffold/master/scaffold/images/evilslimelabs-logo3.png" alt="Evil Slime Labs" width="110" align="left" style="margin-right:10px;">
 
 ### **Maintained by <span style="color:#55FF55;">EvilSlimeLabs</span> <span style="font-size:small;">([Website](https://evilsimelabs.com)) ([GitHub](https://github.com/EvilSlimeLabs)).</span>**
 

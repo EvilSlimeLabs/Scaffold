@@ -37,6 +37,19 @@ slider.
 four from it, top to bottom and then across, so moving an entry here moves the
 cell. There is no separate layout anywhere.
 
+**Clearer Redstone is in the same table, on a tab of its own, and wins.** Its
+options are applied after every Bedrock Tweak whatever order they were asked
+for in, so where both change one block the redstone option is what is drawn;
+nothing on one tab switches anything on the other off.
+
+Its options are Redstone Tweaks' art, converted by `tools/vendor/redstone.py`, and an entry
+with `"tab": "redstone"` is one of them. Several need more than a texture: a
+note block drawn by its pitch, a composter numbered by how full it is. So a
+staged folder may also carry `geometry.json`, whole shape families in format 2
+that replace the ones of the same name, `definition.json`, block ids pointed at
+a family, and `rotation.json`, a rotation for a family the overlay adds.
+`tables()` merges those the way `overlay()` merges the rest.
+
 Nothing here reads the `bedrock_tweaks/` submodule; that is
 `tools/vendor/tweaks.py`'s business, and it runs long before a build does.
 """
@@ -44,6 +57,7 @@ import json
 import os
 
 from scaffold import jsonc
+from scaffold import lookup
 from scaffold import paths
 
 ## the name of the table, the two files a tweak may carry that are merged
@@ -53,8 +67,25 @@ BLOCKS = "blocks.json"
 TERRAIN = os.path.join("textures", "terrain_texture.json")
 ICON = "pack_icon.png"
 
+## the files a staged folder may carry beside its textures, which change the
+## geometry tables rather than the art
+GEOMETRY = "geometry.json"
+DEFINITION = "definition.json"
+ROTATION = "rotation.json"
+
+## the tabs the window shows, in order; an entry with no `tab` is on the first
+TABS = ("tweaks", "redstone")
+
 ## the credit the licence asks to travel with the files
 CREDIT_LINKS = ("https://vanillatweaks.net", "https://bedrocktweaks.net")
+## the credit text Bedrock Tweaks' licence names, word for word, for every
+## credits.txt that carries their files
+CREDIT_LINES = ("Vanilla Tweaks: https://vanillatweaks.net/",
+                "Bedrock Tweaks: https://bedrocktweaks.net/")
+
+## and the credit Redstone Tweaks' licence asks for, CC BY-NC-SA 4.0
+REDSTONE_CREDIT_LINKS = ("https://modrinth.com/resourcepack/redstone-tweaks",
+                         "https://creativecommons.org/licenses/by-nc-sa/4.0/")
 
 _table = None
 
@@ -63,8 +94,7 @@ def offered(reload=False):
     """Every tweak this build offers, as {id: entry}, in the table's order."""
     global _table
     if _table is None or reload:
-        with open(paths.lookup(TABLE), encoding="utf-8") as f:
-            _table = json.load(f)
+        _table = lookup.entries(TABLE)
     return _table
 
 
@@ -98,7 +128,12 @@ def icon(key):
     return picture if os.path.isfile(picture) else None
 
 
-def controls():
+def tab(key):
+    """Which tab of the window this tweak is on."""
+    return offered().get(key, {}).get("tab", TABS[0])
+
+
+def controls(on=None):
     """The sliders the window draws, in the table's order.
 
     Each is `(name, [tweak, ...])`. A tweak with a `control` joins the group of
@@ -109,6 +144,8 @@ def controls():
     """
     groups, seen = [], {}
     for key, entry in offered().items():
+        if on is not None and entry.get("tab", TABS[0]) != on:
+            continue
         name = entry.get("control", key)
         if name not in seen:
             seen[name] = []
@@ -136,7 +173,9 @@ def chosen(keys):
         out = [kept for kept in out if kept not in conflicts(key)]
         if key not in out:
             out.append(key)
-    return out
+    ## Clearer Redstone is laid over Bedrock Tweaks: where both change one
+    ## block, the redstone option is the one drawn
+    return sorted(out, key=lambda key: TABS.index(tab(key)))
 
 
 def overlay(keys):
@@ -166,6 +205,29 @@ def overlay(keys):
         named = _read(os.path.join(where, TERRAIN)).get("texture_data") or {}
         terrain.update(named)
     return folders, blocks, terrain, wearing
+
+
+def tables(keys):
+    """What these tweaks change in the geometry tables.
+
+    Returns `(families, definitions, rotations)`: whole shape families in
+    format 2, keyed by name, which replace a family of the same name; block ids
+    pointed at a family; and a rotation, a state's name or a table, for each
+    family that needs one. A later tweak wins a name two of them carry.
+    """
+    families, definitions, rotations = {}, {}, {}
+    for key in chosen(keys):
+        where = folder(key)
+        families.update(_read(os.path.join(where, GEOMETRY)).get("families") or {})
+        definitions.update(_read(os.path.join(where, DEFINITION)))
+        rotations.update(_read(os.path.join(where, ROTATION)).get("families") or {})
+    return families, definitions, rotations
+
+
+def credits(keys):
+    """Which credits a pack built with these tweaks carries: `tweaks` for
+    Bedrock Tweaks' art, `redstone` for Redstone Tweaks'."""
+    return sorted({tab(key) for key in chosen(keys)})
 
 
 def _read(path):

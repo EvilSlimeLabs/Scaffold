@@ -1244,13 +1244,19 @@ def tweak_label(key):
 
 ## the grid the dialog lays its controls out in, filled down each column and
 ## then across, straight out of `lookups/tweaks.json`. Twelve cells for thirteen
-## tweaks, because the two that cannot both be on share one.
+## Bedrock Tweaks, because the two that cannot both be on share one; Clearer
+## Redstone's fifteen run four columns deep on their own tab.
 TWEAK_ROWS = 4
+
+## each tab's name and the credit its licence asks to travel with the art
+TWEAK_TABS = (("tweaks", "tweaks tab bedrock", "tweaks credit"),
+              ("redstone", "tweaks tab redstone", "redstone credit"))
 TWEAK_ICON = 90
 
 
 class TweaksDialog(QuestionDialog):
-    """Which Bedrock Tweaks to apply, one switch each.
+    """Which Bedrock Tweaks and Clearer Redstone options to apply, one switch
+    each, a tab for each.
 
     **A picture rather than a paragraph.** Bedrock Tweaks draws an icon for
     every pack showing what it does, and `tools/vendor/tweaks.py` stages those
@@ -1264,7 +1270,8 @@ class TweaksDialog(QuestionDialog):
     switches that turned each other off would read as a fault. The picture
     follows the position, and an off switch keeps the first pack's picture, so
     the cell still says what the control is about. `tweaks.controls()` decides
-    which tweaks share a switch; nothing here does.
+    which tweaks share a switch; nothing here does. Redstone dust is the same
+    on the Clearer Redstone tab: off, shaded by its signal, or numbered too.
 
     Nothing is remembered until OK: Cancel leaves the stored list exactly as it
     was, so somebody who opened this to look does not have to undo anything.
@@ -1272,32 +1279,61 @@ class TweaksDialog(QuestionDialog):
     def __init__(self, app):
         super().__init__(app, app.text("tweaks"))
         hide_dialog(self, direction="in")
-        
-        self.controls = []
 
+        self.controls = []
+        self.pages = {}
         on = set(settings.tweaks_on())
-        grid = ctk.CTkFrame(self, fg_color="transparent")
-        grid.grid(row=self.row, column=0, sticky="ew", padx=20, pady=(6, 0))
+
+        ## **Two tabs, one dialog.** Bedrock Tweaks and Clearer Redstone are
+        ## told apart by the pack they come from and the credit each carries,
+        ## and laid out the same way, so each is a grid of its own and the
+        ## buttons and the switch on the title line are shared. Every grid is
+        ## built now and the one not shown is only hidden, so a switch keeps
+        ## its place while somebody looks at the other tab.
+        self.tab = ctk.StringVar(value=TWEAK_TABS[0][0])
+        self.tab_bar = ctk.CTkSegmentedButton(
+            self, values=[app.text(label) for _key, label, _credit in TWEAK_TABS],
+            command=self._show_tab, font=font(size=13),
+            selected_color=AMBER, selected_hover_color=AMBER_HOVER,
+            unselected_color=FIELD, unselected_hover_color=BORDER,
+            text_color=TEXT)
+        self.tab_bar.set(app.text(TWEAK_TABS[0][1]))
+        self.tab_bar.grid(row=self.row, column=0, sticky="w", padx=20, pady=(6, 0))
         self.row += 1
 
-        for index, (name, keys) in enumerate(tweak_packs.controls()):
-            across, down = index // TWEAK_ROWS, index % TWEAK_ROWS
-            grid.grid_columnconfigure(across, weight=1, uniform="tweak")
-            value = next((keys.index(key) + 1 for key in keys if key in on), 0)
-            self.controls.append(self._cell(grid, across, down, name, keys, value))
-        self._relabel_all()
+        pages = ctk.CTkFrame(self, fg_color="transparent")
+        pages.grid(row=self.row, column=0, sticky="nsew", padx=20, pady=(6, 0))
+        self.row += 1
+        for key, _label, _credit in TWEAK_TABS:
+            grid = ctk.CTkFrame(pages, fg_color="transparent")
+            grid.grid(row=0, column=0, sticky="nw")
+            for index, (name, keys) in enumerate(tweak_packs.controls(key)):
+                across, down = index // TWEAK_ROWS, index % TWEAK_ROWS
+                grid.grid_columnconfigure(across, weight=1, uniform="tweak")
+                value = next((keys.index(k) + 1 for k in keys if k in on), 0)
+                cell = self._cell(grid, across, down, name, keys, value)
+                cell["tab"] = key
+                self.controls.append(cell)
+            self.pages[key] = grid
+        ## the page area is as big as the biggest grid, whichever is shown, so
+        ## the dialog keeps its size and its buttons their place across tabs
+        pages.update_idletasks()
+        pages.configure(width=max(g.winfo_reqwidth() for g in self.pages.values()),
+                        height=max(g.winfo_reqheight() for g in self.pages.values()))
+        pages.grid_propagate(False)
 
         ## **The credit sits with the buttons, not with the content.** The
         ## licence asks for it to travel with the files; it is not something to
         ## read before deciding, so it goes on the last line where a footnote
-        ## goes, and the buttons keep the right of that row.
+        ## goes, and the buttons keep the right of that row. It names whoever
+        ## made the art on the tab being shown.
         footer = ctk.CTkFrame(self, fg_color="transparent")
         footer.grid(row=self.row, column=0, sticky="ew", padx=20, pady=(14, 16))
         footer.grid_columnconfigure(1, weight=1)
         self.row += 1
-        ctk.CTkLabel(footer, text=app.text("tweaks credit"), text_color=MUTED,
-                     font=font(size=11), anchor="w", justify="left").grid(
-            row=0, column=0, sticky="w")
+        self.credit = ctk.CTkLabel(footer, text="", text_color=MUTED,
+                                   font=font(size=11), anchor="w", justify="left")
+        self.credit.grid(row=0, column=0, sticky="w")
         buttons = ctk.CTkFrame(footer, fg_color="transparent")
         buttons.grid(row=0, column=2, sticky="e")
         for index, (label, command) in enumerate(
@@ -1312,8 +1348,24 @@ class TweaksDialog(QuestionDialog):
                 text_color=ON_AMBER if last else TEXT,
                 border_width=0 if last else 1, border_color=BORDER,
                 command=command).pack(side="left", padx=(8, 0))
+        self._show_tab(app.text(TWEAK_TABS[0][1]))
         self.update_idletasks()
         self.show()
+
+    def _show_tab(self, label):
+        """Show the grid a tab button names, and that tab's credit."""
+        for key, name, credit in TWEAK_TABS:
+            if self.app.text(name) == label:
+                self.tab.set(key)
+                self.pages[key].grid()
+                self.credit.configure(text=self.app.text(credit))
+            else:
+                self.pages[key].grid_remove()
+        self._relabel_all()
+
+    def shown(self):
+        """The controls on the tab being shown."""
+        return [cell for cell in self.controls if cell["tab"] == self.tab.get()]
 
     def heading(self, text):
         """The title, with the all-on-or-off button on the other end of it.
@@ -1379,9 +1431,13 @@ class TweaksDialog(QuestionDialog):
         self._relabel_all()
 
     def _relabel_all(self):
-        """The button says what pressing it would do, not what is on."""
+        """The button says what pressing it would do to the tab being shown,
+        not what is on."""
+        if not hasattr(self, "tab"):
+            return
+        lit = any(cell["switch"].get_position() for cell in self.shown())
         self.all_button.configure(
-            text=self.app.text("tweaks disable all" if self.chosen()
+            text=self.app.text("tweaks disable all" if lit
                                else "tweaks enable all"))
 
     def chosen(self):
@@ -1390,14 +1446,16 @@ class TweaksDialog(QuestionDialog):
                 for cell in self.controls if cell["switch"].get_position()]
 
     def toggle_all(self):
-        """Switch every control off, or every one on if none is.
+        """Switch every control on the tab being shown off, or every one on if
+        none is.
 
         On means the first position of each, which for Sand & Gravel is the
         bordered pack rather than the sus one: a button that turns everything on
         should not be the only way anybody meets a joke texture.
         """
-        wanted = 0 if self.chosen() else 1
-        for cell in self.controls:
+        shown = self.shown()
+        wanted = 0 if any(cell["switch"].get_position() for cell in shown) else 1
+        for cell in shown:
             cell["switch"].set_position(wanted)
             self._repicture(cell)
 
@@ -2362,6 +2420,7 @@ class App(ctk.CTk):
             command=self.on_tweaks)
         self.tweaks_switch.grid(row=0, column=3, sticky="e")
         self.count_tweaks()
+        self.refresh_tweaks_allowed()
         ## **The dialog's pictures are decoded before anybody opens it.** There
         ## are thirteen, and reading them while the dialog is being built is
         ## work done with the window already on its way up. `load_image` keeps
@@ -2739,6 +2798,7 @@ class App(ctk.CTk):
         self.tech_pack.set(settings.set_tech_pack("none"))
         self.block_lists.set(0)
         self.low_geometry.set(int(settings.set_low_geometry(False)))
+        self.refresh_tweaks_allowed()
         self.big_offset = [0, 0, 0]
         for row in self.rows:
             row.offset = [0, 0, 0]
@@ -2868,6 +2928,16 @@ class App(ctk.CTk):
     def on_low_geometry(self):
         """Remember the choice, which outlives this pack and this session."""
         settings.set_low_geometry(bool(self.low_geometry.get()))
+        self.refresh_tweaks_allowed()
+
+    def refresh_tweaks_allowed(self):
+        """Grey the tweaks out while low geometry is on: a pack built with it
+        applies none, since tweaks repaint the detailed forms it replaces. Which
+        tweaks are chosen is kept for when it is off again."""
+        state = "disabled" if self.low_geometry.get() else "normal"
+        for widget in (getattr(self, "tweaks_switch", None), getattr(self, "tweaks_button", None)):
+            if widget is not None:
+                widget.configure(state=state)
 
     def on_big_build(self):
         """Swap the offset fields and the name tags without losing either.

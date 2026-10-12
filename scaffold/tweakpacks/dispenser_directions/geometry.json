@@ -1,0 +1,456 @@
+{
+	"families": {
+		"clearer_dispenser": {
+			"pick": [
+				{
+					"when": {
+						"facing_direction": [
+							0,
+							1
+						]
+					},
+					"form": "vertical"
+				}
+			],
+			"turn_by": [
+				{
+					"state": "facing_direction"
+				}
+			],
+			"forms": {
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_front"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_back"
+									}
+								},
+								"east": {
+									"uv": [
+										1,
+										0
+									],
+									"size": [
+										-1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_top"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_top",
+										"turn": 180
+									}
+								}
+							}
+						}
+					]
+				},
+				"vertical": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_front_vertical"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_back_vertical"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_top",
+										"turn": 90
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_top",
+										"turn": 270
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_top"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dispenser_top",
+										"turn": 180
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		},
+		"clearer_dropper": {
+			"pick": [
+				{
+					"when": {
+						"facing_direction": [
+							0,
+							1
+						]
+					},
+					"form": "vertical"
+				}
+			],
+			"turn_by": [
+				{
+					"state": "facing_direction"
+				}
+			],
+			"forms": {
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_front"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_back"
+									}
+								},
+								"east": {
+									"uv": [
+										1,
+										0
+									],
+									"size": [
+										-1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_side"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_side"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_top"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_top",
+										"turn": 180
+									}
+								}
+							}
+						}
+					]
+				},
+				"vertical": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_front_vertical"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_back_vertical"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_top",
+										"turn": 90
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_top",
+										"turn": 270
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_top"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/dispenser_directions/dropper_top",
+										"turn": 180
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

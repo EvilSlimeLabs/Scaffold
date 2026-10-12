@@ -40,10 +40,15 @@ STEPS = [
     ("tools.blocks.heads", "the mob heads"),
     ("tools.blocks.containers", "the shulker boxes"),
     ("tools.blocks.hopper", "the hopper, mounted and locked"),
+    ("tools.blocks.chests", "the chest, single and either half of a double"),
     ("tools.blocks.banners", "standing and wall banners"),
     ("tools.blocks.bookshelf", "the bookshelf's sixty-four states"),
     ("tools.blocks.statues", "the copper golem's four poses"),
+    ## before blocks.faces, which copies the plain cube it turns
+    ("tools.blocks.vanilla", "blocks drawn the way Minecraft draws them"),
+    ("tools.blocks.dust", "redstone dust, every way it joins"),
     ("tools.blocks.faces", "a texture per cube, per face"),
+    ("tools.blocks.models", "blocks drawn from Java's models"),
     ("tools.blocks.entities", "the entities drawn as blocks"),
     ## after every family, because it names whatever the others left unnamed
     ("tools.blocks.names", "the block and entity list names"),
@@ -52,8 +57,23 @@ STEPS = [
     ("tools.textures.beds", "the recoloured beds"),
     ("tools.textures.string", "a string a ghost can be seen with"),
     ("tools.textures.water", "water you can see a build through"),
+    ("tools.textures.chests", "the double chest fronts"),
+    ## after the chest sheets, which the waxed ones are made from
+    ("tools.textures.wax", "the waxed copper art"),
+    ("tools.textures.dust_line", "redstone dust's line, coloured as its cross"),
+    ("tools.textures.tweak_tints", "the tweaks' greyscale pictures, tinted"),
+    ("tools.textures.shulkers", "the shulker box faces"),
+    ("tools.textures.foliage", "the biome-tinted plants"),
+    ("tools.textures.end_portal", "a square end portal"),
+    ("tools.textures.filled", "pictures with their holes filled"),
     ## after every shape family, because it reads them
     ("tools.blocks.simplify", "the simplified forms"),
+    ## after the simplified forms, because it copies families whole, theirs
+    ## included, into the Clearer Redstone options
+    ("tools.blocks.redstone", "the Clearer Redstone families"),
+    ## after every family, because both draw blocks from their detailed forms
+    ("tools.textures.low", "the pictures low geometry's boxes wear"),
+    ("tools.textures.item_icons", "the inventory pictures low geometry shows"),
     ("tools.app.icon", "the pack icon and the desktop icon"),
     ("tools.app.fonts", "the bundled typefaces"),
     ("tools.app.languages", "the generated languages"),

@@ -126,7 +126,7 @@ class RecordedStructureTests(unittest.TestCase):
 
     def test_the_states_26_50_added_do_not_become_variants(self):
         # minecraft:corner on stairs and minecraft:connection_* on fences,
-        # panes and bars are new in 26.50. Nothing in nbt_defs.json names
+        # panes and bars are new in 26.50. No family picks a texture by
         # them, so they must not reach a block list entry as a variant.
         reader = self.recorded("lottablocksv2.mcstructure")
         states = {str(k) for entry in reader.palette[1:]

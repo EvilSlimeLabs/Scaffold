@@ -10,7 +10,8 @@ import copy
 import os
 import time
 
-from scaffold import paths
+from scaffold import block_geometry, paths
+from scaffold import lookup
 from scaffold import tweaks as tweaks_packs
 debug = False##used in API test to force errors and break error handler, should remain false.
 
@@ -22,6 +23,25 @@ EXCLUDED_BLOCKS = ("air", "structure_block")
 ## how a shape family names its simpler form, in block_shapes and block_uv
 LOW_SUFFIX = "__low"
 
+
+def detailed(block_type):
+    """The family a simpler form was made from, or the family itself."""
+    if block_type.endswith(LOW_SUFFIX):
+        return block_type[:-len(LOW_SUFFIX)]
+    return block_type
+
+
+## **A lookup table holds Minecraft's angles, and a bone turns the other way
+## about y and z.** The model is the world mirrored in x, so a turn that carries
+## north to west in the world is a turn carrying it to east in the model. A
+## rotation table is written the way Minecraft writes a block's: cardinal
+## north 0, west 90, south 180, east 270, and facing down 90 about x. This is
+## the one place that is turned into what a bone needs.
+def to_bone(angles):
+    """A Minecraft block rotation, as the bone rotation that draws it."""
+    return [angles[0], -angles[1] % 360 if angles[1] else 0,
+            -angles[2] % 360 if angles[2] else 0]
+
 ## Marks a window into a texture, written after the texture's name as
 ## "<texture>#<x>,<y>". Only the top left 16x16 of a texture becomes a tile, so
 ## a block drawn from an entity sized sheet -- a hanging sign's 64x32 sheet
@@ -29,6 +49,45 @@ LOW_SUFFIX = "__low"
 ## the part it needs no other way. Each window becomes a tile of its own,
 ## because the atlas is keyed by the whole name.
 WINDOW_MARK = "#"
+## the prefixes of the bones drawn after every other, planes and then water,
+## and the mark on a cube saying which of them it goes in. **The names put
+## them in order, not the list:** every cutout and every hidden waterlogged
+## block seen in game fits the game drawing a model's bones sorted by name, so
+## a block's bones, `slice_`, sort before its planes', and those before its
+## water's. That reading is untested; `tools/checks/gallery.py --water-trials`
+## is the check.
+LAST_BONE = "tier1_"
+LIQUID_BONE = "tier2_"
+## and the prefix of bones drawn before every other, which sorts first
+EARLY_BONE = "early_"
+LAST_CUBE = "_last"
+## families drawn after everything else, planes included: a plane inside water
+## is behind the water's face, so the water goes after it
+DRAWN_LAST = {"water_late", "water_surface_late"}
+## families drawn before everything: water's top under a block that covers it
+## and shows through its own top
+DRAWN_EARLY = {"water_surface_early"}
+## families drawn in their slice's own bone, after the blocks drawn into it
+## before them: a block's water, which core draws straight after the block.
+## **Order within a bone holds; order between bones does not.** A world showed
+## water in a bone of its own beside the block's flickering in and out as the
+## camera moved, and the same water in the block's own bone steady.
+AFTER_SLICE = "___water"
+DRAWN_AFTER_SLICE = set()
+## planes kept in the bone they are drawn into rather than the planes' tier
+DRAWN_IN_TURN = {"water_surface"}
+
+
+## the prefix of each other tier's layer bones, by tier
+TIER_PREFIX = {-1: EARLY_BONE, 1: LAST_BONE, 2: LIQUID_BONE}
+
+
+def bone_tier(name):
+    """0 for a bone drawn in turn, 1 for planes drawn last, 2 for water after
+    them, and -1 for a bone drawn before all of them."""
+    if name.startswith(EARLY_BONE):
+        return -1
+    return 2 if name.startswith(LIQUID_BONE) else 1 if name.startswith(LAST_BONE) else 0
 
 ## "<texture>~<rrggbb>". A block whose colour is a whole colour rather than one
 ## of a list -- a cauldron's dyed water, which keeps an RGB in its block entity
@@ -152,6 +211,24 @@ DEFAULT_ALPHA = 0.35
 class ArmorStandGeo:
     def __init__(self, name, alpha = DEFAULT_ALPHA,offsets=None, size=[64, 64, 64], ref_pack=None, low_geometry=False, tweaks=None):
         self.ref_resource_pack = ref_pack or paths.vanilla_pack()
+        ## families whose turned cubes go in bones written after every other
+        ## bone, so they are drawn last; empty unless a trial asks for it
+        self.drawn_last = set()
+        ## and the families drawn in the water's tier, after them, and before
+        ## everything
+        self.drawn_liquid = set(DRAWN_LAST)
+        self.drawn_early = set(DRAWN_EARLY)
+        self.drawn_after_slice = set(DRAWN_AFTER_SLICE)
+        ## and the families whose planes are drawn in turn, in the bone of the
+        ## block at the same place when it is turned the same way, rather than
+        ## in the planes' tier: water's top, which is a plane, drawn straight
+        ## after the block standing in it
+        self.shared_bone = set(DRAWN_IN_TURN)
+        ## each block's inventory picture, read through the `item` slot
+        try:
+            self.item_icons = lookup.entries("item_icons.json")
+        except OSError:
+            self.item_icons = {}
         ## **The chosen tweaks are an overlay on the pack below.** A Bedrock
         ## Tweaks pack is an ordinary resource pack, and applying one in game is
         ## a matter of putting it higher in the list; nothing here has a list,
@@ -174,21 +251,37 @@ class ArmorStandGeo:
         ## texture leaves the other thousand alone
         self.blocks_def.update(tweak_blocks)
         self.terrain_texture.setdefault("texture_data", {}).update(tweak_terrain)
-        with open(paths.lookup("block_rotation.json")) as f:
-            ## rotation per state, per shape family. A block whose state has no
-            ## entry is left unrotated, and reports it when debug is on.
-            self.block_rotations = json.load(f)
-        with open(paths.lookup("variants.json")) as f:
-            ## maps a variant state's value to an index into a terrain_texture
-            ## list. log2 index 2, for instance, means a wood type the block's
-            ## own states never name.
-            self.block_variants = json.load(f)
-        with open(paths.lookup("block_definition.json")) as f:
-            self.defs = json.load(f)
-        with open(paths.lookup("block_shapes.json")) as f:
-            self.block_shapes = json.load(f)
-        with open(paths.lookup("block_uv.json")) as f:
-            self.block_uv = json.load(f)
+        ## rotation per state, per shape family, a family that follows one of
+        ## Minecraft's own states already given that state's turns. A block
+        ## whose state has no entry is left unrotated, and reports it when debug
+        ## is on.
+        self.block_rotations = block_geometry.rotations()
+        self.defs = dict(lookup.entries("block_definition.json"))
+        ## every family's cubes, and the window each face of each reads, from
+        ## lookups/block_geometry.json; see `scaffold/block_geometry.py`
+        self.block_shapes, self.block_uv = block_geometry.load()
+        ## and each family's rules for choosing between its forms
+        self.rules = block_geometry.rules()
+        ## **A tweak may change the tables as well as the art.** A family it
+        ## carries replaces the one of that name whole -- forms, rules and
+        ## simpler forms -- so a simpler form the overlay does not draw is not
+        ## left behind wearing the old textures. See `scaffold/tweaks.py`.
+        families, definitions, turning = tweaks_packs.tables(self.tweaks)
+        if families:
+            shapes, uvs = block_geometry.columns(families)
+            for family in families:
+                self.block_shapes.pop(family + LOW_SUFFIX, None)
+                self.block_uv.pop(family + LOW_SUFFIX, None)
+                self.rules[family] = {key: families[family][key]
+                                      for key in block_geometry.RULES
+                                      if key in families[family]}
+            self.block_shapes.update(shapes)
+            self.block_uv.update(uvs)
+        self.defs.update(definitions)
+        standard = block_geometry.read(block_geometry.STATES)["states"]
+        for family, table in turning.items():
+            self.block_rotations[family] = (dict(standard[table])
+                                            if isinstance(table, str) else table)
         ## A shape family may declare a simpler form of itself, named with this
         ## suffix. When the simpler drawing is asked for, that form is used
         ## instead; a family that does not declare one is drawn as it always is,
@@ -295,10 +388,13 @@ class ArmorStandGeo:
             geometries[layer_name]["bones"]=[{"name": "ghost_blocks","pivot": [0, 0, 0]},
                                              {"name": layer_name,"parent": "ghost_blocks","pivot": [0, 0, 0]}]
         
-        for key in self.blocks.keys():
-            layer_name = self.blocks[key]["parent"]
+        for key in sorted(self.blocks.keys(), key=bone_tier):
+            bone = self.blocks[key]
+            if bone_tier(key):
+                bone["parent"] = self.layer_of(bone)
+            layer_name = bone["parent"]
             if layer_name in geometries.keys():
-                geometries[layer_name]["bones"].append(self.blocks[key])
+                geometries[layer_name]["bones"].append(bone)
         self.stand["minecraft:geometry"].append(geometries["default"])
         for layer_name in self.layers:
             self.stand["minecraft:geometry"].append(geometries[layer_name])
@@ -337,17 +433,67 @@ class ArmorStandGeo:
         self.geometry["bones"].append(
             {"name": layer_name, "parent": "ghost_blocks"})#, "pivot": [-8, 0, 8]})
 
-    def make_block(self, x, y, z, block_name, rot=None, top=False,data=0, trap_open=False, parent=None,variant="default", big = False, hinge=False, tint=None,
-                   lift=0.0):
+    def choose(self, block_name, states=None, entity=None, data=0):
+        """(form, turn, texture index) for one block, as `make_block` reads them.
+
+        With states, the family's rules choose all three. Without, `data` names
+        the form and there is no turn or texture choice to make.
+        """
+        family = self.defs[block_name]
+        forms = self.block_shapes[self.simplify(family)]
+        if states is not None:
+            rules = self.rules.get(family, {})
+            return (block_geometry.form(rules, forms, states, entity),
+                    block_geometry.turn(rules, states, entity),
+                    block_geometry.texture_index(rules, states))
+        for name in ("default-{}".format(data), str(data)):
+            if name in forms:
+                return name, None, None
+        return "default", None, None
+
+    def make_block(self, x, y, z, block_name, rot=None, data=0, states=None,
+                   entity=None, big=False, tint=None, lift=0.0, yaw=None, hidden=(),
+                   family=None, beside=False):
         # Resolves one block through the lookup tables and appends its cubes to
-        # the slice bone: shape family, then variant, then rotation, then the
-        # UV window each face reads from the texture sheet.
+        # the slice bone: shape family, then form, then rotation, then the UV
+        # window each face reads from the texture sheet.
+        ##
+        ## `states` and `entity` are the block's own states and block entity,
+        ## and the family's rules in block_geometry.json choose its form, the
+        ## state it turns by and the textures it reads from them (see
+        ## `block_geometry.form`). Without them, `data` names a form outright
+        ## and `rot` the value the rotation table is read with, which is how a
+        ## caller asks for one particular form of a block.
         ##
         ## `lift` raises the whole block inside its own cell, in blocks. A block
         ## never needs it -- a block fills the cell it is in -- but an entity is
         ## not on the grid and can stand part way up one: a cushion on a snow
         ## layer is an eighth of a block above the floor of the cell they share.
-        block_type = self.simplify(self.defs[block_name])
+        ##
+        ## `yaw` is a turn about y in degrees, for whatever faces a way given as
+        ## an angle rather than a state: an entity, or a head on the floor, whose
+        ## block entity holds one. It is a Minecraft block angle -- 0 is the rest
+        ## pose, facing north, and 90 faces west -- and is not looked up
+        ## anywhere: it is added to whatever the rotation table turns the block
+        ## by, and a family with no table is turned by the angle itself.
+        ##
+        ## `hidden` names faces left undrawn, by the side of the cell they are
+        ## on: water against water shows no face between the two.
+        ##
+        ## `family` draws the block with another family than its own, reading
+        ## the block's own textures: water's top, drawn apart from its sides.
+        ##
+        ## `beside` draws a mark on the block already at this place: its planes
+        ## go in that block's own bone, after it, rather than in the planes'
+        ## tier, since order within a bone holds and order between bones does
+        ## not. A container's count is drawn so.
+        ##
+        ## `family` is the block's own family and `block_type` the one drawn,
+        ## which is its simpler form when low geometry asks for one. Which form
+        ## a state picks, and how the block turns, are the family's: a simpler
+        ## form is the same block with fewer cubes.
+        family = family or self.defs[block_name]
+        block_type = self.simplify(family)
         if block_type!="ignore":
             slice_name = "slice_{}".format(y)
             ghost_block_coordinates = "block_{}_{}_{}".format(x, y, z)
@@ -360,74 +506,14 @@ class ArmorStandGeo:
             
             temp_block_group["parent"] = layer_name
             
-            ## Settle on one variant name, then read both tables with it. The
-            ## shape and the UV window describe the same cubes, so reading them
-            ## with different names is how a half-height cube ends up wearing a
+            ## Settle on one form, then read both tables with it. The shape and
+            ## the UV window describe the same cubes, so reading them with
+            ## different names is how a half-height cube ends up wearing a
             ## full-height texture.
-            shape_variant="default"
-            if block_type == "hopper" and rot is not None and rot != 0:
-                shape_variant="side"
-            elif (block_type.startswith("skull") and rot is not None
-                  and str(rot) != "1" and not str(rot).startswith("spin")):
-                ## A head reads facing_direction, where 1 is the floor and 2 to
-                ## 5 name the wall it hangs on. The mounting is the shape as
-                ## well as the turn, and the state carries both.
-                ##
-                ## **A head on the floor arrives as `spinN`, not as 1.** Which
-                ## of sixteen ways it faces is in the block entity rather than
-                ## the states, so `core.py` hands the turn over as `spin0` to
-                ## `spin15` and the plain 1 is only what a floor head with no
-                ## entity beside it keeps. Read as a wall value, every skull
-                ## anybody had actually placed on the ground was drawn four
-                ## pixels up and four back, hanging in the air.
-                shape_variant = "wall"
-            elif block_type == "door" and top:
-                ## The lower block of a door draws both of its halves, so the
-                ## upper one draws nothing at all. That has to be settled before
-                ## the open forms below, or an open door is drawn twice: once by
-                ## each of its blocks, in the same place.
-                shape_variant = "top"
-            elif block_type == "door" and trap_open:
-                ## A door standing open is a different shape, not the closed one
-                ## turned. Which way it swings is the hinge, which decides the
-                ## side of the frame it folds back against, so two doors of one
-                ## facing and opposite hinges open into different blocks.
-                shape_variant = "open_hinged" if hinge else "open"
-            elif block_type == "trapdoor" and trap_open:
-                shape_variant = "open"
-            elif block_type == "fence_gate" and trap_open:
-                ## a gate swings its two halves back against their posts, which
-                ## is a shape rather than a turn
-                shape_variant = "open"
-            elif block_type == "lever" and trap_open:
-                shape_variant = "on"
-            elif top:
-                shape_variant = "top"
+            shape_variant, turned, texture = self.choose(block_name, states, entity, data)
+            if rot is None:
+                rot = turned
 
-            ## **A mounting and a state can both describe one block**, and then
-            ## the form carries the two joined with a dash. A hopper takes its
-            ## mounting from which way it faces and its lock from `toggle_bit`,
-            ## so "side-1" is a locked hopper on a wall. The joined name is read
-            ## first, and a family with no form for the pair falls through to
-            ## the state on its own the way every other family does.
-            joined = "{}-{}".format(shape_variant, data)
-            if (joined in self.block_shapes[block_type]
-                    or joined in self.block_uv[block_type]):
-                shape_variant = joined
-            ## a numeric state - snow depth, repeater delay, sea pickle count -
-            ## names its own variant and outranks the flags above
-            elif str(data) in self.block_shapes[block_type] or str(data) in self.block_uv[block_type]:
-                shape_variant = str(data)
-
-            ## A shape family that does not describe this variant falls back to
-            ## its default rather than raising, which would drop the block into
-            ## the skipped list. A double slab carries a vertical_half state it
-            ## does not use.
-            if shape_variant not in self.block_shapes[block_type]:
-                shape_variant = "default"
-
-            if data!=0 and debug:
-                print(data)
 
             block_shapes = self.block_shapes[block_type][shape_variant]
             block_uv = self.block_uv[block_type].get(shape_variant,
@@ -449,15 +535,18 @@ class ArmorStandGeo:
             ## ground_sign_direction, sixteen values, and 2 means something
             ## different in each.
             rotation = None
-            if block_type in self.block_rotations.keys() and rot is not None:
-                rotation = self.block_rotations[block_type].get(
+            if family in self.block_rotations.keys() and rot is not None:
+                rotation = self.block_rotations[family].get(
                     "{}:{}".format(shape_variant, rot))
                 if rotation is None:
-                    rotation = self.block_rotations[block_type].get(str(rot))
+                    rotation = self.block_rotations[family].get(str(rot))
                 if rotation is None and debug:
-                    print("no rotation {} for block type {}".format(rot, block_type))
+                    print("no rotation {} for block type {}".format(rot, family))
+            if yaw is not None:
+                rotation = list(rotation) if rotation is not None else [0, 0, 0]
+                rotation[1] = (rotation[1] + yaw) % 360
             if rotation is not None:
-                temp_block_group["rotation"] = copy.deepcopy(rotation)
+                temp_block_group["rotation"] = to_bone(rotation)
                 if big:
                     temp_block_group["rotation"][1] += 180
             elif debug:
@@ -467,10 +556,13 @@ class ArmorStandGeo:
             
             
             for i in range(len(block_shapes["size"])):
-                uv = self.block_name_to_uv(block_name,variant=variant,shape_variant=shape_variant,index=i,tint=tint)
-                block={}
                 if len(block_uv["uv_sizes"]["up"])>i:
                     uv_idx=i
+                ## the faces this cube draws; see below
+                faces = {dir for dir, sizes in block_uv["uv_sizes"].items()
+                         if any(sizes[uv_idx]) and dir not in hidden}
+                uv = self.block_name_to_uv(block_name,shape_variant=shape_variant,index=i,tint=tint,block_type=block_type,texture=texture,faces=faces)
+                block={}
                 xoff = 0
                 yoff = 0
                 zoff = 0
@@ -486,18 +578,50 @@ class ArmorStandGeo:
                     
 
                 block_uv_faces=dict(uv)
+                ## the tile each face reads, before its window moves it
+                tiles = {dir: list(face["uv"]) for dir, face in uv.items()}
                 for dir in ["up", "down", "east", "west", "north", "south"]:
+                    ## **A face whose window has no size is not drawn.** A
+                    ## cube's uv in a .geo.json may leave a face out, and the
+                    ## face is then not drawn at all, which is how a plane or a
+                    ## crossed plant shows only the sides it has.
+                    if dir in hidden or not any(block_uv["uv_sizes"][dir][uv_idx]):
+                        block_uv_faces.pop(dir, None)
+                        continue
                     block_uv_faces[dir]["uv"][0] += block_uv["offset"][dir][uv_idx][0]
                     block_uv_faces[dir]["uv"][1] += block_uv["offset"][dir][uv_idx][1]
                     block_uv_faces[dir]["uv_size"] = block_uv["uv_sizes"][dir][uv_idx]
                 
                 block["uv"] = block_uv_faces
-                temp_block_group["cubes"].append(block)
+                flat = sum(1 for n in block["size"] if n == 0) == 1
+                if flat:
+                    self.trim_plane(block, tiles)
+                ## **A plane and water are drawn after everything else.** A
+                ## ghost is blended, so a clear texel still takes the depth it
+                ## stands at and hides any ghost drawn after it, and water
+                ## hides whatever stands in it the same way. Drawn last, what
+                ## is behind them is already there.
+                if family in self.drawn_early:
+                    block[LAST_CUBE] = EARLY_BONE
+                elif family in self.drawn_after_slice:
+                    block[LAST_CUBE] = AFTER_SLICE
+                elif family in self.drawn_liquid:
+                    block[LAST_CUBE] = LIQUID_BONE
+                elif (flat or family in self.drawn_last) and not (
+                        beside or family in self.shared_bone):
+                    block[LAST_CUBE] = LAST_BONE
+                ## a cube with no face drawn is nothing, which is how a form
+                ## says a state shows nothing at all, such as the top half of
+                ## a pitcher crop too young to have grown one
+                if block_uv_faces:
+                    temp_block_group["cubes"].append(block)
 
             for each_group in [ temp_block_group ]:
                 ## the one nested bone this block needs, if any, and the cubes
                 ## that went into it and so must not be drawn in the slice too
-                nested_group = None
+                ## one nested bone for the cubes drawn in turn and one for those
+                ## drawn last
+                nested_groups = {}
                 nested_cubes = set()
                 copied_groups = []
 
@@ -527,7 +651,7 @@ class ArmorStandGeo:
                     if( isOnlyRotatedCube and ( each_cube["rotation"] is None or len( each_cube["rotation"] ) != 3 ) ):
                         isOnlyRotatedCube = False
                     
-                    if( isOnlyRotatedCube ):
+                    if( isOnlyRotatedCube and "pivot" not in each_cube ):
                         ## A cube with a "rotation" and no "pivot" rotates around
                         ## its own centre, so state that centre outright. See the
                         ## geometry 1.16.0 schema reference:
@@ -554,8 +678,12 @@ class ArmorStandGeo:
                         ## bone holds all of a block's cubes that need this: they
                         ## take the same rotation about the same pivot, and only
                         ## the cubes inside differ.
+                        late = each_cube.get(LAST_CUBE) or ""
+                        nested_group = nested_groups.get(late)
                         if nested_group is None:
                             nested_group =  { "parent": each_group["name"], "name": each_group["name"] + "___" + ghost_block_coordinates }
+                            if late:
+                                nested_group["name"] = late + nested_group["name"]
 
                             for primitiveKey in [ "mirror", "inflate", "debug", "render_group_id", "binding" ]:
                                 if primitiveKey in each_group.keys():
@@ -566,6 +694,7 @@ class ArmorStandGeo:
                                     nested_group[objectKey] = copy.deepcopy( each_group[objectKey] )
 
                             nested_group["cubes"] = []
+                            nested_groups[late] = nested_group
                             copied_groups.append( nested_group )
                         nested_group["cubes"].append( each_cube )
                         nested_cubes.add( id( each_cube ) )
@@ -578,6 +707,20 @@ class ArmorStandGeo:
                 ## which is two ghost blocks in one place.
                 kept = [each_cube for each_cube in temp_block_group["cubes"]
                         if id(each_cube) not in nested_cubes]
+                ## a cube drawn last goes in a bone of its own under the slice,
+                ## written after every other bone
+                late = [each_cube for each_cube in kept if each_cube.get(LAST_CUBE)]
+                kept = [each_cube for each_cube in kept if not each_cube.get(LAST_CUBE)]
+                for each_cube in late:
+                    mark = each_cube[LAST_CUBE]
+                    last_name = (each_group["name"] + mark if mark == AFTER_SLICE
+                                 else mark + each_group["name"])
+                    if last_name not in self.blocks:
+                        self.blocks[last_name] = {"name": last_name, "parent": each_group["name"],
+                                                  "pivot": [0, 0, 0], "cubes": []}
+                    self.blocks[last_name]["cubes"].append(each_cube)
+                for each_cube in temp_block_group["cubes"]:
+                    each_cube.pop(LAST_CUBE, None)
 
                 ## Nothing here is copied on the way in. temp_block_group is
                 ## built again for the next block and never read after this, so
@@ -592,8 +735,23 @@ class ArmorStandGeo:
                     each_group["cubes"] = kept
                     self.blocks[each_group["name"]] = each_group
 
+                ## **Two things drawn at one place share its turned bone when they
+                ## turn alike**, a container and the marks on it, a pot and its
+                ## plant: the second's cubes are drawn after the first's in it.
+                ## Turned differently, the second has a bone of its own.
                 for newChildGroup in copied_groups:
-                    self.blocks[newChildGroup["name"]] = newChildGroup
+                    name = newChildGroup["name"]
+                    found = self.blocks.get(name)
+                    if found is not None and (found.get("pivot"), found.get("rotation")) == (
+                            newChildGroup.get("pivot"), newChildGroup.get("rotation")):
+                        found["cubes"].extend(newChildGroup["cubes"])
+                        continue
+                    count = 2
+                    while name in self.blocks:
+                        name = "%s_%d" % (newChildGroup["name"], count)
+                        count += 1
+                    newChildGroup["name"] = name
+                    self.blocks[name] = newChildGroup
             
 
     @property
@@ -682,9 +840,12 @@ class ArmorStandGeo:
         ## A window past the edge of the texture is ignored rather than filled
         ## with the blank the tile is built on. The blocks that name one are
         ## drawn from a sheet, and a legacy id resolving to a plain terrain tile
-        ## is better off reading the tile than reading nothing.
+        ## is better off reading the tile than reading nothing. A texture
+        ## smaller than a tile one way is read from its edge that way, so a
+        ## strip like conduit_base, 24 by 12, can still be read past x16.
         across, down = window
-        if impt.shape[0] < down + 16 or impt.shape[1] < across + 16:
+        if (max(impt.shape[0], 16) < down + 16
+                or max(impt.shape[1], 16) < across + 16):
             across, down = 0, 0
         if down:
             impt = impt[down:, :, :]
@@ -706,15 +867,23 @@ class ArmorStandGeo:
         image_array[:, :, 3] = image_array[:, :, 3] * self.alpha
         self.uv_tiles.append(image_array)
 
-    def block_name_to_uv(self, block_name, variant = "",shape_variant="default",index=0,data=0,tint=None):
+    def block_name_to_uv(self, block_name, shape_variant="default", index=0, tint=None,
+                         block_type=None, texture=None, faces=None):
         
         # helper function maps the section of the uv file to the side of the block
         temp_uv = {}
         if block_name not in self.excluded:  # if you dont want a block to be rendered, exclude the UV
 
-            block_type = self.defs[block_name]
+            ## the family being drawn, which is the simpler form when one was
+            ## asked for: its cubes are not the detailed family's, so neither
+            ## are the textures each one wears
+            block_type = block_type or self.defs[block_name]
             
-            texture_files = self.get_block_texture_paths(block_name, variant = variant)
+            texture_files = self.get_block_texture_paths(block_name, texture)
+
+            ## a face `make_block` leaves out of the model, because its window
+            ## has no size, has no texture to put in the atlas either
+            drawn = set(texture_files) if faces is None else set(faces)
 
             corrected_textures={}
             if shape_variant in self.block_uv[block_type].keys():
@@ -753,6 +922,8 @@ class ArmorStandGeo:
                     if debug:
                         print("{}: {}".format(side,texture_files[side]))
             for key in texture_files.keys():
+                if key not in drawn:
+                    continue
                 ## a texture that asks for a tint takes this block's own colour,
                 ## so every colour lands in the atlas as a tile of its own
                 texture_files[key] = tinted(texture_files[key], tint)
@@ -771,13 +942,147 @@ class ArmorStandGeo:
 
         return temp_uv
 
+    def trim_plane(self, cube, tiles):
+        """Cut an upright plane down to the part of its picture with something
+        in it.
+
+        A plane's clear texels hide the ghosts drawn behind them, so the less
+        clear picture a plane carries the less it hides. Across, the same
+        amount comes off both sides, the smaller of the two clear margins, so
+        a plane turned about its own middle stays where it was; up and down,
+        each end loses its own clear rows, and a turned plane keeps the pivot
+        it had. A plane lying flat loses the same amount off both sides each
+        way: see `trim_flat`.
+        """
+        size, origin, faces = cube["size"], cube["origin"], cube["uv"]
+        if not faces:
+            return
+        if size[1] == 0:
+            return self.trim_flat(cube, tiles)
+        across = 0 if size[0] else 2
+        main = next(iter(faces))
+        corner = tiles.get(main)
+        if corner is None:
+            return
+        tile = self.tile(atlas_index(*corner))
+        (u0, v0) = [faces[main]["uv"][i] - corner[i] for i in (0, 1)]
+        su, sv = faces[main]["uv_size"]
+        cols = sorted(int(round((u0 + su * t) * 16)) for t in (0, 1))
+        rows = sorted(int(round((v0 + sv * t) * 16)) for t in (0, 1))
+        cols = [max(cols[0], 0), min(cols[1], 16)]
+        rows = [max(rows[0], 0), min(rows[1], 16)]
+        if cols[1] <= cols[0] or rows[1] <= rows[0]:
+            return
+        painted = tile[rows[0]:rows[1], cols[0]:cols[1], 3] > 0
+        if not painted.any():
+            return
+        used_cols = painted.any(axis=0).nonzero()[0]
+        used_rows = painted.any(axis=1).nonzero()[0]
+        side = int(min(used_cols[0], len(painted[0]) - 1 - used_cols[-1]))
+        top = int(used_rows[0])
+        bottom = int(len(painted) - 1 - used_rows[-1])
+        if not (side or top or bottom):
+            return
+        if cube.get("rotation") and any(cube["rotation"]) and "pivot" not in cube:
+            cube["pivot"] = [origin[i] + size[i] / 2.0 for i in range(3)]
+        per_u = size[across] / float(cols[1] - cols[0])
+        per_v = size[1] / float(rows[1] - rows[0])
+        lost_top, lost_bottom = (top, bottom) if sv > 0 else (bottom, top)
+        size = list(size)
+        origin = list(origin)
+        size[across] -= 2 * side * per_u
+        origin[across] += side * per_u
+        size[1] -= (lost_top + lost_bottom) * per_v
+        origin[1] += lost_bottom * per_v
+        cube["size"], cube["origin"] = size, origin
+        for face in faces.values():
+            fu, fv = face["uv"]
+            u_size, v_size = face["uv_size"]
+            u_sign = 1 if u_size > 0 else -1
+            v_sign = 1 if v_size > 0 else -1
+            face["uv"] = [fu + u_sign * side / 16.0,
+                          fv + v_sign * (top if v_size > 0 else bottom) / 16.0]
+            face["uv_size"] = [u_size - u_sign * 2 * side / 16.0,
+                               v_size - v_sign * (top + bottom) / 16.0]
+
+    def trim_flat(self, cube, tiles):
+        """Cut a plane lying flat down to the part of its picture with
+        something in it, the smaller clear margin off both sides each way, so
+        it keeps its middle. A face's window runs along x and z, whichever way
+        round, and the same amount comes off each end."""
+        size, origin, faces = cube["size"], cube["origin"], cube["uv"]
+        if cube.get("rotation") and any(cube["rotation"]):
+            return
+        main = "up" if "up" in faces else next(iter(faces))
+        corner = tiles.get(main)
+        if corner is None:
+            return
+        tile = self.tile(atlas_index(*corner))
+        (u0, v0) = [faces[main]["uv"][i] - corner[i] for i in (0, 1)]
+        su, sv = faces[main]["uv_size"]
+        cols = sorted(int(round((u0 + su * t) * 16)) for t in (0, 1))
+        rows = sorted(int(round((v0 + sv * t) * 16)) for t in (0, 1))
+        cols = [max(cols[0], 0), min(cols[1], 16)]
+        rows = [max(rows[0], 0), min(rows[1], 16)]
+        if cols[1] <= cols[0] or rows[1] <= rows[0]:
+            return
+        painted = tile[rows[0]:rows[1], cols[0]:cols[1], 3] > 0
+        if not painted.any():
+            return
+        used_cols = painted.any(axis=0).nonzero()[0]
+        used_rows = painted.any(axis=1).nonzero()[0]
+        side_u = int(min(used_cols[0], len(painted[0]) - 1 - used_cols[-1]))
+        side_v = int(min(used_rows[0], len(painted) - 1 - used_rows[-1]))
+        if not (side_u or side_v):
+            return
+        per_u = size[0] / float(cols[1] - cols[0])
+        per_v = size[2] / float(rows[1] - rows[0])
+        size = list(size)
+        origin = list(origin)
+        size[0] -= 2 * side_u * per_u
+        origin[0] += side_u * per_u
+        size[2] -= 2 * side_v * per_v
+        origin[2] += side_v * per_v
+        cube["size"], cube["origin"] = size, origin
+        for face in faces.values():
+            fu, fv = face["uv"]
+            u_size, v_size = face["uv_size"]
+            u_sign = 1 if u_size > 0 else -1
+            v_sign = 1 if v_size > 0 else -1
+            face["uv"] = [fu + u_sign * side_u / 16.0, fv + v_sign * side_v / 16.0]
+            face["uv_size"] = [u_size - u_sign * 2 * side_u / 16.0,
+                               v_size - v_sign * 2 * side_v / 16.0]
+
     def add_blocks_to_bones(self):
         # Moves every collected block group into the geometry's bone list. Called
         # during the writing step, once every block has been made. A slice is
         # already one bone; the rest are the nested bones a turned block needs,
         # one per block.
-        for key in self.blocks.keys():
-            self.geometry["bones"].append(self.blocks[key])
+        ## **The bones drawn last go at the end, planes and then water, each
+        ## under a layer bone of its own tier.** Hung from its slice, a slice's
+        ## water would be reached with the slice, before every layer after it,
+        ## wherever the game walks the bones by their parents. A tier's layer
+        ## bones sit after every plain one, so the tiers are drawn in order
+        ## whether the bones are walked as listed or by parent, and the pose
+        ## animations scale each with the plain layer of its number.
+        made = set()
+        for key in sorted(self.blocks.keys(), key=bone_tier):
+            bone = self.blocks[key]
+            tier = TIER_PREFIX.get(bone_tier(key))
+            if tier:
+                layer = tier + self.layer_of(bone)
+                if layer not in made:
+                    made.add(layer)
+                    self.geometry["bones"].append({"name": layer, "parent": "ghost_blocks"})
+                bone["parent"] = layer
+            self.geometry["bones"].append(bone)
+
+    def layer_of(self, bone):
+        """The plain layer a bone is drawn in: its slice's layer."""
+        parent = bone.get("parent")
+        while parent in self.blocks and not parent.startswith("layer_"):
+            parent = self.blocks[parent].get("parent")
+        return parent
 
     ## the extensions a texture may be saved with, in the order they are
     ## tried. Bedrock reads either and a tweak may ship one where the vanilla
@@ -800,7 +1105,31 @@ class ArmorStandGeo:
                     return candidate
         return "{}/{}.png".format(self.ref_resource_pack, source)
 
-    def get_block_texture_paths(self, blockName, variant = ""):
+    @staticmethod
+    def named_entry(block_name, entries):
+        """Which entry of a shared texture list a block reads, by its name.
+
+        Several blocks Mojang has split into an id each still point at one list
+        in `blocks.json`, and the game picks each one's entry itself: every
+        wooden door reads `door_lower`, whose entries run oak, spruce, birch,
+        jungle, acacia, dark oak. Nothing in the files says which is which,
+        but the names do, so the longest leading part of the block's id that
+        names exactly one entry picks it. Anything else reads the first.
+        """
+        parts = block_name.split(":")[-1].split("_")
+        files = [entry.split("/")[-1] if isinstance(entry, str) else ""
+                 for entry in entries]
+        for end in range(len(parts), 0, -1):
+            stem = "_".join(parts[:end])
+            found = [i for i, name in enumerate(files)
+                     if stem in name.split("_") or "_" + stem + "_" in "_" + name + "_"]
+            if len(found) == 1:
+                return found[0]
+            if found:
+                return 0
+        return 0
+
+    def get_block_texture_paths(self, blockName, texture=None):
         # helper function for getting the texture locations from the vanilla files.
         ## **A drawn thing that is not a block has no declaration to read.** An
         ## entity is not in blocks.json and never will be, so a family drawn for
@@ -856,20 +1185,13 @@ class ArmorStandGeo:
             if type(texturedata[textures[key]]["textures"]) is str:
                 textures[key] = texturedata[textures[key]]["textures"]
             elif type(texturedata[textures[key]]["textures"]) is list:
-                index=0
-                if variant[0] in self.block_variants.keys():
-                    ## A table is keyed by strings. A state that names a number
-                    ## arrives as an nbtlib Int, whose str() is "Int(0)" rather
-                    ## than "0", so it is converted rather than printed.
-                    choices = self.block_variants[variant[0]]
-                    index = choices.get(variant[1])
-                    if index is None:
-                        try:
-                            index = choices.get(str(int(variant[1])))
-                        except (TypeError, ValueError):
-                            index = choices.get(str(variant[1]))
-                    if index is None:
-                        raise KeyError(variant[1])
+                ## the entry a state of the block picks, through its family's
+                ## `texture_by`, and otherwise the one the block's name points at
+                if texture is not None:
+                    index = texture
+                else:
+                    index = self.named_entry(
+                        blockName, texturedata[textures[key]]["textures"])
                 ## One variant index reads every face, and the faces do not
                 ## have to name lists of the same length: a double plant's
                 ## sides name two textures, the sunflower's front and back,
@@ -879,5 +1201,10 @@ class ArmorStandGeo:
                 choices_for_face = texturedata[textures[key]]["textures"]
                 textures[key] = choices_for_face[min(index, len(choices_for_face) - 1)]
 
-            
+        ## the block's inventory picture, for a face that reads the `item`
+        ## slot: low geometry draws some blocks as it, on the sides of a box.
+        ## `tools/textures/item_icons.py` writes the table; a block it does not
+        ## name shows its own north picture
+        if textures:
+            textures["item"] = self.item_icons.get(blockName) or textures.get("north")
         return textures

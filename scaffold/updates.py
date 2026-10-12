@@ -78,9 +78,10 @@ WORKING = ".scaffold-updates"
 TIMEOUT = 10
 
 ## A build displaced by a *pre-tufup* update, which renamed the running file out
-## of the way rather than copying over it. Nothing writes one any more; this is
-## here so that a program updating from an older release still tidies up after
-## it, and can go once nobody is running 3.0 or older.
+## of the way rather than copying over it. Only the builds from before the rename
+## to Scaffold, numbered up to 3.0.1, did that; every Scaffold release, from 0.9
+## on, updates through tufup. This is here so that one of those older builds
+## still tidies up after itself, and can go once nobody is updating from one.
 DISPLACED = ".old"
 PATIENCE = 5.0
 STEP = 0.25
@@ -365,7 +366,8 @@ def _put_in_place(src_dir, dst_dir, **kwargs):
 # Scaffold used to update itself by renaming: the running file was moved to
 # `Scaffold.exe.old`, the download was written where it stood, and the old file
 # was hidden and cleared away by the next launch. Nothing writes one any more,
-# but somebody updating from 3.0 or older arrives here with one on disk.
+# but somebody updating from a build made before the rename to Scaffold, numbered
+# up to 3.0.1, arrives here with one on disk.
 
 
 def keep_trying(call, patience=PATIENCE):

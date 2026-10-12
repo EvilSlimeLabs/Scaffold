@@ -1,6 +1,8 @@
 import nbtlib
 
+from scaffold import block_geometry
 from scaffold import paths
+from scaffold import block_upgrade
 from math import floor
 
 from numpy import array, argwhere , int32, maximum, minimum, zeros, count_nonzero, flip
@@ -18,9 +20,6 @@ def embed( small_array, big_array, loc):
 class StructureFile:
     def __init__(self, file):
         global loaded
-        with open(paths.lookup("nbt_defs.json")) as nbt_file:
-            self.nbt_defs=json.load(nbt_file)
-            
         if type(file) is dict:
             self.NBTfile = file
         else:
@@ -39,7 +38,16 @@ class StructureFile:
         self.blocks = array(
             self.NBTfile["structure"]["block_indices"][0], dtype=int32)
         self.size = list(map(int, self.NBTfile["size"]))
-        self.palette = self.NBTfile["structure"]["palette"]["default"]["block_palette"]
+        ## The second layer is what shares a cell with the block: the water a
+        ## waterlogged block stands in. -1 is nothing.
+        layers = self.NBTfile["structure"]["block_indices"]
+        self.liquid = None
+        if len(layers) > 1 and len(layers[1]) == len(self.blocks):
+            self.liquid = array(layers[1], dtype=int32).reshape(self.size)
+        ## every entry as the current game names it, so nothing after this
+        ## point sees an old id or an old state; see block_upgrade
+        self.palette = [block_upgrade.upgrade(entry) for entry in
+                        self.NBTfile["structure"]["palette"]["default"]["block_palette"]]
         self.mins = array(list(map(int,self.NBTfile["structure_world_origin"])))
         self.maxs = self.mins + array(self.size)-1
         self.origin = array(list(map(int,self.NBTfile["structure_world_origin"])))
@@ -127,6 +135,18 @@ class StructureFile:
         index = self.cube[x, y, z]
         return self.palette[int(index)]
 
+    def get_liquid(self, x, y, z):
+        """What shares a cell with the block there, the water a waterlogged
+        block stands in, or None. The second layer indexes the palette as it
+        was saved, before `get_blockmap` put air at its front."""
+        if self.liquid is None:
+            return None
+        index = int(self.liquid[x, y, z])
+        if index < 0:
+            return None
+        found = self.palette[index + 1]
+        return None if found["name"] == "minecraft:air" else found
+
     def get_size(self):
         return self.size
 
@@ -145,9 +165,9 @@ class StructureFile:
                 ## which a user may replace, and a count already turned into a
                 ## name cannot be regrouped or renamed afterwards.
                 variant=None
-                for state in block["states"].keys():
-                    if self.nbt_defs.get(state) == "variant":
-                        variant=str(block["states"][state])
+                state=block_geometry.variant_state(name)
+                if state is not None and state in block["states"].keys():
+                    variant=str(block["states"][state])
                 if variant:
                     name="%s/%s" % (name, variant)
                 if name not in block_counter.keys():
@@ -158,10 +178,6 @@ class StructureFile:
         return block_counter
 class CombinedStructures:
     def __init__(self,file_list,exclude_list=[]):
-        ## through paths, like every other data read: these were relative, so a
-        ## big build only worked with the checkout as the working directory
-        with open(paths.lookup("nbt_defs.json")) as nbt_file:
-            self.nbt_defs=json.load(nbt_file)
         self.structs={}
         self.maxs = array([-2147483647,-2147483647,-2147483647],dtype=int32)
         self.mins = array([2147483647,2147483647,2147483647],dtype=int32)
@@ -180,7 +196,9 @@ class CombinedStructures:
                 dtype=int32)
             
             self.structs[file]["size"] = array(list(map(int, self.structs[file]["nbt"]["size"])))
-            self.structs[file]["palette"] = self.structs[file]["nbt"]["structure"]["palette"]["default"]["block_palette"]
+            self.structs[file]["palette"] = [
+                block_upgrade.upgrade(entry) for entry in
+                self.structs[file]["nbt"]["structure"]["palette"]["default"]["block_palette"]]
             index_of_air = 0
             for i in range(len(self.structs[file]["palette"])):
                 if self.structs[file]["palette"][i]["name"] == "minecraft:air":
@@ -279,9 +297,9 @@ class CombinedStructures:
                 ## which a user may replace, and a count already turned into a
                 ## name cannot be regrouped or renamed afterwards.
                 variant=None
-                for state in block["states"].keys():
-                    if self.nbt_defs.get(state) == "variant":
-                        variant=str(block["states"][state])
+                state=block_geometry.variant_state(name)
+                if state is not None and state in block["states"].keys():
+                    variant=str(block["states"][state])
                 if variant:
                     name="%s/%s" % (name, variant)
                 if name not in block_counter.keys():

@@ -1,0 +1,10 @@
+Scaffold includes textures from Bedrock Tweaks and Vanilla Tweaks,
+in the folders of the Bedrock Tweaks options here, under the
+licence in LICENSE beside this file.
+
+Vanilla Tweaks: https://vanillatweaks.net/
+Bedrock Tweaks: https://bedrocktweaks.net/
+
+The Clearer Redstone options' textures are Redstone Tweaks by
+RexxStone, under CC BY-NC-SA 4.0; REDSTONE_TWEAKS_LICENSE beside
+this file has their credit.

@@ -20,9 +20,11 @@ import unittest
 
 import nbtlib
 
+from tools.blocks import tables
 from scaffold import block_list, paths
 from scaffold.pack import armor_stand_geo_class as asgc
 from scaffold.pack import structure_reader
+from scaffold import lookup
 
 
 STRUCTURE = os.path.join("test_structures", "All Blocks World",
@@ -49,9 +51,21 @@ POPLAR = {
 }
 
 
+## the three tables a family's geometry is written in, which are read the way
+## the family was authored: a family turned to Minecraft's rest pose as it was
+## written is turned back, so what is checked here is the layout its generator
+## describes. What a block looks like once drawn is `make_block`'s, and the
+## tests that need that call it.
+GEOMETRY = ("block_shapes", "block_uv", "block_rotation")
+
+
 def load(name):
+    # through paths, so the suite does not depend on where it was run from
+    if name in GEOMETRY:
+        return tables.load({"block_shapes": tables.SHAPES, "block_uv": tables.UV,
+                            "block_rotation": tables.ROTATION}[name])
     with open(paths.lookup(name + ".json"), encoding="utf-8") as f:
-        return json.load(f)
+        return lookup.unwrap(name + ".json", json.load(f))
 
 
 class DefinitionTests(unittest.TestCase):
@@ -140,7 +154,7 @@ class BuildTests(unittest.TestCase):
 
     def test_a_wool_slab_sits_on_the_floor_and_its_top_form_does_not(self):
         low = self.cubes("white_wool_slab")[0][0][1]
-        high = self.cubes("white_wool_slab", top=True)[0][0][1]
+        high = self.cubes("white_wool_slab", data="top")[0][0][1]
         self.assertLess(low, high)
 
 
@@ -170,12 +184,13 @@ class ShelfMushroomTests(unittest.TestCase):
         self.assertEqual(self.cubes(), self.cubes(data="0"))
 
     def test_it_hangs_on_the_wall_behind_it(self):
-        # a wall mounting sits at z0 the way a wall sign does, so the wall is
-        # the block behind it and the mushroom looks along +z
+        # a wall mounting reaches z 16 the way a wall sign does, so the wall is
+        # the block behind it, to the south, and the mushroom looks north
         shapes = load("block_shapes")["shelf_mushroom"]
         for form in ("0", "1"):
             for size, at in zip(shapes[form]["size"], shapes[form]["offsets"]):
-                self.assertEqual(at[2], 0.0, "%s left the wall" % form)
+                self.assertAlmostEqual(at[2] + size[2], 1.0,
+                                       msg="%s left the wall" % form)
                 self.assertLess(size[2], 1.0)
 
     def test_the_two_growths_read_different_sheets(self):
@@ -185,15 +200,15 @@ class ShelfMushroomTests(unittest.TestCase):
         self.assertIn("shelf_mushroom_small", small)
         self.assertIn("shelf_mushroom_large", large)
 
-    def test_the_cap_turns_with_the_block(self):
-        # Mojang's model faces north and this family's default faces south, so
-        # the top and the bottom carry a half turn. Without it the cap's pale
-        # front lip is drawn against the wall.
+    def test_the_cap_reads_mojangs_own_rectangle(self):
+        # Mojang's model faces north, as this family does, so the top and the
+        # bottom read their rectangles as the model gives them, unturned.
+        # Turned, the cap's pale front lip is drawn against the wall.
         uv = load("block_uv")["shelf_mushroom"]["0"]
         for face in ("up", "down"):
-            for texture in uv["overwrite"][face]:
-                self.assertTrue(texture.endswith("^180"),
-                                "%s is not turned: %s" % (face, texture))
+            for index, texture in enumerate(uv["overwrite"][face]):
+                self.assertNotIn("^", texture, "%s is turned: %s" % (face, texture))
+                self.assertTrue(all(n > 0 for n in uv["uv_sizes"][face][index]))
 
     def test_it_faces_the_way_a_shelf_does(self):
         rotation = load("block_rotation")
@@ -223,28 +238,34 @@ class StrawBedTests(unittest.TestCase):
         ## and they stand beside each other along the bed rather than stacked
         self.assertEqual(base[0][1], pillow[0][1])
 
-    def test_it_lies_along_x_the_way_the_dyed_bed_does(self):
-        # the two share BED_FACING, which only works if they lie the same way:
-        # each half of the head is half a block across x and the whole of z
+    def test_it_lies_along_z_the_way_the_dyed_bed_does(self):
+        # the two turn by their states' own angles, which only works if they
+        # lie the same way: each half of the head is the whole of x and half a
+        # block along z
         shapes = load("block_shapes")["straw_bed"]["1"]
         for size in shapes["size"]:
-            self.assertAlmostEqual(size[0], 0.5, places=3)
-            self.assertAlmostEqual(size[2], 1.0, places=3)
+            self.assertAlmostEqual(size[0], 1.0, places=3)
+            self.assertAlmostEqual(size[2], 0.5, places=3)
 
     def test_it_turns_with_the_dyed_bed(self):
+        # a dyed bed carries a numbered `direction` and a straw bed the words,
+        # counted from south the same way, and the two lie the same way round
         rotation = load("block_rotation")
-        self.assertEqual(rotation["straw_bed"], rotation["bed"])
+        for number, word in enumerate(("south", "west", "north", "east")):
+            with self.subTest(facing=word):
+                self.assertEqual(rotation["straw_bed"][word],
+                                 rotation["bed"][str(number)])
 
-    def test_the_top_and_bottom_carry_the_quarter_turn(self):
-        # Mojang's model lies along z and this one along x, so the tile turns
-        # with it; without that the straw runs across the mattress. Which of
-        # the two quarters is a thing settled by looking at it in game, so what
-        # is pinned here is that a quarter turn is asked for at all.
+    def test_the_top_reads_the_straw_along_the_bed(self):
+        # Mojang's model lies along z, as this one does, so no tile is turned;
+        # turned a quarter, the straw runs across the mattress. The top reads
+        # its rectangle backwards and the bottom forwards.
         uv = load("block_uv")["straw_bed"]["1"]
         for face in ("up", "down"):
-            for texture in uv["overwrite"][face]:
-                self.assertTrue(texture.endswith(("^90", "^270")),
-                                "%s is not turned: %s" % (face, texture))
+            for index, texture in enumerate(uv["overwrite"][face]):
+                self.assertNotIn("^", texture, "%s is turned: %s" % (face, texture))
+                forwards = all(n > 0 for n in uv["uv_sizes"][face][index])
+                self.assertEqual(forwards, face == "down")
 
     def test_the_frills_are_left_off(self):
         # Mojang hangs ten zero thickness planes of straw off the edges. Every
@@ -264,14 +285,17 @@ class StrawBedTests(unittest.TestCase):
 
 
 class NewStatesTests(unittest.TestCase):
-    """26.50 gave old blocks new states, and Scaffold reads none of them."""
+    """26.50 gave old blocks new states, and the families that join read them."""
 
-    def test_the_new_states_are_not_block_state_definitions(self):
-        defs = load("nbt_defs")
-        for state in ("minecraft:corner", "minecraft:connection_north",
-                      "minecraft:connection_south", "minecraft:connection_east",
-                      "minecraft:connection_west"):
-            self.assertNotIn(state, defs)
+    def test_the_joining_families_read_the_new_states(self):
+        from scaffold import block_geometry
+        rules = block_geometry.rules()
+        for family in ("fence", "pane", "bars", "tripwire"):
+            read = json.dumps(rules[family])
+            for side in ("north", "east", "south", "west"):
+                with self.subTest(family=family, side=side):
+                    self.assertIn('"minecraft:connection_%s"' % side, read)
+        self.assertIn('"minecraft:corner"', json.dumps(rules["stairs"]))
 
     def test_a_stair_builds_whatever_corner_it_carries(self):
         geo = asgc.ArmorStandGeo("test", offsets=[0, 0, 0])

@@ -6,8 +6,8 @@ A block made of one cube can take the six textures Bedrock declares for it and
 be right. A block made of several cannot, because every cube gets the same six,
 so a beacon's glass shell, its core and its obsidian base are all painted alike.
 
-`block_uv.json` has an `overwrite` list for exactly this, a texture per cube per
-face. A value written `@up` or `@down` means "whatever this block declares for
+`block_geometry.json` gives each face of each cube a texture of its own for
+exactly this. A value written `@up` or `@down` means "whatever this block declares for
 that face", so one entry serves every wood a block comes in and every state it
 has, without naming a single texture file.
 
@@ -25,37 +25,28 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.insert(0, ROOT)
 
 from tools.blocks import tables as lookup_writer
+from tools.blocks import tables as _tables
 
 LOOKUPS = os.path.join(ROOT, "scaffold", "lookups")
-SHAPES = os.path.join(LOOKUPS, "block_shapes.json")
-UV = os.path.join(LOOKUPS, "block_uv.json")
+SHAPES = lookup_writer.SHAPES
+UV = lookup_writer.UV
 DEFINITION = os.path.join(LOOKUPS, "block_definition.json")
 ROTATION = os.path.join(LOOKUPS, "block_rotation.json")
 FACES = ("up", "down", "north", "south", "east", "west")
 
-## the four ways a block with a front can stand, as `minecraft:cardinal_direction`
-## names them and as Bedrock's older numbering does. The turn runs the other
-## way round from the compass: a vault built facing west needed the model spun
-## the way "east" is written here.
-## A vault's four facings, a half turn round from where they were first
-## written: a vault placed facing south drew its front northward in game.
-FACING = {"0": [0, 180, 0], "1": [0, 90, 0], "2": [0, 0, 0], "3": [0, 270, 0],
-          "south": [0, 180, 0], "west": [0, 90, 0], "north": [0, 0, 0],
-          "east": [0, 270, 0]}
+## A vault turns by Minecraft's own angles: its front, the north slot, rests on
+## the north face, and its top and bottom read their tiles with the picture's
+## top edge to the north.
+FACING = "minecraft:cardinal_direction"
 
 
 def load(path):
-    return json.load(io.open(path, encoding="utf-8"))
+    return lookup_writer.load(path)
 
 
 def define(blocks, family):
     """Point block ids at a shape family."""
-    table = json.load(io.open(DEFINITION, encoding="utf-8"))
-    for block in blocks:
-        table[block] = family
-    body = json.dumps(table, indent="\t", ensure_ascii=False,
-                      separators=(",", ":"))
-    io.open(DEFINITION, "w", encoding="utf-8", newline="").write(body + "\n")
+    _tables.define(blocks, family)
 
 
 def all_faces(per_cube):
@@ -81,8 +72,10 @@ def main():
     changed.append("beacon")
 
     ## --- tripwire hook: the plate, the hook, the wire -----------------------
+    ## a face reading the slot of its own name is left to it
     revise("tripwire_hook", "default",
-           all_faces(["@down", "@north", "@east"]))
+           {face: [("default" if slot == "@" + face else slot)
+                   for slot in ("@down", "@north", "@east")] for face in FACES})
     changed.append("tripwire_hook")
 
     ## --- the two block tall flowers -----------------------------------------
@@ -93,24 +86,6 @@ def main():
     revise("double_plant", "top", all_faces(["@up", "@up"]),
            from_variant="top")
     changed.append("double_plant")
-
-    ## --- azalea: a bush whose slots are not its faces ------------------------
-    ## `blocks.json` gives an azalea six textures and only two of them are what
-    ## the block looks like. `north` and `up` are the leaves; `south`, `east`
-    ## and `west` are the potted bush's side, the plant inside a pot, and the
-    ## pot's own plant, which the engine picks from for a model of its own. A
-    ## block taking them literally is leaves on one side and crockery on three.
-    ## All four sides read the leaves, and so does the underside, which is
-    ## `potted_azalea_bush_top` otherwise.
-    shapes["azalea"] = json.loads(json.dumps(shapes["cube"]))
-    uv["azalea"] = json.loads(json.dumps(uv["cube"]))
-    uv["azalea"]["default"]["overwrite"] = {
-        "up": ["@up"], "down": ["@up"],
-        "north": ["@north"], "south": ["@north"],
-        "east": ["@north"], "west": ["@north"]}
-    lookup_writer.put(SHAPES, "azalea", shapes["azalea"], tight=True)
-    define(["azalea", "flowering_azalea"], "azalea")
-    changed.append("azalea")
 
     ## --- carved pumpkins: the face was round the back ------------------------
     ## Its table was written a half turn out from every other block that carries
@@ -132,13 +107,13 @@ def main():
     ## to match `furnace` and `observer`, and still facing backwards in game.
     ## Those two carry their own tables and are right as they are, so this is not
     ## a shared fault to fix in one place. `lit_pumpkin` shares the family and so
-    ## moves with it. Up and down are a turn about x and are left alone; a
-    ## pumpkin has no facing that uses them.
-    lookup_writer.put(ROTATION, "carved_pumpkin", {
-        "south": [0, 0, 0], "east": [0, 270, 0], "west": [0, 90, 0],
-        "up": [270, 0, 0], "down": [90, 0, 0], "north": [0, 180, 0],
-        "0": [0, 180, 0], "1": [0, 270, 0], "2": [0, 0, 0],
-        "3": [0, 90, 0]}, tight=True)
+    ## moves with it. A pumpkin carries `minecraft:cardinal_direction`, so the
+    ## four words are all it can be turned by.
+    ##
+    ## Its geometry reads the declared front, the south slot, on the north face,
+    ## where a block at rest looks, so it turns by Minecraft's own angles.
+    lookup_writer.put(ROTATION, "carved_pumpkin", "minecraft:cardinal_direction",
+                      tight=True)
 
     ## --- vault: a cube, but one with a front ---------------------------------
     ## A rotation table is keyed by shape family, and a vault shared `cube` with
@@ -149,6 +124,11 @@ def main():
     ## with the four facings spelt out.
     shapes["vault"] = json.loads(json.dumps(shapes["cube"]))
     uv["vault"] = json.loads(json.dumps(uv["cube"]))
+    vault = uv["vault"]["default"]
+    vault.pop("overwrite", None)
+    for face in ("up", "down"):
+        vault["offset"][face] = [[1, 1]]
+        vault["uv_sizes"][face] = [[-1, -1]]
     lookup_writer.put(SHAPES, "vault", shapes["vault"], tight=True)
     lookup_writer.put(ROTATION, "vault", FACING, tight=True)
     define(["vault"], "vault")
@@ -160,8 +140,7 @@ def main():
     print("gave %d families a texture per cube:" % len(set(changed)))
     for family in sorted(set(changed)):
         print("   %s" % family)
-    for path in (SHAPES, UV):
-        json.loads(io.open(path, encoding="utf-8").read())
+    json.loads(io.open(lookup_writer.GEOMETRY, encoding="utf-8").read())
     print("both tables still parse")
 
 

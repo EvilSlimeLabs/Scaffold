@@ -1,0 +1,46 @@
+{
+	"resource_pack_name": "vanilla",
+	"texture_name": "atlas.terrain",
+	"texture_data": {
+		"redstone_dust_shades_dust": {
+			"textures": [
+				"textures/clearer_redstone/redstone_dust_shades/dust_0",
+				"textures/clearer_redstone/redstone_dust_shades/dust_1",
+				"textures/clearer_redstone/redstone_dust_shades/dust_2",
+				"textures/clearer_redstone/redstone_dust_shades/dust_3",
+				"textures/clearer_redstone/redstone_dust_shades/dust_4",
+				"textures/clearer_redstone/redstone_dust_shades/dust_5",
+				"textures/clearer_redstone/redstone_dust_shades/dust_6",
+				"textures/clearer_redstone/redstone_dust_shades/dust_7",
+				"textures/clearer_redstone/redstone_dust_shades/dust_8",
+				"textures/clearer_redstone/redstone_dust_shades/dust_9",
+				"textures/clearer_redstone/redstone_dust_shades/dust_10",
+				"textures/clearer_redstone/redstone_dust_shades/dust_11",
+				"textures/clearer_redstone/redstone_dust_shades/dust_12",
+				"textures/clearer_redstone/redstone_dust_shades/dust_13",
+				"textures/clearer_redstone/redstone_dust_shades/dust_14",
+				"textures/clearer_redstone/redstone_dust_shades/dust_15"
+			]
+		},
+		"redstone_dust_shades_line": {
+			"textures": [
+				"textures/clearer_redstone/redstone_dust_shades/line_0",
+				"textures/clearer_redstone/redstone_dust_shades/line_1",
+				"textures/clearer_redstone/redstone_dust_shades/line_2",
+				"textures/clearer_redstone/redstone_dust_shades/line_3",
+				"textures/clearer_redstone/redstone_dust_shades/line_4",
+				"textures/clearer_redstone/redstone_dust_shades/line_5",
+				"textures/clearer_redstone/redstone_dust_shades/line_6",
+				"textures/clearer_redstone/redstone_dust_shades/line_7",
+				"textures/clearer_redstone/redstone_dust_shades/line_8",
+				"textures/clearer_redstone/redstone_dust_shades/line_9",
+				"textures/clearer_redstone/redstone_dust_shades/line_10",
+				"textures/clearer_redstone/redstone_dust_shades/line_11",
+				"textures/clearer_redstone/redstone_dust_shades/line_12",
+				"textures/clearer_redstone/redstone_dust_shades/line_13",
+				"textures/clearer_redstone/redstone_dust_shades/line_14",
+				"textures/clearer_redstone/redstone_dust_shades/line_15"
+			]
+		}
+	}
+}

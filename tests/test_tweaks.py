@@ -43,7 +43,7 @@ class TableTests(unittest.TestCase):
     def test_the_grid_is_three_columns_of_four(self):
         """The dialog fills three columns of four from the table's order, so
         the table has to hold exactly twelve controls."""
-        self.assertEqual(len(tweaks.controls()), 12)
+        self.assertEqual(len(tweaks.controls("tweaks")), 12)
 
     def test_the_tweaks_that_conflict_are_the_ones_sharing_a_control(self):
         ## two switches that turned each other off would read as a fault, so a
@@ -224,6 +224,19 @@ class SettingsTests(unittest.TestCase):
         settings.settings["tweaks_on"] = ["ore_borders", "from_the_future"]
 
         self.assertEqual(settings.tweaks_on(), ["ore_borders"])
+
+
+class ProjectCreditsTests(unittest.TestCase):
+    """Bedrock Tweaks' licence asks a project carrying its files for a
+    credits.txt with its credit word for word, beside the files."""
+
+    def test_the_staged_art_carries_its_credits(self):
+        from scaffold import paths
+        path = os.path.join(os.path.dirname(paths.__file__), "tweakpacks", "credits.txt")
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+        for line in tweaks.CREDIT_LINES:
+            self.assertIn(line, text)
 
 
 if __name__ == "__main__":

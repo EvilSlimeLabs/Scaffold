@@ -20,7 +20,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.insert(0, ROOT)
 
 from tools.blocks import tables
-from tools.blocks.geometry import Cube, on_sheet, unwrap
+from tools.blocks.geometry import Cube, on_sheet, unwrap_south as unwrap
 
 
 # --- shulker boxes ----------------------------------------------------------
@@ -30,13 +30,14 @@ from tools.blocks.geometry import Cube, on_sheet, unwrap
 # it has, so the lid's art is on the lid and the base's on the base.
 SHULKER = "textures/entity/shulker/shulker_%s"
 
-## The dyes that name a block, then below them the ids that name no colour and
+## The dyes that name a block, then below them the id that names no colour and
 ## the one whose sheet is spelled differently: Bedrock calls the block light
-## gray and the sheet silver, and there is no silver_shulker_box to define.
+## gray and the sheet silver, and there is no silver_shulker_box to define. An
+## older structure's `shulker_box` with a `color` arrives already split into
+## these by `block_upgrade`.
 COLOURS = ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink",
            "gray", "cyan", "purple", "blue", "brown", "green", "red", "black"]
-EXTRA = {"undyed_shulker_box": "undyed", "shulker_box": "undyed",
-         "light_gray_shulker_box": "silver"}
+EXTRA = {"undyed_shulker_box": "undyed", "light_gray_shulker_box": "silver"}
 
 
 ## **Where the two parts sit on the sheet, as the boxes the entity model draws
@@ -65,50 +66,37 @@ def parted(sheet, box):
     return art, window
 
 
-## **The two parts overlap, and have to.** The entity draws the base eight tall
-## from the floor and the lid twelve tall from y4, which is sixteen in all and
-## exactly a block. Where they cross, each fills what the other leaves out: the
-## bottom four rows of the lid's side art are painted at the edges and clear
-## through the middle, and the top four of the base's are the other way about.
-## Stacked eight on eight instead, with the lid's twelve rows squashed onto
-## eight, neither covers the other and a shulker box has a slot cut through
-## every side of it.
-BASE_TALL = 8
-LID_TALL = 12
-LID_AT = 4
-
-## **The base is drawn a shade narrower than the lid.** Both are a full sixteen
-## across in the entity's own model, so over the four rows they share every one
-## of their side faces sat on the other's and the whole overlap flickered. A
-## fifth of a pixel in on each side puts the base's walls inside the lid's, and
-## the step below the lid is too small to read. The lid keeps the block's full
-## width, since it is the part that has to line up with the block beside it.
-BASE_INSET = 0.2
+## A closed shulker box is drawn as one box, a shade under a whole block, each
+## face reading its own tile from `tools/textures/shulkers.py`. It rests lid up,
+## and turns by the `facing` its block entity keeps, the way the game numbers a
+## facing: 0 down, 1 up, 2 north, 3 south, 4 west, 5 east.
+FACE_TILE = "textures/blocks/shulker_box_%s_%s"
+FACING = {"0": [180, 0, 0], "1": [0, 0, 0], "2": [90, 0, 0], "3": [270, 0, 0],
+          "4": [0, 0, 270], "5": [0, 0, 90]}
 
 
 def shulker(colour):
-    """A base with a lid over it, each reading its own part of the sheet."""
-    sheet = SHULKER % colour
-    base_art, base_window = parted(sheet, BASE_BOX)
-    lid_art, lid_window = parted(sheet, LID_BOX)
-    across = 16 - 2 * BASE_INSET
-    return {"default": [
-        Cube((across, BASE_TALL, across),
-             (BASE_INSET, 0, BASE_INSET),
-             texture=base_art, window=base_window),
-        Cube((16, LID_TALL, 16), (0, LID_AT, 0),
-             texture=lid_art, window=lid_window)]}
+    """One box, its sides, top and bottom each a tile of its own."""
+    side, top, bottom = (FACE_TILE % (colour, part) for part in ("side", "top", "bottom"))
+    art = {"north": side, "south": side, "east": side, "west": side,
+           "up": top, "down": bottom}
+    return {"default": [Cube((15.2, 15.2, 15.2), (0.4, 0.4, 0.4), texture=art,
+                             window={face: (0, 0, 16, 16) for face in art})]}
 
 
 def main():
     print("writing the shulker boxes")
     for colour in COLOURS:
         family = "shulker_box_%s" % colour
-        tables.write(family, shulker(colour))
+        tables.write(family, shulker(colour), center=(8, 7.6, 8))
+        tables.rules(family, turn_by=[{"entity": "facing"}])
+        tables.turns(family, FACING)
         tables.define(["%s_shulker_box" % colour], family)
     for block, colour in EXTRA.items():
         family = "shulker_box_%s" % colour
-        tables.write(family, shulker(colour))
+        tables.write(family, shulker(colour), center=(8, 7.6, 8))
+        tables.rules(family, turn_by=[{"entity": "facing"}])
+        tables.turns(family, FACING)
         tables.define([block], family)
     print("   %d colours" % (len(COLOURS) + 1))
 

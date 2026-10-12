@@ -11,8 +11,8 @@ python -m tools.checks.blocks         every declared block resolved to a texture
 python -m tools.checks.coverage      what the bundled structures drop
 ```
 
-Both should report nothing missing. `coverage_report.py` drives the real
-pipeline against all 108 bundled structures, so it is the fastest way to see
+Both should report nothing missing. `tools/checks/coverage.py` drives the
+real pipeline against every bundled structure, so it is the fastest way to see
 whether a lookup change broke something.
 
 ---
@@ -21,39 +21,44 @@ whether a lookup change broke something.
 
 1. `lookups/block_definition.json` maps the block id to a **shape family**. No
    entry means the block is skipped and reported, not drawn.
-2. `lookups/nbt_defs.json` says what each of the block's **states** means.
-3. `scaffold.core._process_block` turns those states into a rotation, a
-   texture variant, a shape variant and a few flags.
-4. `armor_stand_geo_class.make_block` reads `block_shapes.json` and
-   `block_uv.json` with the resulting variant name and emits cubes.
+2. `scaffold.core` hands `make_block` the block's states and its block entity,
+   and settles only what an entity adds besides a form: a dye to tint with and a
+   floor head's yaw.
+3. The family's rules in `lookups/block_geometry.json` choose a **form**, the
+   state it **turns** by and the entry of a texture **list** its faces read
+   (`scaffold/block_geometry.py`, through `ArmorStandGeo.choose`).
+4. `armor_stand_geo_class.make_block` emits that form's cubes, each face with
+   its window and its texture, turned by `block_rotation.json`.
 
-**`block_shapes.json` and `block_uv.json` must agree.** A variant in one and not
-the other silently falls back to `default`, which is how a half-height cube ends
-up wearing a full-height texture. Add variants to both.
+A form's cubes and its windows are one entry, so the two cannot disagree.
 
 ---
 
 ## What a state can mean
 
-`nbt_defs.json` maps a state name to one of these:
+A state means only what its family's rules say. `pick` names a mounting from
+states that match, `data` makes a value from numbers (`number`), from words or
+several states at once (`join`) or from the block entity, `turn_by` names the
+state that turns the block, and `texture_by` the one that picks from a texture
+list. `docs/Editing Blocks.md` has the details.
 
-| Meaning | Effect | Example |
-| --- | --- | --- |
-| `rot` | picks a rotation from `block_rotation.json` | `minecraft:cardinal_direction` |
-| `variant` | picks an index into a texture **list** via `variants.json` | `rehydration_level` |
-| `top` | selects the `top` shape variant | `upper_block_bit` |
-| `open_bit`, `hinge` | door and trapdoor flags | `open_bit` |
-| `data` | the state's number names the shape variant | `books_stored` |
-| `shape` | the state's **value** names the shape variant | `attachment` |
+`join` puts the values together with `-` **in the order the rule lists the
+states**, so a hanging sign's `["attached_bit", "hanging"]` gives `"0-1"`. Name
+the forms in that order or they will never be found.
 
-`data` and `shape` both end up as the variant name. `data` is for numbers,
-`shape` for words, because an `int()` on `"hanging"` raises. When a block carries
-several `shape` states they are joined with `-` **in the order the state names
-sort**, so `attached_bit` before `hanging` gives `"0-1"`. Write the variants in
-that order or they will never be found.
+A state no rule names is ignored entirely. That is the usual reason a block
+looks the same however it is placed.
 
-A state that is not in `nbt_defs.json` is ignored entirely. That is the usual
-reason a block looks the same however it is placed.
+**Some states exist only in a structure saved by 26.50 or newer.** That release
+started saving `minecraft:corner` on stairs and `minecraft:connection_north`,
+`_east`, `_south` and `_west` on fences, panes, iron and copper bars and string.
+Before it the game worked them out from the neighbours every time it drew the
+block and saved nothing. A structure saved earlier has none, so those blocks are
+drawn in their default form: a lone post, a straight stair. Nothing works the
+states out from the neighbours instead. Walls carry `wall_connection_type_*`
+and `wall_post_bit` from long before, and are drawn joined from any structure
+that has them. Mojang's `metadata/vanilladata_modules/mojang-blocks.json` in
+`bedrock-samples/` is where to check which release gave a block a state.
 
 ---
 
@@ -67,15 +72,25 @@ drawn **unrotated, silently**.
 That is what made every door face the same way. `door` had `0`–`3` and the
 structures were giving it `"east"`. Twelve families had the same gap.
 
-The numbering is not the same for every block:
+The numbering is not the same for every block that still carries a number:
 
 - most blocks: `0` south, `1` west, `2` north, `3` east
-- **doors**: `0` east, `1` south, `2` west, `3` north
 - **trapdoors**: `0` east, `1` west, `2` south, `3` north
 - **standing signs, and hanging signs fixed to the block above**: sixteen steps
   of 22.5°, not four
 
-When adding a family, give it both the numbers and the words.
+When adding a family, give it every value its blocks carry today.
+
+**An older structure's numbers are translated before any table sees them.** A
+block Mojang has since moved from `direction` to `minecraft:cardinal_direction`
+arrives as words, translated with Mojang's own numbering, by
+`lookups/block_upgrades.json`, so its family carries the words and no numbers.
+That numbering was not always what these tables assumed: Mojang's upgrade turns
+a door's `direction` 0 into `south`, where the door table's old `0` gave the
+turn its `east` does. An old door is now turned by the same words a newly
+placed one is. Whether those words point the right way has not been checked in
+a world since; an old door and a new one facing the same way should look the
+same, and that is the thing to look at.
 
 **A form may number its rotations differently from the rest of its family**, and
 says so with a `"<variant>:<value>"` key, which is read before the plain value.
@@ -95,8 +110,8 @@ running back into the wall, and the arm read as a post nobody asked for. The bar
 it already has goes out to the edges of the block instead, the way a bell's beam
 spans two walls.
 
-**A family turns about the middle of its block.** `center` in
-`block_shapes.json` is that pivot, and a family whose cubes all sit at one edge
+**A family turns about the middle of its block.** A form's `center` in
+`block_geometry.json` is that pivot, and a family whose cubes all sit at one edge
 is tempting to pivot on that edge instead. Doing so takes the block out of its
 own block: a door pivoted on the plane of its own panel, a quarter turn round,
 ended up half in the block beside it. Only a family whose parts really do turn
@@ -118,10 +133,11 @@ without help, every cube gets the same six, so a grindstone's legs are painted
 with the wheel's texture on top and a beacon's glass shell, its core and its
 obsidian base are all painted alike.
 
-`block_uv.json` has an `overwrite` entry for this: a texture per cube, per face.
+`block_geometry.json` gives every face of every cube a texture of its own for
+this, and a slot names whatever the block declares for one of its faces:
 
 ```json
-"overwrite": {"up": ["@down", "@up", "@north"], ...}
+"faces": {"up": {"uv": [0, 0], "size": [1, 1], "texture": {"slot": "down"}}, ...}
 ```
 
 - a literal path is used as given
@@ -138,30 +154,30 @@ families shared by many block ids.
 ## Textures that are not what they seem
 
 - **Some are lists.** `terrain_texture.json` may map one name to several files.
-  `dried_ghast_front` is four, one per drying stage. The `variant` mechanism
-  indexes them through `variants.json`. A numeric state arrives from nbtlib as
-  `Int(0)`, whose `str()` is `"Int(0)"` and not `"0"`; the lookup converts.
+  `dried_ghast_front` is four, one per drying stage. The family's `texture_by`
+  rule picks one, by the state's own number or through a table of its values.
 - **Some are flipbooks.** `campfire.png` is 16×128, eight stacked frames, and
   `campfire_log_lit.png` is 16×64. Using one whole stretches every frame over the
   face; the UV window has to take one frame's worth of `v`.
 - **Some are named and do not exist.** `blocks.json` names
   `chiseled_bookshelf_front`, which no vanilla pack ships and
-  `terrain_texture.json` has no entry for. Name the real texture in `overwrite`.
+  `terrain_texture.json` has no entry for. Name the real texture on the face.
 - **Some are entity sheets.** `copper_golem.png` is 64×64 and `oak_hanging_sign.png`
   is 64×32, atlases laid out for an entity model rather than tiles.
 
 Only the **top left 16×16** of a texture becomes a tile; a larger one is cropped,
 never scaled, so its pixels keep their size. A block drawn from a sheet says
-which part it needs by writing a window after the texture's name:
+which part it needs with a window beside the texture:
 
 ```json
-"overwrite": {"north": ["@north#0,12", "@north#4,0"]}
+"north": {"uv": [0, 0], "size": [1, 1], "texture": {"slot": "north", "window": [0, 12]}}
 ```
 
-`#x,y` is the corner of the 16×16 window, in pixels, and it travels with an `@`
-reference so one entry serves every wood. Each window becomes a tile of its own,
-because the atlas is keyed by the whole name. A hanging sign reads three: the bar
-at `#4,0`, the chains at `#0,6` and the board at `#0,12`. A window that falls
+`window` is the corner of the 16×16 region, in pixels, and it travels with a
+slot so one entry serves every wood. Each window becomes a tile of its own,
+because the atlas is keyed by the texture and its window together. A hanging
+sign reads three: the bar at `[4, 0]`, the chains at `[0, 6]` and the board at
+`[0, 12]`. A window that falls
 outside the texture is ignored, so a legacy id resolving to a plain terrain tile
 still reads the tile.
 
@@ -180,8 +196,9 @@ one palette entry for all of them, and the pose is in
 (x outermost).
 
 `structure_reader.get_block_entity(x, y, z)` reads it and
-`scaffold.core.BLOCK_ENTITY_SHAPES` says which field of which block entity names the
-shape. Add to that mapping to support another one. A block entity carries a
+the family's `data` rule in `block_geometry.json` says which field of the block
+entity names the form (`entity`, `entity_add` or `instead`). Give a family that
+rule to support another one. A block entity carries a
 great deal that has nothing to do with how a block looks, so only the named
 fields are read.
 
@@ -199,6 +216,20 @@ shrunk into the pot, because a family cannot be scaled from outside, so its
 lower half is inside the pot. And the plant is **not** in the block list: that
 is counted off the structure's palette, which the pot's contents are not part
 of.
+
+**A block entity may name another block.** A chest beside another of its kind
+is half of a double chest, and each half's entity keeps the other's world
+position as `pairx` and `pairz`. `core.paired` turns that into the half a block
+is, seen from in front, and gives it to the rules as the entity field `pair`;
+the `chest` family draws `left` and `right` from it, each reaching from its own
+outer edge to the seam. The left half stands on the low side of x, because east
+is. A half whose partner is outside the structure is drawn as a single chest.
+
+**A block entity may be drawn as a mark beside the block.** With Clearer
+Redstone on, how full a container is and which crafter slots are locked are
+drawn by pseudo-blocks at the same position, `scaffold:fill` and
+`scaffold:crafter_slot`, from `scaffold/marks.py`. They are not in the block
+list either.
 
 ---
 
@@ -221,8 +252,8 @@ simple form will still be the old one's outline.
 
 Geometry numbers and UV values can be checked here. How they look cannot.
 
-- **A copper golem statue's four poses are four geometry files.** The community
-  submodule ships `copper_golem`, `copper_golem_sitting`, `copper_golem_running`
+- **A copper golem statue's four poses are four geometry files.** The game's
+  resource pack ships `copper_golem`, `copper_golem_sitting`, `copper_golem_running`
   and `copper_golem_star`, and each is the golem's nine or eleven cubes with the
   arms and the legs turned where that pose puts them. Which `Pose` number goes
   with which file is the guess left in it: the order below is the order the game
@@ -233,14 +264,14 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   head keeps its own size.
 - **The eight oxidation stages all wear the unweathered sheet.** Every one of
   them declares the same texture name in `blocks.json`, and nothing in the block
-  says which stage it is, so one family answers for all eight. The community
-  pack ships `copper_golem_exposed`, `_weathered` and `_oxidized` beside it if
+  says which stage it is, so one family answers for all eight. The game's
+  resource pack ships `copper_golem_exposed`, `_weathered` and `_oxidized` beside it if
   that is ever worth eight families.
 - **Which side a wall mounting attaches to** is taken from the convention
-  `wall_sign` uses: at 0° a block faces south, so the wall is behind it at
-  `z=0`, and a bell's beam, a grindstone's legs and a hanging sign's arm all run
-  that way. If they come out of the wrong face in a world, that convention is
-  what to flip.
+  `wall_sign` uses: at rest a block faces north, so the wall is behind it to
+  the south, and a bell's beam, a grindstone's legs and a hanging sign's arm all
+  run that way, against `z=16`. If they come out of the wrong face in a world,
+  that convention is what to flip.
 - **A grindstone fixed to two walls** puts legs into both, by analogy with the
   bell's `multiple`, which spans two walls. The state appears in no test
   structure, so this form has never been built from a real one.
@@ -264,7 +295,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   plant's back and should never be used.
 - **A bed is drawn in its colour, and the colour is a second set of tiles.**
   It is in the block entity, as `color`, and which half the block is is in its
-  states, so `core.BLOCK_ENTITY_ADDS` joins the two and a variant is named
+  states, so the family's `entity_add` rule joins the two and a form is named
   `<head_piece_bit>-<colour>`. That is the one field of a block entity that goes
   *with* a shape state rather than instead of it. The game holds a model per
   colour rather than tinting anything, so `tools/textures/beds.py` recolours
@@ -294,14 +325,14 @@ Geometry numbers and UV values can be checked here. How they look cannot.
 - **A head standing on the floor turns with its block entity.** The states say
   only which of the six faces it is fixed to; the sixteen steps round are the
   `Rotation` field, which `core.BLOCK_ENTITY_ROTATIONS` reads and hands over as
-  `spinN`, named apart from the facings because those are numbers too.
-  **That numbering starts half a turn from the block convention.** A block at
-  rest faces south and a skull whose `Rotation` is zero faces north, so
-  `make_head_forms.FLOOR` adds 180 to the plain facing and to every one of the
-  sixteen steps. Without it every head in a build faced away from where it was
-  placed. The wall facings do not carry it: those come from `facing_direction`,
-  which names the way the head looks, and the wall form is already built
-  sitting against the wall behind it.
+  a yaw. `make_block` adds it to the turn the floor facing, `1`, already
+  gives, so it is not looked up anywhere.
+  **A `Rotation` of zero faces north**, which is a block's rest pose, so the
+  floor facing takes no turn of its own. The number climbs clockwise seen from
+  above, the other way round from a block angle, and `core.head_yaw` turns it
+  into one. The come from `facing_direction`, which names the way the head
+  looks, and the wall form is already built sitting against the wall behind
+  it.
 - **A conduit is drawn closed.** Bedrock gives the block no state for being
   active, because whether it is depends on the frame of prismarine around it at
   run time, so a structure file cannot say. The open form is written and
@@ -309,7 +340,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
 - **A player head is always Steve.** A skin is the player's own and a resource
   pack cannot know it, so every player head wears the default one.
 - **Every head is the model the game draws it with.** `entity/skull.entity.json`
-  names four geometries, one per kind of head, and the community submodule ships
+  names four geometries, one per kind of head, and the game's resource pack ships
   them: `geometry.mob_head` and `geometry.player_head` in `models/mobs.json`
   alongside `geometry.dragon_head`, and `geometry.piglin` as a file of its own.
   So the piglin keeps its snout, its tusks and its ears, and the dragon all
@@ -317,7 +348,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
 - **A bone that turns has to be turned on the way in.** The piglin's ears are
   bones the game leans thirty degrees about pivots of their own, and a head
   built from the cubes alone leaves them flat against the skull. Scaffold turns
-  a cube about the cube's own middle, so `make_head_forms.on_its_own` moves the
+  a cube about the cube's own middle, so `tools/blocks/heads.on_its_own` moves the
   middle to where the bone's pivot would have put it and keeps the same turn on
   the cube, which comes to the same thing. Bedrock's angles run the other way
   round from the usual mathematical ones, and the ears are what settles that:
@@ -376,8 +407,8 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   block reads a list by its variant, so no variant reaches the second entry and
   the head names both outright. It cannot live in `double_plant` because a shape
   family varies by state and not by variant; a structure written before the block
-  ids were flattened holds `double_plant` with `double_plant_type` and keeps the
-  plain cross.
+  ids were flattened holds `double_plant` with `double_plant_type`, which is
+  translated to `sunflower` as the structure is read and gets the head too.
 - **Every face reads the part of the tile its own cube covers.** `Cube.uv` is the
   rule: up and down take the cube's x and z, north and south its x and y, east
   and west its z and y. Given the whole tile instead, a face two pixels deep
@@ -401,8 +432,8 @@ Geometry numbers and UV values can be checked here. How they look cannot.
 - **A cube rotation about y or z reads backwards against the game.** The block
   is mirrored in x on its way into the model, and a mirror reverses those two
   turns. A rotation about x is unaffected. `tools/checks/render.py` models the
-  mirror, so a picture from it can be trusted; the numbers in
-  `block_shapes.json` cannot be read as world angles. Rotation *tables* are not
+  mirror, so a picture from it can be trusted; a cube's numbers in
+  `block_geometry.json` cannot be read as world angles. Rotation *tables* are not
   affected — every one of those was tuned by eye in game and has the reversal in
   its numbers already.
   **A symmetric pair is safe and a lone angle is not.** A campfire's logs, an
@@ -442,12 +473,10 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   their side faces sat on the other's and the whole overlap flickered. The lid
   keeps the block's full width, since it is the part that lines up with the
   block beside it.
-- **A head on the floor arrives as `spinN`, not as `1`.** Which of sixteen ways
-  it faces is in the block entity rather than the states, so `core.py` hands the
-  turn over as `spin0` to `spin15`, and the plain `1` is only what a head with no
-  entity beside it keeps. `make_block` read anything that was not `1` as a wall
-  value, so every skull anybody had actually placed on the ground was drawn four
-  pixels up and four back, hanging in the air.
+- **A head on the floor keeps its facing of `1`.** Which of sixteen ways it
+  faces arrives separately, as a yaw, so the facing still says "floor".
+  `make_block` reads anything but `1` as a wall value, and a floor head read as
+  one is drawn four pixels up and four back, hanging in the air.
 - **The plain item frame and the glow item frame are two families.** They are
   the same cubes, and the only thing between them is that the plain one's canvas
   is turned half round. A window with both sizes negative is that half turn, the
@@ -552,7 +581,7 @@ Geometry numbers and UV values can be checked here. How they look cannot.
   `brewing_stand_slot_a_bit` and its two fellows say which of the three slots
   are full, and they are shape states, so the family has eight forms.
   `potion_bottle_empty` is an item texture rather than a terrain tile and had to
-  be copied out of the community submodule; a bottle's own colour is not in the
+  be copied out of the game's resource pack; a bottle's own colour is not in the
   block, so every one of them is drawn empty.
 - **The compost heights, the egg positions and the cocoa sizes** are plausible
   rather than measured from the game. The counts and the stages are right; where
@@ -631,22 +660,22 @@ happened to be in state 3. Each is a family of its own, and its stage textures
 are named as literal paths: `terrain_texture.json` has no entry for
 `wheat_stage_0`, which is a file in the pack that nothing points at.
 
-**A state that indexes a texture list has to be in `variants.json`.** Without an
-entry the index is zero, so every one of them draws the first texture in the
+**A state that indexes a texture list has to be named by `texture_by`.** Without
+one the block's own name picks the entry, or the first is read, so every one of them draws the first texture in the
 list, silently: that is what made every two-high plant a sunflower, every short
 fern a tuft of grass, and every mushroom block wear the inside face.
 
 **A head is an entity sheet.** So is a shulker box, a banner and a hanging sign.
-Those sheets live in `textures/entity/` and are copied out of the community
-submodule, because the trimmed pack carries only terrain tiles. Each face names
+Those sheets live in `textures/entity/` and are copied out of the game's
+resource pack, because the trimmed pack carries only terrain tiles. Each face names
 the 16×16 window it reads.
 
 **And a block drawn with an entity's model reads that model's sheet the same
 way.** A copper golem statue is drawn with the geometry the game gives the mob,
 so `make_statue_poses.py` unwraps each of its cubes the way Bedrock lays a box
 out — up and down across the top, then west, front, east and back in a strip —
-and each face names its corner of the 64×64 sheet. `make_block_forms.unwrap` is
-that layout and `make_block_forms.spun` is the turn a bone or a cube carries;
+and each face names its corner of the 64×64 sheet. `tools/blocks/geometry.unwrap` is
+that layout and `geometry.spun` is the turn a bone or a cube carries;
 the mob heads use both. A model built from boxes measured off a picture instead
 comes out as a blob wearing terrain tiles, which is what the statue was.
 
@@ -690,8 +719,8 @@ and four to a block puts eight under a bed.
 left, so the face comes out wearing something else entirely with nothing to say
 it did. The piglin's right ear asked for a tile at `x60` of a 64 wide sheet and
 came out wearing the side of its head. Pull the corner back far enough that the
-tile fits, which is what `make_block_forms.on_sheet` does and what
-`make_head_forms` reads every face through now.
+tile fits, which is what `geometry.on_sheet` does and what
+`tools/blocks/heads.py` reads every face through now.
 
 **A colour that is a whole colour gets a tile of its own, built.** A cauldron's
 dye is an RGB in its block entity, not one of a list, so no lookup table could
@@ -745,7 +774,7 @@ the top with the body's top and bottom under it, and `flower_pot.png` holds the
 rim over the wall in one 16×16 file. A face left to work its window out from
 where its cube sits reads those as if they were one picture: the decorated pot
 came out with holes through it, because the body's top landed on the neck's
-unwrap and on the empty row between the two. `make_block_forms.on_sheet` is what
+unwrap and on the empty row between the two. `geometry.on_sheet` is what
 turns a region of a sheet into a texture reference and a window, pulling the
 tile corner back far enough that the region fits inside it and never past the
 edge of the sheet. Two regions may share a corner, which is why the last face of
@@ -848,7 +877,7 @@ gather. `core.ENTITY_MODELS` is the whole of the bridge:
 ```
 
 `block` is the pseudo block id its shape family is keyed by -- it is an ordinary
-entry in `block_definition.json` and an ordinary family in `block_shapes.json`
+entry in `block_definition.json` and an ordinary family in `block_geometry.json`
 -- `variant` is the entity field that picks the form, and `forms` says what each
 value of that field means. Adding another entity is an entry here and a family
 in `tools/blocks/entities.py`. Nothing else changes: the shape, the textures,
@@ -875,11 +904,13 @@ has to travel exactly that path or it lands somewhere its own building is not;
 turned with it, because a block's rotation state is not either, and an entity
 turned where a block is not would face the wrong way in the same model.
 
-**A yaw is a float too.** An entity is not placed on a grid of facings the way a
-block is; it carries a `Rotation` that can be anything. `core.entity_turn`
-rounds it to the nearest quarter, which is as fine as something drawn in a cell
-can be turned, and the four numbers it produces are the keys the family's
-rotation table is written with.
+**A yaw is an angle, and the angle is the turn.** An entity is not placed on a
+grid of facings the way a block is; it carries a `Rotation` in degrees.
+`make_block` applies it directly, so an entity's family has no rotation table
+at all. An entity's yaw is 0 facing south and 90 facing west, and a block angle
+is 0 facing north and 90 facing west, so `core.entity_yaw` turns one into the
+other as 180 less the yaw. A cushion snaps to the four quarters in game, but
+nothing here depends on that.
 
 **The colour order is the render controller's, not the wool order.**
 `controller.render.cushion` indexes `Array.skins` by `query.variant`, and that
@@ -889,7 +920,7 @@ from its own.
 
 **A family drawn for an entity has no `blocks.json` entry and never will.** An
 entity is not a block, so Mojang's pack does not declare one. The family names
-all six faces outright in its `overwrite` instead, `get_block_texture_paths`
+all six faces' textures outright instead, `get_block_texture_paths`
 answers with nothing rather than raising when a block has no declaration, and
 `tools/checks/blocks.py` resolves a family with literal textures through the
 files themselves.
@@ -905,15 +936,98 @@ never carried a copper golem's pose or a banner's design.
 
 ---
 
+## Redstone dust, and what a block says about it
+
+**Bedrock saves no connections for dust.** A `redstone_wire` in a structure
+carries `redstone_signal` and nothing else; which of its sides join something
+is worked out by the game as it draws, and never written down. Java saves the
+four sides as states, Bedrock does not. So Scaffold joins dust itself:
+`scaffold/dust.py` reads the rules in `lookups/dust_connections.json` and core
+hands each dust `scaffold:dust_<side>`, `none`, `side` or `up`, which the
+`red_dust` family's `data` rule joins into one of its 81 forms
+(`tools/blocks/dust.py`). Every piece of every form reads a window of the
+block's own top picture, so a tweak that repaints the cross repaints the joined
+dust too.
+
+**The table is the rules, by pattern**:
+
+| Key | What it holds |
+| --- | --- |
+| `dust` | the blocks that are dust |
+| `attract` | blocks that draw dust toward them, in order, first match wins: `faces` is `all`, or a list of `front`, `back`, `sides` relative to the block's facing, or plain sides; `facing` names the state and the `directions` table that turns its value into a side |
+| `directions` | a facing state's values as sides: the word states as they are, `facing_direction`'s numbers, and a piston's own numbering |
+| `not_conductors` | blocks that do not carry power: dust runs down past their corner, and they do not cut dust climbing beside them |
+| `holds_dust` | blocks dust can lie on that are not conductors: glass, glowstone, a hopper, a top slab, upside down stairs |
+
+Anything else that the tables draw as one whole cube is taken for a conductor. Dust that climbs a whole block draws a line up its side; up a slab, a hopper or anything else that is not a whole block it joins flat, with nothing on the side, as the game draws it.
+
+**Bedrock differs from Java here, and the table is Bedrock's.** Bedrock draws
+dust toward a piston's back and sides; Java toward neither. Bedrock lets dust
+lie on glass. The rest of the list is Java's behaviour taken as Bedrock's until
+a world says otherwise, which is untested for: comparator sides, the jukebox,
+the lectern and the sculk sensors; slime and honey blocks as non-conductors; and
+whether dust on glowstone, a hopper or a slab is drawn joining the dust below
+it, which Bedrock does not power downward.
+
+**Add-on blocks say it themselves, in the behaviour pack.** A resource pack,
+Mojang's or anybody's, carries nothing about redstone: `blocks.json` is
+pictures and sounds. A custom block declares its redstone behaviour in its
+behaviour pack's block file:
+
+- `minecraft:redstone_producer`: `power`, `strongly_powered_face`, and
+  `connected_faces`, the faces that join a circuit, which is the nearest thing
+  to "dust points here". With `transform_relative` the faces turn with the
+  block's `minecraft:transformation`.
+- `minecraft:redstone_consumer`: `min_power`, and `propagates_power`, whether
+  power passes through it.
+- `minecraft:redstone_conductivity`: `redstone_conductor`, whether it can be
+  powered, and `allows_wire_to_step_down`.
+
+Mojang's documentation describes what these do to power and does not say in so
+many words that dust is drawn toward a producer's connected faces or toward a
+consumer; that reading is untested. Vanilla blocks mostly do not use them:
+Mojang's sample behaviour pack defines 98 blocks, the wool and concrete slabs
+and stairs among them, and those carry only `redstone_conductivity`. The rules
+for repeaters, observers, levers and dust itself live in the game.
+
+**When add-on packs are read**, an add-on block joins dust through
+`Connections.add`, which takes a rule of the table's own shape and reads it
+before the table's: its producer's `connected_faces` as `faces`, its
+`minecraft:transformation` as its facing, and a block whose
+`redstone_conductor` is false into `not_conductors`. Core builds one
+`Connections` per pack, `Scaffold.dust`, for that reader to fill.
+
+## Tables that disagree with Minecraft's numbering
+
+These are drawn as they always were, and each is worth one look in a world with
+the armor stand facing north before anything is changed. Each could be a table
+tuned with the stand facing some other way, or a real quirk of the block.
+
+- **Pistons, sticky pistons, their arms and end rods** have all four sides half
+  a turn from Mojang's `facing_direction`: one facing north is drawn facing
+  south, and one facing west drawn facing east. Up and down agree.
+- **A lightning rod** has east and west swapped.
+- **A vault** has north and south swapped.
+- **A dispenser, a dropper and a command block** put up and down where
+  Minecraft's angles would not: Minecraft turns the front to the top for up,
+  and these tables use a turn of their own.
+- **A wall coral fan's** `coral_direction` matches no numbering of Mojang's that
+  has been checked.
+
 ## Adding a block
 
 1. Put the id in `block_definition.json` against a shape family.
-2. If the family is new, describe it in `block_shapes.json` **and**
-   `block_uv.json`.
-3. If it turns, give it a `block_rotation.json` entry with both numbers and
-   words.
-4. If any of its states change how it looks, map them in `nbt_defs.json`.
-5. If it is built from more than one cube, give it an `overwrite`.
+2. If the family is new, describe it in `block_geometry.json`, through a
+   generator in `tools/blocks/` and `tables.write`.
+3. If it turns, draw it facing north and give it a `block_rotation.json`
+   entry for every value its blocks carry today, with Minecraft's angle for
+   each.
+4. If any of its states change how it looks, give its family the rules that
+   read them: `pick`, `data`, `turn_by` or `texture_by`.
+   If Mojang renamed or split a block that already had an entry, add a rule to
+   `block_upgrades.json` instead of keeping the old id beside the new one.
+5. If it is built from more than one cube, give each cube's faces their own
+   textures.
 6. If it now carries three or more cubes, re-run `tools/blocks/simplify.py`.
 7. Run `tools/checks/coverage.py` and `tools/checks/blocks.py`. Both should
    report nothing.

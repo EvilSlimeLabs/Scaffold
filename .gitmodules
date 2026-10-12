@@ -1,9 +1,6 @@
-[submodule "CommunityVanillaResourcePack"]
-	path = CommunityVanillaResourcePack
-	url = https://github.com/ZtechNetwork/MCBVanillaResourcePack.git
 [submodule "be_tech_pack"]
 	path = be_tech_pack
-	url = git@github.com:EvilSlimeLabs/Bedrock-Technical-Resource-Pack.git
+	url = https://github.com/EvilSlimeLabs/Bedrock-Technical-Resource-Pack.git
 [submodule "bedrock-samples"]
 	path = bedrock-samples
 	url = https://github.com/Mojang/bedrock-samples.git
@@ -11,3 +8,6 @@
 	path = bedrock_tweaks
 	url = https://github.com/BedrockTweaks/Files.git
 	branch = devel
+[submodule "redstone_tweaks"]
+	path = redstone_tweaks
+	url = https://github.com/EvilSlimeLabs/redstone-tweaks-mirror.git

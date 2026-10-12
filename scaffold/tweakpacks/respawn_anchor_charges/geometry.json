@@ -1,0 +1,619 @@
+{
+	"families": {
+		"clearer_respawn_anchor": {
+			"data": {
+				"number": [
+					"respawn_anchor_charge"
+				]
+			},
+			"forms": {
+				"0": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_0"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/top_0"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"1": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_1"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_1"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_1"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_1"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/top_1"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"2": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_2"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_2"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_2"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_2"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/top_2"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"3": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_3"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_3"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_3"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_3"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/top_3"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"4": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_4"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_4"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_4"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_4"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/top_4"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/bottom"
+									}
+								}
+							}
+						}
+					]
+				},
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.95,
+								0.95,
+								0.95
+							],
+							"offset": [
+								0.025,
+								0.025,
+								0.025
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_0"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_0"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_0"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/side_0"
+									}
+								},
+								"up": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/top_0"
+									}
+								},
+								"down": {
+									"uv": [
+										1,
+										1
+									],
+									"size": [
+										-1,
+										-1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/respawn_anchor_charges/bottom"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

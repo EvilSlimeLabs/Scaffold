@@ -23,6 +23,7 @@ import json
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from scaffold import lang_parse
+from scaffold import lookup
 from scaffold import paths
 from scaffold.ui import ui_fonts
 
@@ -38,8 +39,7 @@ def colours():
     global _colours
     if _colours is None:
         try:
-            with open(paths.lookup(COLOURS_FILE), encoding="utf-8") as f:
-                _colours = json.load(f)
+            _colours = lookup.entries(COLOURS_FILE)
         except (OSError, ValueError):
             _colours = {}
     return _colours

@@ -1,116 +1,223 @@
-"""Change one family in a lookup table without reformatting the rest.
+"""Change one family in a lookup table, and nothing else.
 
-`block_uv.json` is not formatted consistently, because some entries keep their
-numeric arrays on one line and most do not. Rewriting the whole file from a
-parsed copy therefore reformats entries nobody touched and buries the real
-change in thousands of lines of noise. Everything here replaces or appends one
-family's span and leaves every byte outside it alone.
+The generators think in the columns the geometry tables used to be kept in: a
+family's shapes, `SHAPES`, and the windows its faces read, `UV`, each a list per
+cube. Both live in `lookups/block_geometry.json` now (see
+`scaffold/block_geometry.py`), so `put` and `load` translate: a generator puts
+one column and the other is read back from the file, or from what the same run
+put a moment ago, and the family is written whole. The file is written in one
+fixed layout, so a change to one family changes only that family's lines.
+
+`ROTATION` is `lookups/block_rotation.json`, and a generator hands it
+Minecraft's own angles, or the name of a state in `lookups/state_rotations.json`
+whose angles the family turns by. A table that is exactly one of those states'
+own is written as that state's name, and `load` reads the name back as the table.
+
+Every generator writes its families in Minecraft's frame: resting facing north,
+in the coordinates a Bedrock `.geo.json` uses. Nothing here turns anything.
 
 Not shipped. The generated pack reads the tables, never this.
 """
 import io
 import json
 import os
-import re
+
+from scaffold import block_geometry as geometry
+from scaffold import lookup
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LOOKUPS = os.path.join(ROOT, "scaffold", "lookups")
+GEOMETRY = os.path.join(LOOKUPS, geometry.GEOMETRY)
+STATES = os.path.join(LOOKUPS, geometry.STATES)
+DEFINITION = os.path.join(LOOKUPS, "block_definition.json")
+ROTATION = os.path.join(LOOKUPS, geometry.ROTATION)
+## the two columns a family's geometry is put and read in; both are kept in
+## GEOMETRY, and neither is a file of its own
 SHAPES = os.path.join(LOOKUPS, "block_shapes.json")
 UV = os.path.join(LOOKUPS, "block_uv.json")
-DEFINITION = os.path.join(LOOKUPS, "block_definition.json")
-ROTATION = os.path.join(LOOKUPS, "block_rotation.json")
 
-## a list whose items are numbers or lists, however deeply nested
-_NUMERIC = re.compile(
-    r"\[\s*((?:-?\d+(?:\.\d+)?|\[[^][]*\])"
-    r"(?:\s*,\s*(?:-?\d+(?:\.\d+)?|\[[^][]*\]))*)\s*\]")
+## the columns this run has put, family by family, so the second of a pair is
+## matched with the first rather than with what the file held before either
+_put = {}
 
 
-def compact(text, rounds=6):
-    """Put arrays of plain numbers back on one line."""
-    for _ in range(rounds):
-        text = _NUMERIC.sub(
-            lambda m: "[%s]" % re.sub(r"\s+", " ", m.group(1)).strip(), text)
-    return text
+def _kind(path):
+    """Which of the three geometry tables a path is, if any."""
+    here = os.path.normcase(os.path.abspath(path))
+    for table, kind in ((SHAPES, "shapes"), (UV, "uv"), (ROTATION, "rotation")):
+        if here == os.path.normcase(os.path.abspath(table)):
+            return kind
+    return None
 
 
-def render(family, value, tight=False):
-    """One family, formatted as the file writes them."""
-    body = json.dumps({family: value}, indent="\t", ensure_ascii=False)
-    body = body[body.index("\n") + 1:body.rindex("\n")]
-    return compact(body) if tight else body
+def _read(path):
+    with io.open(path, encoding="utf-8") as f:
+        return json.load(f)
 
 
-def _span(text, family):
-    """Where a top-level family's entry starts and ends in the raw text."""
-    opening = '\n\t"%s": {' % family
-    start = text.find(opening)
-    if start < 0:
-        return None
-    depth = 0
-    for i in range(text.index("{", start + 1), len(text)):
-        if text[i] == "{":
-            depth += 1
-        elif text[i] == "}":
-            depth -= 1
-            if depth == 0:
-                return start + 1, i + 1
-    raise ValueError("unbalanced braces after %r" % family)
+def _states():
+    return _read(STATES)["states"]
 
 
-def put(path, family, value, tight=False):
-    """Replace a family if the file has it, or append it if it does not."""
-    text = io.open(path, encoding="utf-8").read()
-    block = render(family, value, tight)
-    found = _span(text, family)
-    if found:
-        start, end = found
-        text = text[:start] + block + text[end:]
-        what = "replaced"
-    else:
-        close = text.rstrip().rfind("}")
-        text = text[:close].rstrip() + ",\n" + block + "\n}\n"
-        what = "added"
-    io.open(path, "w", encoding="utf-8", newline="").write(text)
+def _family(name):
+    """The family a column entry belongs to, and which of its sections."""
+    if name.endswith(geometry.LOW_SUFFIX):
+        return name[:-len(geometry.LOW_SUFFIX)], "low"
+    return name, "forms"
+
+
+def _columns(document):
+    return geometry.columns(document["families"])
+
+
+def _write_geometry(document):
+    text = geometry.render_geometry(document)
+    io.open(GEOMETRY, "w", encoding="utf-8", newline="").write(text)
     ## a malformed edit should fail here rather than in a build weeks later
-    json.loads(io.open(path, encoding="utf-8").read())
+    json.loads(io.open(GEOMETRY, encoding="utf-8").read())
+
+
+def _write_rotation(document):
+    text = geometry.render_table(document, "families")
+    io.open(ROTATION, "w", encoding="utf-8", newline="").write(text)
+    json.loads(io.open(ROTATION, encoding="utf-8").read())
+
+
+def _same_turns(table, standard):
+    if set(table) != set(standard):
+        return False
+    for key, turn in table.items():
+        for a, b in zip(turn, standard[key]):
+            gap = (float(a) - float(b)) % 360
+            if min(gap, 360 - gap) > 1e-6:
+                return False
+    return True
+
+
+def named_state(table):
+    """The state whose own turns a table is exactly, or None."""
+    for state, standard in _states().items():
+        if _same_turns(table, standard):
+            return state
+    return None
+
+
+def load(path):
+    """A whole table, as the columns the generators write."""
+    kind = _kind(path)
+    if kind in ("shapes", "uv"):
+        shapes, uvs = _columns(_read(GEOMETRY))
+        return shapes if kind == "shapes" else uvs
+    if kind == "rotation":
+        states = _states()
+        return {family: (dict(states[value]) if isinstance(value, str) else value)
+                for family, value in _read(ROTATION)["families"].items()}
+    return _read(path)
+
+
+def put(path, name, value, tight=False):
+    """Replace a family if the table has it, or add it if it does not.
+
+    `tight` is kept for the generators that pass it; the layout is fixed.
+    """
+    kind = _kind(path)
+    if kind is None:
+        raise ValueError("%s is not a table this writes" % path)
+    if kind == "rotation":
+        document = _read(ROTATION)
+        what = "replaced" if name in document["families"] else "added"
+        ## a state's name stands for that state's own turns
+        document["families"][name] = value if isinstance(value, str)             else named_state(value) or value
+        _write_rotation(document)
+        return what
+
+    document = _read(GEOMETRY)
+    shapes, uvs = _columns(document)
+    held = _put.setdefault(name, {})
+    held[kind] = value
+    shape = held.get("shapes", shapes.get(name))
+    windows = held.get("uv", uvs.get(name))
+    family, section = _family(name)
+    what = "replaced" if family in document["families"] and \
+        section in document["families"][family] else "added"
+    if shape is None or windows is None:
+        ## the first half of a new family: written once the other half is put
+        return "held"
+    forms, problems = geometry.family_from_columns(shape, windows)
+    if problems and "shapes" in held and "uv" in held:
+        raise ValueError("%s: %s" % (name, "; ".join(problems)))
+    document["families"].setdefault(family, {})[section] = forms
+    _write_geometry(document)
     return what
 
 
-def drop(path, family):
+def drop(path, name):
     """Remove a family, if it is there."""
-    text = io.open(path, encoding="utf-8").read()
-    found = _span(text, family)
-    if not found:
+    kind = _kind(path)
+    _put.pop(name, None)
+    if kind == "rotation":
+        document = _read(ROTATION)
+        if name not in document["families"]:
+            return False
+        del document["families"][name]
+        _write_rotation(document)
+        return True
+    document = _read(GEOMETRY)
+    family, section = _family(name)
+    entry = document["families"].get(family)
+    if not entry or section not in entry:
         return False
-    start, end = found
-    ## An entry is one item of an object, so exactly one of the two commas
-    ## either side of it goes with it: the one after, unless this was the last
-    ## item and there is none, in which case the one before. Taking both runs
-    ## the two entries that were its neighbours together.
-    after = end
-    while after < len(text) and text[after] in " \t":
-        after += 1
-    if after < len(text) and text[after] == ",":
-        text = text[:start] + text[after + 1:].lstrip("\n")
-    else:
-        text = (text[:start].rstrip().rstrip(",") + "\n"
-                + text[end:].lstrip("\n"))
-    io.open(path, "w", encoding="utf-8", newline="").write(text)
-    json.loads(io.open(path, encoding="utf-8").read())
+    del entry[section]
+    ## rules with no forms left to choose between are nothing
+    if "forms" not in entry:
+        del document["families"][family]
+    _write_geometry(document)
     return True
+
+
+def rules(family, **found):
+    """Set a family's rules for choosing a form, a turn and a texture.
+
+    Each keyword is one of `pick`, `data`, `turn_by` and `texture_by`, as
+    `scaffold/block_geometry.py` reads them; one given as None is removed. The
+    family has to have been written first.
+    """
+    document = _read(GEOMETRY)
+    entry = document["families"][family]
+    for key, value in found.items():
+        if key not in geometry.RULES:
+            raise ValueError("%s is not a rule" % key)
+        if value is None:
+            entry.pop(key, None)
+        else:
+            entry[key] = value
+    _write_geometry(document)
+
+
+def definitions():
+    """Every block id and the family it is drawn with."""
+    return lookup.unwrap("block_definition.json", lookup.load(DEFINITION))
 
 
 def define(blocks, family):
     """Point block ids at a family, leaving the rest of the file alone."""
-    table = json.load(io.open(DEFINITION, encoding="utf-8"))
+    table = definitions()
     for block in blocks:
         table[block] = family
-    ## the file is one key a line, tab indented, with no space after the colon;
-    ## writing it any other way reformats three thousand lines
-    body = json.dumps(table, indent="\t", ensure_ascii=False,
-                      separators=(",", ":"))
-    io.open(DEFINITION, "w", encoding="utf-8", newline="").write(body + "\n")
+    lookup.save_entries(DEFINITION, table)
+
+
+def forms(family, written, section="forms"):
+    """Replace one family's forms, given whole in format 2.
+
+    For a family simple enough to be written as it is read, with no columns in
+    between. Its rules are kept.
+    """
+    document = _read(GEOMETRY)
+    _put.pop(family, None)
+    document["families"].setdefault(family, {})[section] = written
+    _write_geometry(document)
+    print("   %-18s %s" % (family, ", ".join(written)))
 
 
 def write(family, forms, center=(8, 8, 8)):

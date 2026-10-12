@@ -1,0 +1,1216 @@
+{
+	"families": {
+		"hopper": {
+			"pick": [
+				{
+					"when": {
+						"facing_direction": [
+							1,
+							2,
+							3,
+							4,
+							5
+						]
+					},
+					"form": "side"
+				}
+			],
+			"data": {
+				"join": [
+					"toggle_bit"
+				]
+			},
+			"turn_by": [
+				{
+					"state": "facing_direction"
+				}
+			],
+			"texture_by": {
+				"join": [
+					"facing_direction",
+					"toggle_bit"
+				],
+				"values": {
+					"0-0": 0,
+					"0-1": 8,
+					"1-0": 2,
+					"1-1": 10,
+					"2-0": 2,
+					"2-1": 10,
+					"3-0": 2,
+					"3-1": 10,
+					"4-0": 2,
+					"4-1": 10,
+					"5-0": 2,
+					"5-1": 10
+				}
+			},
+			"forms": {
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.4375,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.5625,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/top_down_unlocked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 90
+									}
+								}
+							}
+						},
+						{
+							"size": [
+								0.5,
+								0.375,
+								0.5
+							],
+							"offset": [
+								0.25,
+								0.25,
+								0.25
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.25,
+										0.25
+									],
+									"size": [
+										0.5,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.25,
+										0.25
+									],
+									"size": [
+										0.5,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 90
+									}
+								}
+							}
+						},
+						{
+							"size": [
+								0.25,
+								0.25,
+								0.25
+							],
+							"offset": [
+								0.375,
+								0.0625,
+								0.375
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.375,
+										0.375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.375,
+										0.375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 90
+									}
+								}
+							}
+						}
+					]
+				},
+				"default-1": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.4375,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.5625,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/top_down_locked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 90
+									}
+								}
+							}
+						},
+						{
+							"size": [
+								0.5,
+								0.375,
+								0.5
+							],
+							"offset": [
+								0.25,
+								0.25,
+								0.25
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.25,
+										0.25
+									],
+									"size": [
+										0.5,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.25,
+										0.25
+									],
+									"size": [
+										0.5,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 90
+									}
+								}
+							}
+						},
+						{
+							"size": [
+								0.25,
+								0.25,
+								0.25
+							],
+							"offset": [
+								0.375,
+								0.0625,
+								0.375
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.375,
+										0.375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.375,
+										0.375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 90
+									}
+								}
+							}
+						}
+					]
+				},
+				"side": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.4375,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.5625,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/top_side_unlocked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 90
+									}
+								}
+							}
+						},
+						{
+							"size": [
+								0.5,
+								0.375,
+								0.5
+							],
+							"offset": [
+								0.25,
+								0.25,
+								0.25
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.25,
+										0.25
+									],
+									"size": [
+										0.5,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.25,
+										0.25
+									],
+									"size": [
+										0.5,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 90
+									}
+								}
+							}
+						},
+						{
+							"size": [
+								0.25,
+								0.25,
+								0.25
+							],
+							"offset": [
+								0.375,
+								0.3125,
+								0.0625
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.375,
+										0.4375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.375,
+										0.4375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0625,
+										0.4375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0625,
+										0.4375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.375,
+										0.0625
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_unlocked",
+										"turn": 90
+									}
+								}
+							}
+						}
+					]
+				},
+				"side-1": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								1.0,
+								0.4375,
+								1.0
+							],
+							"offset": [
+								0.0,
+								0.5625,
+								0.0
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										0.4375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/top_side_locked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.0,
+										0.0
+									],
+									"size": [
+										1.0,
+										1.0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 90
+									}
+								}
+							}
+						},
+						{
+							"size": [
+								0.5,
+								0.375,
+								0.5
+							],
+							"offset": [
+								0.25,
+								0.25,
+								0.25
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.25,
+										0.375
+									],
+									"size": [
+										0.5,
+										0.375
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.25,
+										0.25
+									],
+									"size": [
+										0.5,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.25,
+										0.25
+									],
+									"size": [
+										0.5,
+										0.5
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 90
+									}
+								}
+							}
+						},
+						{
+							"size": [
+								0.25,
+								0.25,
+								0.25
+							],
+							"offset": [
+								0.375,
+								0.3125,
+								0.0625
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0.375,
+										0.4375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0.375,
+										0.4375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0.0625,
+										0.4375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0.0625,
+										0.4375
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0.375,
+										0.6875
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 180
+									}
+								},
+								"down": {
+									"uv": [
+										0.375,
+										0.0625
+									],
+									"size": [
+										0.25,
+										0.25
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/hopper_directions/side_locked",
+										"turn": 90
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

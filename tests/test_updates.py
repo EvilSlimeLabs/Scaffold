@@ -77,7 +77,8 @@ class LeftoverTests(unittest.TestCase):
 
     Scaffold used to update by renaming the running file to `.old` and writing
     the new build where it stood. Nothing does that any more, but anyone coming
-    from 3.0 or older arrives with one on disk.
+    from a build made before the rename to Scaffold, numbered up to 3.0.1,
+    arrives with one on disk.
     """
 
     def setUp(self):

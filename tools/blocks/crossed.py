@@ -37,10 +37,11 @@ sys.path.insert(0, ROOT)
 
 from tools.blocks import tables as lookup_writer
 from tools.blocks.geometry import Cube, FACES, build
+from tools.blocks import tables as _tables
 
 LOOKUPS = os.path.join(ROOT, "scaffold", "lookups")
-SHAPES = os.path.join(LOOKUPS, "block_shapes.json")
-UV = os.path.join(LOOKUPS, "block_uv.json")
+SHAPES = lookup_writer.SHAPES
+UV = lookup_writer.UV
 DEFINITION = os.path.join(LOOKUPS, "block_definition.json")
 ROTATION = os.path.join(LOOKUPS, "block_rotation.json")
 
@@ -59,12 +60,8 @@ def write(family, forms):
 
 
 def define(blocks, family):
-    table = json.load(io.open(DEFINITION, encoding="utf-8"))
-    for block in blocks:
-        table[block] = family
-    body = json.dumps(table, indent="\t", ensure_ascii=False,
-                      separators=(",", ":"))
-    io.open(DEFINITION, "w", encoding="utf-8", newline="").write(body + "\n")
+    """Point block ids at a shape family."""
+    _tables.define(blocks, family)
 
 
 def unturn(family):

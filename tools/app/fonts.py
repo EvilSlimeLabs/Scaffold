@@ -25,10 +25,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+from tools import sources
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FONTS = os.path.join(ROOT, "scaffold", "fonts")
 LANGS = os.path.join(ROOT, "scaffold", "lookups", "lang")
-SGA_SHEET = os.path.join(ROOT, "CommunityVanillaResourcePack", "font", "ascii_sga.png")
+SGA_SHEET = sources.resource_pack("font", "ascii_sga.png")
 
 CJK_OUT = "NotoSansSC-Scaffold.ttf"
 SGA_OUT = "ScaffoldEnchanting.ttf"

@@ -14,10 +14,15 @@ pixels where they differ are exactly the six book faces. It comes out as three
 columns four pixels wide at x 1, 6 and 11, and two rows six pixels tall at y 1
 and 9.
 
-The front is the **south** face, at `z` 16, because a block at rest faces south
-and that is where the rotation tables put `direction` 0. The books stand proud
-of it. Put on the north face instead, the shelf reads its books out of the wall
-it is against and every one of its four facings is half a turn out.
+The front is the **north** face, at `z` 0, because a block at rest faces north.
+The books stand proud of it. Put on the south face instead, the shelf reads its
+books out of the wall it is against and every one of its four facings is half a
+turn out.
+
+**The sides read each other's declared texture**, east the west one and west
+the east one, and the top and bottom read their tiles backwards both ways. That
+is how the shelf has always been drawn, and the game's own sides and top are
+symmetric enough that nobody has seen otherwise.
 
 `blocks.json` names the front texture `chiseled_bookshelf_front` and the back
 `chiseled_bookshelf_side`, but both are drawn from the empty shelf here rather
@@ -25,7 +30,7 @@ than taken from those names: `chiseled_bookshelf_front` resolves through
 `terrain_texture.json` to the empty shelf, which would put a shelf front on the
 back of the block as well, so the back names the side texture outright.
 
-Writes into `lookups/block_shapes.json` and `lookups/block_uv.json`; nothing here
+Writes into `lookups/block_geometry.json`; nothing here
 is needed at run time.
 """
 import io
@@ -38,8 +43,8 @@ sys.path.insert(0, ROOT)
 
 from tools.blocks import tables as lookup_writer
 
-SHAPES = os.path.join(ROOT, "scaffold", "lookups", "block_shapes.json")
-UV = os.path.join(ROOT, "scaffold", "lookups", "block_uv.json")
+SHAPES = lookup_writer.SHAPES
+UV = lookup_writer.UV
 FACES = ("up", "down", "north", "south", "east", "west")
 FAMILY = "chiseled_bookshelf"
 
@@ -63,10 +68,10 @@ BODY = 0.95
 def slot_box(index):
     """One slot, as a texture window and as a box on the front of the block.
 
-    The front is the south face, and a face's texture column is read as its
-    position along x, the way every other family in the tables reads one. The
+    The front is the north face, which reads its tile left to right as x
+    climbs: seen from the north, the low side of x, east, is on the left. The
     texture row counts down from the top of the tile while y counts up from the
-    floor, so the two are turned over here.
+    floor, so the rows are turned over here.
     """
     column = COLUMNS[index % 3]
     row = ROWS[index // 3]
@@ -82,9 +87,15 @@ def variant(mask):
     filled = [i for i in range(6) if mask & (1 << i)]
 
     sizes = [[BODY, BODY, BODY]]
-    offsets = [[0, 0, 0]]
+    ## the case sits in the middle of its cell, and the books on it
+    inset = round((1 - BODY) / 2, 6)
+    offsets = [[inset, inset, inset]]
     windows = {face: [[1, 1]] for face in FACES}
     origins = {face: [[0, 0]] for face in FACES}
+    ## the top and bottom read backwards, from their far corner
+    for face in ("up", "down"):
+        windows[face] = [[-1, -1]]
+        origins[face] = [[1, 1]]
     ## the shelf's own front, which is where the empty slots are drawn
     front = [EMPTY]
 
@@ -97,20 +108,25 @@ def variant(mask):
         ## proud of the shelf's own edges and the six of them spread wider than
         ## the slots they are meant to fill. Scaling both the size and the
         ## corner by BODY keeps each book in its slot.
-        sizes.append([wide * BODY, tall * BODY, PROUD])
-        ## standing on the front of the block, which is its south face
-        offsets.append([x * BODY, y * BODY, BODY])
+        sizes.append([round(wide * BODY, 6), round(tall * BODY, 6), PROUD])
+        ## standing on the front of the block, which is its north face
+        offsets.append([round(inset + x * BODY, 6), round(inset + y * BODY, 6),
+                        round(inset - PROUD, 6)])
         for face in FACES:
-            ## only the south face of a panel is really seen; the slivers round
+            ## only the north face of a panel is really seen; the slivers round
             ## its edge take the same window rather than a meaningless one
-            windows[face].append([wide, tall])
-            origins[face].append([u, v])
+            if face in ("up", "down"):
+                windows[face].append([-wide, -tall])
+                origins[face].append([u + wide, v + tall])
+            else:
+                windows[face].append([wide, tall])
+                origins[face].append([u, v])
         front.append(OCCUPIED)
 
     shape = {
         "size": sizes,
         "offsets": offsets,
-        "center": [BODY / 2, BODY / 2, BODY / 2],
+        "center": [0.5, 0.5, 0.5],
     }
     uv = {
         "uv_sizes": windows,
@@ -118,8 +134,10 @@ def variant(mask):
         ## the shelf front and every panel name their texture outright, and so
         ## does the back: the name blocks.json puts on it resolves to the shelf
         ## front, which would draw a second set of slots on the wall side
-        "overwrite": {"south": front,
-                      "north": [BACK] + [OCCUPIED] * len(filled)},
+        "overwrite": {"north": front,
+                      "south": [BACK] + [OCCUPIED] * len(filled),
+                      "east": ["@west"] * (1 + len(filled)),
+                      "west": ["@east"] * (1 + len(filled))},
     }
     return shape, uv
 
@@ -141,8 +159,7 @@ def main():
 
     total = sum(len(shapes[k]["size"]) for k in shapes)
     print("%d variants, %d cubes across the table" % (len(shapes), total))
-    for name in (SHAPES, UV):
-        json.loads(io.open(name, encoding="utf-8").read())
+    json.loads(io.open(lookup_writer.GEOMETRY, encoding="utf-8").read())
     print("both tables still parse")
 
 

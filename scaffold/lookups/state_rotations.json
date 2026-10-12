@@ -1,0 +1,14 @@
+{
+	"$schema": "schema/state_rotations.schema.json",
+	"format": 2,
+	"minecraft": "26.50",
+	"about": "The turn Minecraft gives each value of each state that turns a block: x, y and z in degrees.",
+	"states": {
+		"direction": {"0": [0, 180, 0], "1": [0, 90, 0], "2": [0, 0, 0], "3": [0, 270, 0]},
+		"facing_direction": {"0": [90, 0, 0], "1": [270, 0, 0], "2": [0, 0, 0], "3": [0, 180, 0], "4": [0, 90, 0], "5": [0, 270, 0]},
+		"ground_sign_direction": {"0": [0, 180, 0], "1": [0, 157.5, 0], "2": [0, 135, 0], "3": [0, 112.5, 0], "4": [0, 90, 0], "5": [0, 67.5, 0], "6": [0, 45, 0], "7": [0, 22.5, 0], "8": [0, 0, 0], "9": [0, 337.5, 0], "10": [0, 315, 0], "11": [0, 292.5, 0], "12": [0, 270, 0], "13": [0, 247.5, 0], "14": [0, 225, 0], "15": [0, 202.5, 0]},
+		"minecraft:cardinal_direction": {"north": [0, 0, 0], "west": [0, 90, 0], "south": [0, 180, 0], "east": [0, 270, 0]},
+		"minecraft:facing_direction": {"down": [90, 0, 0], "up": [270, 0, 0], "north": [0, 0, 0], "south": [0, 180, 0], "west": [0, 90, 0], "east": [0, 270, 0]},
+		"weirdo_direction": {"0": [0, 270, 0], "1": [0, 90, 0], "2": [0, 180, 0], "3": [0, 0, 0]}
+	}
+}

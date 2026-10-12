@@ -1,9 +1,7 @@
 {
-	"metadata": {
-		"version": "1.0.0",
-		"description": "Block names for Scaffold",
-		"MCVersion": "26.50"
-	},
+	"format": 2,
+	"minecraft": "26.50",
+	"about": "The name a block list gives each block id and variant.",
 	"names": {
 		"minecraft:raw_iron_block": {
 			"default": "Raw Iron Block"
@@ -977,9 +975,6 @@
 		"minecraft:anvil": {
 			"default": "Anvil"
 		},
-		"minecraft:grass": {
-			"default": "Grass Block"
-		},
 		"minecraft:soul_campfire": {
 			"default": "Soul Campfire"
 		},
@@ -991,9 +986,6 @@
 		},
 		"minecraft:sea_lantern": {
 			"default": "Sea Lantern"
-		},
-		"minecraft:chain": {
-			"default": "Chains"
 		},
 		"minecraft:end_rod": {
 			"default": "End Rod"
@@ -1012,25 +1004,6 @@
 		},
 		"minecraft:lodestone": {
 			"default": "Lodestone"
-		},
-		"minecraft:carpet": {
-			"gray": "Gray Carpet",
-			"black": "Black Carpet",
-			"red": "Red Carpet",
-			"green": "Green Carpet",
-			"brown": "Brown Carpet",
-			"blue": "Blue Carpet",
-			"purple": "Purple Carpet",
-			"cyan": "Cyan Carpet",
-			"silver": "Light Gray Carpet",
-			"pink": "Pink Carpet",
-			"lime": "Lime Carpet",
-			"yellow": "Yellow Carpet",
-			"light_blue": "Light Blue Carpet",
-			"magenta": "Magenta Carpet",
-			"orange": "Orange Carpet",
-			"white": "White Carpet",
-			"default": "Carpet"
 		},
 		"minecraft:black_wool": {
 			"default": "Black Wool"
@@ -1131,25 +1104,6 @@
 		"minecraft:white_concrete": {
 			"default": "White Concrete"
 		},
-		"minecraft:concrete_powder": {
-			"black": "Black Concrete Powder",
-			"red": "Red Concrete Powder",
-			"green": "Green Concrete Powder",
-			"brown": "Brown Concrete Powder",
-			"blue": "Blue Concrete Powder",
-			"purple": "Purple Concrete Powder",
-			"cyan": "Cyan Concrete Powder",
-			"silver": "Light Grey Concrete Powder",
-			"gray": "Grey Concrete Powder",
-			"pink": "Pink Concrete Powder",
-			"lime": "Lime Concrete Powder",
-			"yellow": "Yellow Concrete Powder",
-			"light_blue": "Blue Concrete Powder",
-			"magenta": "Magenta Concrete Powder",
-			"orange": "Orange Concrete Powder",
-			"white": "White Concrete Powder",
-			"default": "Concrete Powder"
-		},
 		"minecraft:black_concrete_powder": {
 			"default": "Black Concrete Powder"
 		},
@@ -1200,25 +1154,6 @@
 		},
 		"minecraft:cocoa": {
 			"default": "Cocoa Bean"
-		},
-		"minecraft:stained_hardened_clay": {
-			"black": "Black Terracotta",
-			"red": "red  Terracotta",
-			"green": "Green  Terracotta",
-			"brown": "Brown  Terracotta",
-			"blue": "Blue Terracotta",
-			"purple": "Purple Terracotta",
-			"cyan": "Cyan Terracotta",
-			"silver": "Light Gray Terracotta",
-			"gray": "Gray Terracotta",
-			"pink": "Pink Terracotta",
-			"lime": "Lime Terracotta",
-			"yellow": "Yellow Terracotta",
-			"light_blue": "Light Blue Terracotta",
-			"magenta": "Magenta Terracotta",
-			"orange": "Orange Terracotta",
-			"white": "White Terracotta",
-			"default": "Terracotta"
 		},
 		"minecraft:black_terracotta": {
 			"default": "Black Terracotta"
@@ -1322,9 +1257,6 @@
 		"minecraft:blue_glazed_terracotta": {
 			"default": "Blue Glazed Terracotta"
 		},
-		"minecraft:skull": {
-			"default": "Mob Head"
-		},
 		"minecraft:turtle_egg": {
 			"default": "Turtle Egg"
 		},
@@ -1394,24 +1326,6 @@
 		"minecraft:black_candle": {
 			"default": "Black Candle"
 		},
-		"minecraft:shulker_box": {
-			"white": "White Shulker Box",
-			"gray": "Grey Shulker Box",
-			"silver": "Light Grey Shulker Box",
-			"green": "Green Shulker Box",
-			"black": "Black Shulker Box",
-			"cyan": "Cyan Shulker Box",
-			"brown": "Brown Shulker Box",
-			"light_blue": "Light Blue Shulker Box",
-			"red": "Red Shulker Box",
-			"blue": "Blue Shulker Box",
-			"orange": "Orange Shulker Box",
-			"purple": "Purple Shulker Box",
-			"lime": "Lime Shulker Box",
-			"pink": "Pink Shulker Box",
-			"magenta": "Magenta Shulker Box",
-			"default": "Shulker Box"
-		},
 		"minecraft:white_shulker_box": {
 			"default": "White Shulker Box"
 		},
@@ -1459,27 +1373,6 @@
 		},
 		"minecraft:undyed_shulker_box": {
 			"default": "Shulker Box"
-		},
-		"minecraft:coral_fan_hang": {
-			"default": "Coral Fan"
-		},
-		"minecraft:coral_fan_dead": {
-			"default": "Dead Coral Fan"
-		},
-		"minecraft:coral": {
-			"default": "Coral"
-		},
-		"minecraft:coral_fan": {
-			"default": "Coral Fan"
-		},
-		"minecraft:coral_block": {
-			"default": "Coral Block"
-		},
-		"minecraft:coral_fan_hang2": {
-			"default": "Coral Fan"
-		},
-		"minecraft:coral_fan_hang3": {
-			"default": "Coral Fan"
 		},
 		"minecraft:water": {
 			"default": "Water"
@@ -1685,36 +1578,8 @@
 		"minecraft:spruce_wall_sign": {
 			"default": "Spruce Sign"
 		},
-		"minecraft:wooden_slab": {
-			"default": "Spruce Slab"
-		},
-		"minecraft:double_wooden_slab": {
-			"default": "Oak Slab"
-		},
 		"minecraft:spruce_pressure_plate": {
 			"default": "Spruce Pressure Plate"
-		},
-		"minecraft:wood": {
-			"default": "Oak Wood"
-		},
-		"minecraft:leaves": {
-			"default": "Oak Leaves",
-			"oak": "Oak Leaves",
-			"spruce": "Spruce Leaves",
-			"birch": "Birch Leaves",
-			"jungle": "Jungle Leaves"
-		},
-		"minecraft:planks": {
-			"default": "Spruce Planks"
-		},
-		"minecraft:sapling": {
-			"default": "Oak Sapling",
-			"oak": "Oak Sapling",
-			"spruce": "Spruce Sapling",
-			"birch": "Birch Sapling",
-			"jungle": "Jungle Sapling",
-			"acacia": "Acacia Sapling",
-			"dark_oak": "Dark Oak Sapling"
 		},
 		"minecraft:birch_button": {
 			"default": "Birch Button"
@@ -1802,11 +1667,6 @@
 		},
 		"minecraft:acacia_wall_sign": {
 			"default": "Acacia Sign"
-		},
-		"minecraft:leaves2": {
-			"default": "Acacia Leaves",
-			"acacia": "Acacia Leaves",
-			"dark_oak": "Dark Oak Leaves"
 		},
 		"minecraft:dark_oak_trapdoor": {
 			"default": "Dark Oak Trapdoor"
@@ -1934,9 +1794,6 @@
 		"minecraft:chorus_flower": {
 			"default": "Chorus Flower"
 		},
-		"minecraft:tallgrass": {
-			"default": "Tall Grass"
-		},
 		"minecraft:big_dripleaf": {
 			"default": "Big Dripleaf"
 		},
@@ -1964,22 +1821,6 @@
 		"minecraft:melon_stem": {
 			"default": "Melon Stem"
 		},
-		"minecraft:yellow_flower": {
-			"default": "Dandelion"
-		},
-		"minecraft:red_flower": {
-			"poppy": "Poppy",
-			"orchid": "Blue Orchid",
-			"allium": "Allium",
-			"houstonia": "Azure Bluet",
-			"cornflower": "Cornflower",
-			"tulip_red": "Red Tulip",
-			"tulip_orange": "Orange Tulip",
-			"tulip_white": "White Tulip",
-			"tulip_pink": "Pink Tulip",
-			"oxeye": "Oxeye Daisy",
-			"default": "Flower"
-		},
 		"minecraft:bamboo_sapling": {
 			"default": "Bamboo"
 		},
@@ -1995,30 +1836,8 @@
 		"minecraft:lit_pumpkin": {
 			"default": "Jack O'Lantern"
 		},
-		"minecraft:stone_block_slab2": {
-			"prismarine_dark": "Dark Prismarine Slab",
-			"prismarine_brick": "Prismarine Brick Slab",
-			"prismarine_rough": "Prismarine Slab",
-			"smooth_sandstone": "Smooth Sandstone Slab",
-			"red_sandstone": "Red Sandstone Slab",
-			"mossy_cobblestone": "Mossy Cobblestone Slab",
-			"red_nether_brick": "Red Nether Brick Slab",
-			"purpur": "Purpur Slab",
-			"default": "Stone Block Slab2"
-		},
 		"minecraft:cactus": {
 			"default": "Cactus"
-		},
-		"minecraft:double_stone_block_slab2": {
-			"prismarine_dark": "Dark Prismarine",
-			"prismarine_brick": "Prismarine Bricks",
-			"prismarine_rough": "Prismarine",
-			"smooth_sandstone": "Smooth Sandstone",
-			"red_sandstone": "Red Sandstone",
-			"mossy_cobblestone": "Mossy Cobblestone",
-			"red_nether_brick": "Red Nether Brick",
-			"purpur": "Purpur",
-			"default": "Double Stone Block Slab2"
 		},
 		"minecraft:nether_wart": {
 			"default": "Nether Wart"
@@ -2030,52 +1849,16 @@
 			"default": "Sand"
 		},
 		"minecraft:sandstone": {
-			"smooth": "Smooth Sandstone",
-			"heiroglyphs": "Chiseled Sandstone",
-			"cut": "Cut Sandstone",
 			"default": "Sandstone"
 		},
 		"minecraft:red_sandstone": {
-			"smooth": "Smooth Red Sandstone",
-			"heiroglyphs": "Chiseled Red Sandstone",
-			"cut": "Cut Red Sandstone",
 			"default": "Red Sandstone"
 		},
 		"minecraft:lava": {
 			"default": "Lava"
 		},
-		"minecraft:stone_block_slab3": {
-			"smooth_red_sandstone": "Smooth Red Sandstone Slab",
-			"polished_granite": "Polished Granite Slab",
-			"polished_diorite": "Polished Diorite Slab",
-			"polished_andesite": "Polished Andesite Slab",
-			"granite": "Granite Slab",
-			"diorite": "Diorite Slab",
-			"andesite": "Andesite Slab",
-			"end_stone_brick": "End Stone Brick Slab",
-			"default": "Stone Block Slab3"
-		},
-		"minecraft:stone_block_slab4": {
-			"smooth_quartz": "Smooth Quartz Slab",
-			"cut_sandstone": "Cut Sandstone Slab",
-			"cut_red_sandstone": "Cut Red Sandstone Slab",
-			"stone": "Stone Slab",
-			"mossy_stone_brick": "Mossy Stone Brick Slab",
-			"default": "Stone Block Slab4"
-		},
 		"minecraft:bubble_column": {
 			"default": "Water"
-		},
-		"minecraft:double_stone_block_slab3": {
-			"smooth_red_sandstone": "Smooth Red Sandstone",
-			"polished_granite": "Polished Granite",
-			"polished_diorite": "Polished Diorite",
-			"polished_andesite": "Polished Andesite",
-			"granite": "Granite",
-			"diorite": "Diorite",
-			"andesite": "Andesite",
-			"end_stone_brick": "End Stone Brick",
-			"default": "Double Stone Block Slab3"
 		},
 		"minecraft:dark_prismarine_stairs": {
 			"default": "Dark Prismarine Stairs"
@@ -2091,14 +1874,6 @@
 		},
 		"minecraft:waxed_oxidized_cut_copper_slab": {
 			"default": "Waxed Oxidized Cut Copper Slab"
-		},
-		"minecraft:double_stone_block_slab4": {
-			"smooth_quartz": "Smooth Quartz",
-			"cut_sandstone": "Cut Sandstone",
-			"cut_red_sandstone": "Cut Red Sandstone",
-			"stone": "Stone",
-			"mossy_stone_brick": "Mossy Stone Bricks",
-			"default": "Double Stone Block Slab4"
 		},
 		"minecraft:waxed_double_cut_copper_slab": {
 			"default": "Waxed Cut Copper"
@@ -2118,16 +1893,6 @@
 		"minecraft:mud": {
 			"default": "Mud"
 		},
-		"minecraft:stone_block_slab": {
-			"quartz": "Quartz Slab",
-			"sandstone": "Sandstone Slab",
-			"cobblestone": "Cobblestone Slab",
-			"stone_brick": "Stonebrick Slab",
-			"brick": "Brick Slab",
-			"nether_brick": "Nether Brick Slab",
-			"smooth_stone": "Smooth Stone Slab",
-			"default": "Stone Block Slab"
-		},
 		"minecraft:mycelium": {
 			"default": "Mycelium"
 		},
@@ -2142,16 +1907,6 @@
 		},
 		"minecraft:oxidized_cut_copper_slab": {
 			"default": "Oxidized Cut Copper Slab"
-		},
-		"minecraft:double_stone_block_slab": {
-			"quartz": "Quartz Block",
-			"sandstone": "Sandstone",
-			"cobblestone": "Cobblestone",
-			"stone_brick": "Stone Brick",
-			"brick": "Brick",
-			"nether_brick": "Nether Brick",
-			"smooth_stone": "Smooth Stone Double Slab",
-			"default": "Double Stone Block Slab"
 		},
 		"minecraft:podzol": {
 			"default": "Podzol"
@@ -2211,7 +1966,6 @@
 			"default": "Snow Layers"
 		},
 		"minecraft:purpur_block": {
-			"lines": "Purpur Pillar",
 			"default": "Purpur Block"
 		},
 		"minecraft:granite_stairs": {
@@ -2228,9 +1982,6 @@
 		},
 		"minecraft:smooth_red_sandstone_stairs": {
 			"default": "Smooth Red Sandstone Stairs"
-		},
-		"minecraft:monster_egg": {
-			"default": "Infested Stone"
 		},
 		"minecraft:soul_sand": {
 			"default": "Soul Sand"
@@ -2413,8 +2164,6 @@
 			"default": "Blackstone"
 		},
 		"minecraft:quartz_block": {
-			"smooth": "Smooth Quartz Block",
-			"chiseled": "Chiseled Quartz Block",
 			"default": "Quartz Block"
 		},
 		"minecraft:reinforced_deepslate": {
@@ -2424,8 +2173,6 @@
 			"default": "Netherrack"
 		},
 		"minecraft:prismarine": {
-			"dark": "Dark Prismarine",
-			"bricks": "Prismarine Bricks",
 			"default": "Prismarine"
 		},
 		"minecraft:cut_copper": {
@@ -2444,13 +2191,6 @@
 			"default": "Magma"
 		},
 		"minecraft:stone": {
-			"granite_smooth": "Polished Granite",
-			"diorite_smooth": "Polished Diorite",
-			"andesite_smooth": "Polished Andesite",
-			"stone": "Stone",
-			"granite": "Granite",
-			"diorite": "Diorite",
-			"andesite": "Andesite",
 			"default": "Stone"
 		},
 		"minecraft:cracked_nether_bricks": {
@@ -2497,10 +2237,6 @@
 		},
 		"minecraft:mossy_cobblestone": {
 			"default": "Mossy Cobblestone"
-		},
-		"minecraft:stonebrick": {
-			"default": "Stone Bricks",
-			"mossy": "Mossy Stone Brick"
 		},
 		"minecraft:brick_block": {
 			"default": "Brick"
@@ -2560,20 +2296,6 @@
 			"default": "Dragon Egg"
 		},
 		"minecraft:cobblestone_wall": {
-			"cobblestone": "Cobblestone Wall",
-			"mossy_cobblestone": "Mossy Cobblestone Wall",
-			"granite": "Granite Wall",
-			"diorite": "Diorite Wall",
-			"andesite": "Andesite Wall",
-			"sandstone": "Sandstone Wall",
-			"red_sandstone": "Red Sandstone Wall",
-			"stone_brick": "Stone Brick Wall",
-			"brick": "Brick Wall",
-			"nether_brick": "Nether Brick Wall",
-			"red_nether_brick": "Red Nether Brick Wall",
-			"end_brick": "End Brick Wall",
-			"prismarine": "Prismarine Wall",
-			"mossy_stone_brick": "Mossy Stone Brick",
 			"default": "Cobblestone Wall"
 		},
 		"minecraft:blackstone_wall": {
@@ -2620,25 +2342,6 @@
 		},
 		"minecraft:web": {
 			"default": "Cobweb"
-		},
-		"minecraft:stained_glass": {
-			"default": "Stained Glass",
-			"white": "White Stained Glass",
-			"gray:": "Gray Stained Glass",
-			"silver": "Light Gray Stained Glass",
-			"black:": "Black Stained Glass",
-			"brown:": "Brown Stained Glass",
-			"Red:": "Red Stained Glass",
-			"orange:": "Orange Stained Glass",
-			"yellow:": "Yellow Stained Glass",
-			"lime:": "Lime Stained Glass",
-			"green:": "Green Stained Glass",
-			"cyan:": "Cyan Stained Glass",
-			"light_blue:": "Light Blue Stained Glass",
-			"blue:": "Blue Stained Glass",
-			"purple:": "Purple Stained Glass",
-			"magenta:": "Magenta Stained Glass",
-			"pink:": "Pink Stained Glass"
 		},
 		"minecraft:white_stained_glass": {
 			"default": "White Stained Glass"
@@ -2687,25 +2390,6 @@
 		},
 		"minecraft:pink_stained_glass": {
 			"default": "Pink Stained Glass"
-		},
-		"minecraft:stained_glass_pane": {
-			"default": "Stained Glass Pane",
-			"white": "White Stained Glass Pane",
-			"gray:": "Gray Stained Glass Pane",
-			"silver": "Light Gray Stained Glass Pane",
-			"black:": "Black Stained Glass Pane",
-			"brown:": "Brown Stained Glass Pane",
-			"Red:": "Red Stained Glass Pane",
-			"orange:": "Orange Stained Glass Pane",
-			"yellow:": "Yellow Stained Glass Pane",
-			"lime:": "Lime Stained Glass Pane",
-			"green:": "Green Stained Glass Pane",
-			"cyan:": "Cyan Stained Glass Pane",
-			"light_blue:": "Light Blue Stained Glass Pane",
-			"blue:": "Blue Stained Glass Pane",
-			"purple:": "Purple Stained Glass Pane",
-			"magenta:": "Magenta Stained Glass Pane",
-			"pink:": "Pink Stained Glass Pane"
 		},
 		"minecraft:white_stained_glass_pane": {
 			"default": "White Stained Glass Pane"
@@ -3007,14 +2691,8 @@
 		"minecraft:mangrove_door": {
 			"default": "Mangrove Door"
 		},
-		"minecraft:double_plant": {
-			"default": "Double Plant"
-		},
 		"minecraft:moving_block": {
 			"default": "Moving Block"
-		},
-		"minecraft:stickyPistonArmCollision": {
-			"default": "Ignore"
 		},
 		"minecraft:warped_door": {
 			"default": "Warped Door"
@@ -3231,24 +2909,6 @@
 		},
 		"minecraft:reeds": {
 			"default": "Sugar Cane"
-		},
-		"minecraft:tripWire": {
-			"default": "Tripwire"
-		},
-		"minecraft:fence": {
-			"default": "Oak Fence"
-		},
-		"minecraft:log": {
-			"oak": "Oak Log",
-			"spruce": "Spruce Log",
-			"birch": "Birch Log",
-			"jungle": "Jungle Log",
-			"default": "Oak Log"
-		},
-		"minecraft:log2": {
-			"acacia": "Acacia Log",
-			"dark_oak": "Dark Oak Log",
-			"default": "Acacia Log"
 		},
 		"minecraft:poplar_planks": {
 			"default": "Poplar Planks"
@@ -3667,9 +3327,6 @@
 		"minecraft:chemical_heat": {
 			"default": "Chemical Heat"
 		},
-		"minecraft:chemistry_table": {
-			"default": "Chemistry Table"
-		},
 		"minecraft:cherry_shelf": {
 			"default": "Cherry Shelf"
 		},
@@ -3720,50 +3377,6 @@
 		},
 		"minecraft:closed_eyeblossom": {
 			"default": "Closed Eyeblossom"
-		},
-		"minecraft:colored_torch_bp": {
-			"default": "Colored Torch Bp"
-		},
-		"minecraft:colored_torch_rg": {
-			"default": "Colored Torch Rg"
-		},
-		"minecraft:concrete": {
-			"black": "Black Concrete",
-			"red": "Red Concrete",
-			"green": "Green Concrete",
-			"brown": "Brown Concrete",
-			"blue": "Blue Concrete",
-			"purple": "Purple Concrete",
-			"cyan": "Cyan Concrete",
-			"silver": "Light Gray Concrete",
-			"gray": "Gray Concrete",
-			"pink": "Pink Concrete",
-			"lime": "Lime Concrete",
-			"yellow": "Yellow Concrete",
-			"lightBlue": "Light Blue Concrete",
-			"magenta": "Magenta Concrete",
-			"orange": "Orange Concrete",
-			"white": "White Concrete",
-			"default": "Concrete"
-		},
-		"minecraft:concretePowder": {
-			"black": "Black Concrete Powder",
-			"red": "Red Concrete Powder",
-			"green": "Green Concrete Powder",
-			"brown": "Brown Concrete Powder",
-			"blue": "Blue Concrete Powder",
-			"purple": "Purple Concrete Powder",
-			"cyan": "Cyan Concrete Powder",
-			"silver": "Light Gray Concrete Powder",
-			"gray": "Gray Concrete Powder",
-			"pink": "Pink Concrete Powder",
-			"lime": "Lime Concrete Powder",
-			"yellow": "Yellow Concrete Powder",
-			"lightBlue": "Light Blue Concrete Powder",
-			"magenta": "Magenta Concrete Powder",
-			"orange": "Orange Concrete Powder",
-			"white": "White Concrete Powder",
-			"default": "Concrete Powder"
 		},
 		"minecraft:copper_bars": {
 			"default": "Copper Bars"
@@ -3846,39 +3459,6 @@
 		},
 		"minecraft:diorite_wall": {
 			"default": "Diorite Wall"
-		},
-		"minecraft:double_stone_slab": {
-			"default": "Stone Slab"
-		},
-		"minecraft:double_stone_slab2": {
-			"red_sandstone": "Red Sandstone Slab",
-			"purpur": "Purpur Double Slab",
-			"prismarine.rough": "Prismarine DoubleSlab",
-			"prismarine.dark": "Dark Prismarine Double Slab",
-			"prismarine.bricks": "Prismarine Brick Double Slab",
-			"mossy_cobblestone": "Mossy Cobblestone Double Slab",
-			"red_nether_brick": "Red Nether Brick Double Slab",
-			"sandstone.smooth": "Smooth Sandstone Double Slab",
-			"default": "Double Stone Slab2"
-		},
-		"minecraft:double_stone_slab3": {
-			"end_brick": "End Stone Brick Double Slab",
-			"red_sandstone.smooth": "Smooth Red Sandstone Double Slab",
-			"andesite.smooth": "Polished Andesite Double Slab",
-			"andesite": "Andesite Double Slab",
-			"diorite": "Diorite Double Slab",
-			"diorite.smooth": "Polished Diorite Double Slab",
-			"granite": "Granite Double Slab",
-			"granite.smooth": "Polished Granite Double Slab",
-			"default": "Double Stone Slab3"
-		},
-		"minecraft:double_stone_slab4": {
-			"mossy_stone_brick": "Mossy Stone Brick Double Slab",
-			"smooth_quartz": "Smooth Quartz Double Slab",
-			"stone": "Stone Double Slab",
-			"cut_sandstone": "Cut Sandstone Double Slab",
-			"cut_red_sandstone": "Cut Red Sandstone Double Slab",
-			"default": "Double Stone Slab4"
 		},
 		"minecraft:dragon_head": {
 			"default": "Dragon Head"
@@ -4318,12 +3898,6 @@
 		"minecraft:hard_glass_pane": {
 			"default": "Hard Glass Pane"
 		},
-		"minecraft:hard_stained_glass": {
-			"default": "Hard Stained Glass"
-		},
-		"minecraft:hard_stained_glass_pane": {
-			"default": "Hard Stained Glass Pane"
-		},
 		"minecraft:hardened_clay": {
 			"default": "Terracotta"
 		},
@@ -4341,9 +3915,6 @@
 		},
 		"minecraft:jungle_shelf": {
 			"default": "Jungle Shelf"
-		},
-		"minecraft:lava_cauldron": {
-			"default": "Lava Cauldron"
 		},
 		"minecraft:leaf_litter": {
 			"default": "Leaf Litter"
@@ -4383,9 +3954,6 @@
 		},
 		"minecraft:mossy_stone_brick_wall": {
 			"default": "Mossy Stone Brick Wall"
-		},
-		"minecraft:movingBlock": {
-			"default": "Moving Block"
 		},
 		"minecraft:mushroom_stem": {
 			"default": "Mushroom Stem"
@@ -4455,9 +4023,6 @@
 		},
 		"minecraft:pink_candle_cake": {
 			"default": "Cake with Pink Candle"
-		},
-		"minecraft:pistonArmCollision": {
-			"default": "Piston Arm Collision"
 		},
 		"minecraft:player_head": {
 			"default": "Player Head"
@@ -4531,9 +4096,6 @@
 		"minecraft:sandstone_wall": {
 			"default": "Sandstone Wall"
 		},
-		"minecraft:seaLantern": {
-			"default": "Sea Lantern"
-		},
 		"minecraft:short_dry_grass": {
 			"default": "Short Dry Grass"
 		},
@@ -4545,39 +4107,6 @@
 		},
 		"minecraft:stone_brick_wall": {
 			"default": "Stone Brick Wall"
-		},
-		"minecraft:stone_slab": {
-			"default": "Stone Slab"
-		},
-		"minecraft:stone_slab2": {
-			"red_sandstone": "Red Sandstone Slab",
-			"purpur": "Purpur Slab",
-			"prismarine.rough": "Prismarine Slab",
-			"prismarine.dark": "Dark Prismarine Slab",
-			"prismarine.bricks": "Prismarine Brick Slab",
-			"mossy_cobblestone": "Mossy Cobblestone Slab",
-			"red_nether_brick": "Red Nether Brick Slab",
-			"sandstone.smooth": "Smooth Sandstone Slab",
-			"default": "Stone Slab2"
-		},
-		"minecraft:stone_slab3": {
-			"end_brick": "End Stone Brick Slab",
-			"red_sandstone.smooth": "Smooth Red Sandstone Slab",
-			"andesite.smooth": "Polished Andesite Slab",
-			"andesite": "Andesite Slab",
-			"diorite": "Diorite Slab",
-			"diorite.smooth": "Polished Diorite Slab",
-			"granite": "Granite Slab",
-			"granite.smooth": "Polished Granite Slab",
-			"default": "Stone Slab3"
-		},
-		"minecraft:stone_slab4": {
-			"mossy_stone_brick": "Mossy Stone Brick Slab",
-			"smooth_quartz": "Smooth Quartz Slab",
-			"stone": "Stone Slab",
-			"cut_sandstone": "Cut Sandstone Slab",
-			"cut_red_sandstone": "Cut Red Sandstone Slab",
-			"default": "Stone Slab4"
 		},
 		"minecraft:stonecutter": {
 			"default": "Stonecutter"
@@ -4744,9 +4273,6 @@
 		"minecraft:wither_skeleton_skull": {
 			"default": "Wither Skeleton Skull"
 		},
-		"minecraft:wool": {
-			"default": "Wool"
-		},
 		"minecraft:yellow_candle_cake": {
 			"default": "Cake with Yellow Candle"
 		},
@@ -4755,6 +4281,129 @@
 		},
 		"minecraft:zombie_head": {
 			"default": "Zombie Head"
+		},
+		"minecraft:colored_torch_blue": {
+			"default": "Colored Torch Blue"
+		},
+		"minecraft:colored_torch_green": {
+			"default": "Colored Torch Green"
+		},
+		"minecraft:colored_torch_purple": {
+			"default": "Colored Torch Purple"
+		},
+		"minecraft:colored_torch_red": {
+			"default": "Colored Torch Red"
+		},
+		"minecraft:compound_creator": {
+			"default": "Compound Creator"
+		},
+		"minecraft:element_constructor": {
+			"default": "Element Constructor"
+		},
+		"minecraft:hard_black_stained_glass": {
+			"default": "Hard Black Stained Glass"
+		},
+		"minecraft:hard_black_stained_glass_pane": {
+			"default": "Hard Black Stained Glass Pane"
+		},
+		"minecraft:hard_blue_stained_glass": {
+			"default": "Hard Blue Stained Glass"
+		},
+		"minecraft:hard_blue_stained_glass_pane": {
+			"default": "Hard Blue Stained Glass Pane"
+		},
+		"minecraft:hard_brown_stained_glass": {
+			"default": "Hard Brown Stained Glass"
+		},
+		"minecraft:hard_brown_stained_glass_pane": {
+			"default": "Hard Brown Stained Glass Pane"
+		},
+		"minecraft:hard_cyan_stained_glass": {
+			"default": "Hard Cyan Stained Glass"
+		},
+		"minecraft:hard_cyan_stained_glass_pane": {
+			"default": "Hard Cyan Stained Glass Pane"
+		},
+		"minecraft:hard_gray_stained_glass": {
+			"default": "Hard Gray Stained Glass"
+		},
+		"minecraft:hard_gray_stained_glass_pane": {
+			"default": "Hard Gray Stained Glass Pane"
+		},
+		"minecraft:hard_green_stained_glass": {
+			"default": "Hard Green Stained Glass"
+		},
+		"minecraft:hard_green_stained_glass_pane": {
+			"default": "Hard Green Stained Glass Pane"
+		},
+		"minecraft:hard_light_blue_stained_glass": {
+			"default": "Hard Light Blue Stained Glass"
+		},
+		"minecraft:hard_light_blue_stained_glass_pane": {
+			"default": "Hard Light Blue Stained Glass Pane"
+		},
+		"minecraft:hard_light_gray_stained_glass": {
+			"default": "Hard Light Gray Stained Glass"
+		},
+		"minecraft:hard_light_gray_stained_glass_pane": {
+			"default": "Hard Light Gray Stained Glass Pane"
+		},
+		"minecraft:hard_lime_stained_glass": {
+			"default": "Hard Lime Stained Glass"
+		},
+		"minecraft:hard_lime_stained_glass_pane": {
+			"default": "Hard Lime Stained Glass Pane"
+		},
+		"minecraft:hard_magenta_stained_glass": {
+			"default": "Hard Magenta Stained Glass"
+		},
+		"minecraft:hard_magenta_stained_glass_pane": {
+			"default": "Hard Magenta Stained Glass Pane"
+		},
+		"minecraft:hard_orange_stained_glass": {
+			"default": "Hard Orange Stained Glass"
+		},
+		"minecraft:hard_orange_stained_glass_pane": {
+			"default": "Hard Orange Stained Glass Pane"
+		},
+		"minecraft:hard_pink_stained_glass": {
+			"default": "Hard Pink Stained Glass"
+		},
+		"minecraft:hard_pink_stained_glass_pane": {
+			"default": "Hard Pink Stained Glass Pane"
+		},
+		"minecraft:hard_purple_stained_glass": {
+			"default": "Hard Purple Stained Glass"
+		},
+		"minecraft:hard_purple_stained_glass_pane": {
+			"default": "Hard Purple Stained Glass Pane"
+		},
+		"minecraft:hard_red_stained_glass": {
+			"default": "Hard Red Stained Glass"
+		},
+		"minecraft:hard_red_stained_glass_pane": {
+			"default": "Hard Red Stained Glass Pane"
+		},
+		"minecraft:hard_white_stained_glass": {
+			"default": "Hard White Stained Glass"
+		},
+		"minecraft:hard_white_stained_glass_pane": {
+			"default": "Hard White Stained Glass Pane"
+		},
+		"minecraft:hard_yellow_stained_glass": {
+			"default": "Hard Yellow Stained Glass"
+		},
+		"minecraft:hard_yellow_stained_glass_pane": {
+			"default": "Hard Yellow Stained Glass Pane"
+		},
+		"minecraft:lab_table": {
+			"default": "Lab Table"
+		},
+		"minecraft:material_reducer": {
+			"default": "Material Reducer"
+		},
+		"minecraft:underwater_tnt": {
+			"default": "Underwater Tnt"
 		}
 	}
 }

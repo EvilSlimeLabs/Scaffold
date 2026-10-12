@@ -23,7 +23,8 @@ dropped, which is most of the weight.
 
 **The licence asks for two things.** Bedrock Tweaks' own licence allows this
 project to include the files provided the result is not sold and provided the
-credit travels with them. `LICENSE` is copied in beside the art for that reason
+credit travels with them. `LICENSE` is copied in beside the art for that reason,
+with the `credits.txt` the licence asks a project carrying the files to have,
 and `pack/manifest.py` puts the credit in any pack built with a tweak on.
 """
 import argparse
@@ -35,11 +36,14 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__)))))
 
+from scaffold import lookup
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SOURCE = os.path.join(ROOT, "bedrock_tweaks", "resource_packs", "files")
 LICENCE = os.path.join(ROOT, "bedrock_tweaks", "LICENSE")
 TARGET = os.path.join(ROOT, "scaffold", "tweakpacks")
 TABLE = os.path.join(ROOT, "scaffold", "lookups", "tweaks.json")
+CREDITS = os.path.join(TARGET, "credits.txt")
 
 ## What a build can read out of a tweak pack: the textures, the `blocks.json`
 ## that says which texture a block wears, and the `terrain_texture.json` that
@@ -56,8 +60,7 @@ SKIP_SUFFIXES = ("_mers.tga", "_normal.tga", "_heightmap.tga",
 
 def offered():
     """The packs this project offers, as {id: entry}, in the table's order."""
-    with open(TABLE, encoding="utf-8") as f:
-        return json.load(f)
+    return lookup.unwrap("tweaks.json", lookup.load(TABLE))
 
 
 def wanted(relative):
@@ -88,6 +91,10 @@ def stage(apply):
 
     total = 0
     for key, entry in offered().items():
+        ## Clearer Redstone's options are staged from Redstone Tweaks, by
+        ## tools/vendor/redstone.py, not from this submodule
+        if entry.get("tab", "tweaks") != "tweaks":
+            continue
         where = entry["from"]
         root = os.path.join(SOURCE, where)
         if not os.path.isdir(root):
@@ -108,14 +115,35 @@ def stage(apply):
             os.makedirs(os.path.dirname(destination), exist_ok=True)
             shutil.copyfile(os.path.join(root, name), destination)
 
-    print("\n%d files across %d tweaks" % (total, len(offered())))
+    print("\n%d files across %d tweaks" % (total, len(
+        [e for e in offered().values() if e.get("tab", "tweaks") == "tweaks"])))
     if apply:
         os.makedirs(TARGET, exist_ok=True)
         shutil.copyfile(LICENCE, os.path.join(TARGET, "LICENSE"))
-        print("staged into scaffold/tweakpacks/, with the licence beside them")
+        write_credits()
+        print("staged into scaffold/tweakpacks/, with the licence and the "
+              "credits beside them")
     else:
         print("nothing written; pass --apply to copy them in")
     return 0
+
+
+def write_credits():
+    """The credits.txt Bedrock Tweaks' licence asks a project carrying its
+    files to have, with its credit word for word."""
+    from scaffold import tweaks
+    lines = ["Scaffold includes textures from Bedrock Tweaks and Vanilla Tweaks,",
+             "in the folders of the Bedrock Tweaks options here, under the",
+             "licence in LICENSE beside this file.",
+             ""]
+    lines += list(tweaks.CREDIT_LINES)
+    lines += ["",
+              "The Clearer Redstone options' textures are Redstone Tweaks by",
+              "RexxStone, under CC BY-NC-SA 4.0; REDSTONE_TWEAKS_LICENSE beside",
+              "this file has their credit.",
+              ""]
+    with open(CREDITS, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(lines))
 
 
 def main():

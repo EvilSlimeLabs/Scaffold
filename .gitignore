@@ -11,11 +11,15 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+# the Python package, built by hand with pyproject-build --outdir dist-pypi
+dist-pypi/
 downloads/
 eggs/
 .eggs/
 lib/
 tmp/
+## what tools/export/handoff.py puts together for Structura's developer
+handoff/
 lib64/
 parts/
 sdist/
@@ -156,3 +160,7 @@ pages/
 # while a block is being worked on and are drawn again whenever they are wanted,
 # so none of them belongs in the history.
 renders/
+
+# The comparison of Structura 1.7's own drawing with Scaffold's. It needs a
+# Structura checkout and is kept locally, not as part of the project.
+tools/checks/structura.py

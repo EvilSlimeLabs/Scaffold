@@ -1,0 +1,1028 @@
+{
+	"families": {
+		"clearer_crafter_slot": {
+			"data": {
+				"number": [
+					"slot"
+				]
+			},
+			"turn_by": [
+				{
+					"state": "orientation"
+				}
+			],
+			"forms": {
+				"0": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.2625,
+								0.985,
+								0.61875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"1": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.440625,
+								0.985,
+								0.61875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"2": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.61875,
+								0.985,
+								0.61875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"3": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.2625,
+								0.985,
+								0.440625
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"4": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.440625,
+								0.985,
+								0.440625
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"5": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.61875,
+								0.985,
+								0.440625
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"6": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.2625,
+								0.985,
+								0.2625
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"7": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.440625,
+								0.985,
+								0.2625
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"8": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.61875,
+								0.985,
+								0.2625
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				},
+				"default": {
+					"center": [
+						0.5,
+						0.5,
+						0.5
+					],
+					"cubes": [
+						{
+							"size": [
+								0.11875,
+								0,
+								0.11875
+							],
+							"offset": [
+								0.2625,
+								0.985,
+								0.61875
+							],
+							"faces": {
+								"north": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"south": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"east": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"west": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"up": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										1,
+										1
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								},
+								"down": {
+									"uv": [
+										0,
+										0
+									],
+									"size": [
+										0,
+										0
+									],
+									"texture": {
+										"texture": "textures/clearer_redstone/crafter_slots/locked"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,48 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "state_rotations.schema.json",
+	"title": "Scaffold state rotations, format 2",
+	"description": "The turn Minecraft gives each value of a state that turns a block: x, y and z in degrees, as Minecraft writes a block's rotation.",
+	"type": "object",
+	"required": [
+		"format",
+		"minecraft",
+		"states"
+	],
+	"additionalProperties": false,
+	"properties": {
+		"$schema": {
+			"type": "string"
+		},
+		"format": {
+			"const": 2
+		},
+		"minecraft": {
+			"type": "string"
+		},
+		"about": {
+			"type": "string",
+			"description": "One line on what the table holds."
+		},
+		"states": {
+			"type": "object",
+			"additionalProperties": {
+				"$ref": "#/$defs/turns"
+			}
+		}
+	},
+	"$defs": {
+		"turns": {
+			"type": "object",
+			"minProperties": 1,
+			"additionalProperties": {
+				"type": "array",
+				"items": {
+					"type": "number"
+				},
+				"minItems": 3,
+				"maxItems": 3
+			}
+		}
+	}
+}

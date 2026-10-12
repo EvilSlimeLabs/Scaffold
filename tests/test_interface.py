@@ -106,15 +106,32 @@ class TweaksDialogTests(unittest.TestCase):
             cell["switch"].set_position(0)
 
         made.toggle_all()
-        self.assertEqual(len(made.chosen()), len(made.controls))
+        self.assertEqual(len(made.chosen()), len(made.shown()))
         ## on means the first position of each, never the second: a button that
         ## turns everything on should not be the only way anybody meets a joke
         ## texture
-        for cell in made.controls:
+        for cell in made.shown():
             self.assertEqual(cell["switch"].get_position(), 1)
 
         made.toggle_all()
         self.assertEqual(made.chosen(), [])
+
+    def test_toggle_all_reaches_only_the_tab_being_shown(self):
+        made = self.dialog()
+        for cell in made.controls:
+            cell["switch"].set_position(0)
+        made._show_tab(self.app.text("tweaks tab redstone"))
+        made.toggle_all()
+        self.assertEqual({self.tweaks.tab(key) for key in made.chosen()},
+                         {"redstone"})
+
+    def test_each_tab_has_its_own_grid(self):
+        made = self.dialog()
+        for tab in self.tweaks.TABS:
+            with self.subTest(tab=tab):
+                self.assertEqual(
+                    len([c for c in made.controls if c["tab"] == tab]),
+                    len(self.tweaks.controls(tab)))
 
     def test_the_all_button_says_what_pressing_it_would_do(self):
         made = self.dialog()

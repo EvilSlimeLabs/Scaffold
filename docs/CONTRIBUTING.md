@@ -17,13 +17,16 @@ Two rules keep the core usable that way, and a pull request that breaks either c
 #### Scaffold CLI
 The CLI was added by contributors that wanted to make their own web services. This is allowed. Scaffold is MIT licensed and anyone can do anything with Scaffold.
 
-It lives in `scaffold/cli/` now, and **nothing in there may import `scaffold/ui/`**. That rule is what lets `Scaffold-cli.exe` be built without the interface in it at all; `scaffold_cli.spec` excludes `scaffold.ui` outright, so a build fails rather than quietly growing if the interface creeps back into the command line's imports. Anything both the window and the command line need, such as the settings and the language tables, belongs at the top of the package instead, beside `core.py`.
+It lives in `scaffold/cli/` now, and **nothing in there may import `scaffold/ui/`**. That rule is what lets `Scaffold-cli.exe` be built without the interface in it at all; `build.py` compiles it with Nuitka's `--nofollow-import-to=scaffold.ui`, so the interface stays out of that executable even if an import of it creeps back into the command line. Anything both the window and the command line need, such as the settings and the language tables, belongs at the top of the package instead, beside `core.py`.
 
 ## Blocks Definitions
-Minecraft is a giant mess when it comes to naming, versioning, and block definitions. But because Scaffold dates back to 2020 and posted files still reference old block names, we need to be careful when updating blocks. In 2020 an effort was made to remove all hard coded block definitions. At this point, blocks are defined in 2 locations. Vanilla_Resource_pack, where the textures and texture locations are saved in a similar way to the default texture pack from Minecraft, and in lookups, where all the block geometry and nbt is defined.
+Minecraft is a giant mess when it comes to naming, versioning, and block definitions, and structures saved years ago still carry the old names. Blocks are defined in two places: `scaffold/Vanilla_Resource_Pack/`, which holds the textures and the texture declarations the way the game's own resource pack does, and `scaffold/lookups/`, which holds every block's geometry and the rules that choose its form. `docs/Lookup Format 2.md` describes the tables and `docs/Editing Blocks.md` how to change one.
 
-### Editing Vanilla_Resource_pack 
-When adding new blocks, do not remove old block definitions. Due to the project Mojang ran between 2020 and 2024 renaming all the blocks, old structures will be broken if the terrain_texture.json and blocks.json is simply copied from the new version. Instead, the old and new terrain textures must be merged. This is a bit painful, but it is what it is.
+### Old block names
+The tables describe the blocks the current game has, and nothing else. A structure saved under an old name is translated as it is read, by the rules in `scaffold/lookups/block_upgrades.json`. When Mojang renames a block or a state, add a rule there rather than keeping the old name in a table, and check it with `python -m tools.checks.upgrades --schema <a clone of pmmp/BedrockBlockUpgradeSchema>`.
+
+### Editing Vanilla_Resource_Pack
+Some of its textures are deliberately not vanilla, such as pre-tinted grass and leaves, so do not copy the game's files over it by hand. `python -m tools.vendor.vanilla_pack` reports how it differs from the game's own pack and knows which files to leave alone; read the report, then run it again with `--apply`.
 
 ### Adding Geometry
 In 2025 when Vibrant Visuals was added, the CPU cost of rendering a bone became 50-100x more expensive. For that reason, when making new geometries, we need to be respectful of cube count. Excessive use of cubes will cause excessive lag.

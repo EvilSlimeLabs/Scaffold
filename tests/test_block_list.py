@@ -45,41 +45,38 @@ class KeyTests(unittest.TestCase):
     """A block list counts ids, and a variant travels with one."""
 
     def test_a_variant_is_split_back_off(self):
-        self.assertEqual(block_list.split("minecraft:red_flower/poppy"),
-                         ("minecraft:red_flower", "poppy"))
+        self.assertEqual(block_list.split("minecraft:cushion/white"),
+                         ("minecraft:cushion", "white"))
         self.assertEqual(block_list.split("minecraft:stone"),
                          ("minecraft:stone", "default"))
 
     def test_a_variant_is_named_as_itself(self):
-        # a poppy and an allium are one block id and two things to gather
-        self.assertEqual(block_list.name_of("minecraft:red_flower/poppy"),
-                         "Poppy")
-        self.assertEqual(block_list.name_of("minecraft:red_flower/allium"),
-                         "Allium")
+        # a white and a red cushion are one entity and two things to gather
+        self.assertEqual(block_list.name_of("minecraft:cushion/white"),
+                         "White Cushion")
+        self.assertEqual(block_list.name_of("minecraft:cushion/red"),
+                         "Red Cushion")
 
     def test_a_variant_nothing_names_falls_back_to_the_block(self):
-        self.assertEqual(block_list.name_of("minecraft:red_flower/nonsense"),
-                         block_list.name_of("minecraft:red_flower"))
+        self.assertEqual(block_list.name_of("minecraft:cushion/nonsense"),
+                         block_list.name_of("minecraft:cushion"))
 
 
 class MatchTests(unittest.TestCase):
     def test_a_variant_can_be_matched_and_a_star_stops_at_the_slash(self):
-        # some blocks keep what they are made of in the variant: every stone
-        # slab from before the names were flattened is a `stone_block_slab`
         self.assertTrue(block_list._matches(
-            "*/quartz", "minecraft:stone_block_slab/quartz"))
-        # and without the star stopping at the slash, "*/brick" would swallow
-        # the separator and half of "nether_brick" with it
+            "*/cracked", "minecraft:turtle_egg/cracked"))
+        # without the star stopping at the slash, "*/cracked" would swallow
+        # the separator and half of "max_cracked" with it
         self.assertFalse(block_list._matches(
-            "*/brick", "minecraft:stone_block_slab/nether_brick"))
+            "*/cracked", "minecraft:turtle_egg/max_cracked"))
 
     def test_a_legacy_slab_lands_with_the_stone_it_is_cut_from(self):
-        self.assertEqual(
-            block_list.category_of("minecraft:stone_block_slab/quartz"),
-            "Quartz")
-        self.assertEqual(
-            block_list.category_of("minecraft:stone_block_slab/cobblestone"),
-            "Cobblestone")
+        # an old structure's stone slab is counted under the id Mojang names it
+        # today, so it is sorted with the stone it is cut from
+        self.assertEqual(block_list.category_of("minecraft:quartz_slab"), "Quartz")
+        self.assertEqual(block_list.category_of("minecraft:cobblestone_slab"),
+                         "Cobblestone")
 
     def test_a_pattern_may_leave_the_namespace_off(self):
         self.assertTrue(block_list._matches("stone", "minecraft:stone"))
@@ -157,6 +154,14 @@ class OverrideTests(unittest.TestCase):
     def test_a_bare_string_is_the_shorthand_for_a_name(self):
         self.write({"names": {"minecraft:stone": "Rock"}})
         self.assertEqual(block_list.name_of("minecraft:stone"), "Rock")
+
+    def test_a_file_written_against_an_old_id_names_the_block_it_became(self):
+        # blocks reach the list under the ids Mojang uses today, so a name
+        # given to an old id and its variant has to follow the block there
+        self.write({"names": {"minecraft:stone_block_slab": {"quartz": "Quartz Half"},
+                              "minecraft:seaLantern": "Glow Box"}})
+        self.assertEqual(block_list.name_of("minecraft:quartz_slab"), "Quartz Half")
+        self.assertEqual(block_list.name_of("minecraft:sea_lantern"), "Glow Box")
 
     def test_categories_given_replace_the_list_rather_than_merging(self):
         # order is the whole meaning of the list, and half a list merged by

@@ -1,0 +1,42 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "block_rotation.schema.json",
+	"title": "Scaffold block rotation, format 2",
+	"description": "How each shape family that turns is turned: the name of a state in state_rotations.json whose turns it takes as they are, or a table of its own from value to turn. A key written <form>:<value> is read before the plain value for that form.",
+	"type": "object",
+	"required": [
+		"format",
+		"minecraft",
+		"families"
+	],
+	"additionalProperties": false,
+	"properties": {
+		"$schema": {
+			"type": "string"
+		},
+		"format": {
+			"const": 2
+		},
+		"minecraft": {
+			"type": "string"
+		},
+		"about": {
+			"type": "string",
+			"description": "One line on what the table holds."
+		},
+		"families": {
+			"type": "object",
+			"additionalProperties": {
+				"oneOf": [
+					{
+						"type": "string",
+						"description": "A state named in state_rotations.json."
+					},
+					{
+						"$ref": "state_rotations.schema.json#/$defs/turns"
+					}
+				]
+			}
+		}
+	}
+}

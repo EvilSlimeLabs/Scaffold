@@ -1,8 +1,8 @@
 """Resolve every block Scaffold claims to support down to a texture file.
 
     python -m tools.checks.blocks             what is broken here
-    python -m tools.checks.blocks --gaps      what the community pack has and this does not
-    python -m tools.checks.blocks --tables    block_shapes / block_uv consistency
+    python -m tools.checks.blocks --gaps      what the game's pack has and this does not
+    python -m tools.checks.blocks --tables    families with no geometry, windows past their tile
 
 Bedrock reports none of this. A block whose texture cannot be resolved raises
 inside `armorstandgeo.make_block`, `scaffold._add_blocks_to_geo` catches it,
@@ -17,18 +17,23 @@ import sys
 ## jsonc lives at the repository root: the generated pack reads the
 ## submodule's JSONC at runtime too, so it is shipped code, not a tool
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from tools import sources
 from scaffold import jsonc
+from scaffold import lookup
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ## the data moved inside the package when the project became installable
 PACKAGE = os.path.join(ROOT, "scaffold")
 OURS = os.path.join(PACKAGE, "Vanilla_Resource_Pack")
-COMM = os.path.join(ROOT, "CommunityVanillaResourcePack")
+SOURCE = sources.resource_pack()
 
 ## Education Edition and other blocks that no vanilla pack ships textures for.
 ## They are declared so structures containing them do not surprise anyone, and
 ## they will never resolve.
-UNRESOLVABLE = re.compile(r"^(element_\d+|chemistry_table|chemical_heat|hard_(stained_)?glass(_pane)?"
-                          r"|colored_torch_\w+|underwater_torch|coral_(fan_)?pink_dead)$")
+UNRESOLVABLE = re.compile(r"^(element_\d+|chemistry_table|compound_creator|material_reducer|element_constructor"
+                          r"|lab_table|chemical_heat|hard_(\w+_)?(stained_)?glass(_pane)?"
+                          r"|colored_torch_\w+|underwater_torch|underwater_tnt"
+                          r"|coral_(fan_)?pink_dead)$")
 
 
 class Pack:
@@ -61,7 +66,7 @@ class Pack:
         A block drawn entirely from those needs no blocks.json entry at all,
         which is how an entity resolves: a cushion is not a block, so Mojang's
         pack does not declare one and never will, and its sixteen sheets are
-        named face by face in `block_uv.json` instead.
+        named face by face in `block_geometry.json` instead.
         """
         literal = [name for name in overwrite if name.startswith("textures/")]
         if literal:
@@ -121,7 +126,7 @@ def report_broken(defs, ours, comm, uvs=None):
         shape, problems = broken[block]
         fixable = comm is not None and not comm.problems(block)
         print("   %-40s %-14s %s%s" % (block, shape, "; ".join(problems)[:70],
-                                       "   [community pack has it]" if fixable else ""))
+                                       "   [the game's pack has it]" if fixable else ""))
     print("\n=== EXPECTED UNRESOLVED (%d) ===" % len(expected))
     print("   Education Edition and unobtainable blocks; no vanilla pack ships these")
     return len(real)
@@ -129,7 +134,7 @@ def report_broken(defs, ours, comm, uvs=None):
 
 def report_gaps(defs, comm):
     missing = sorted({k for k in comm.blocks if k != "format_version"} - set(defs))
-    print("=== IN THE COMMUNITY PACK, NOT IN block_definition.json (%d) ===" % len(missing))
+    print("=== IN THE GAME'S PACK, NOT IN block_definition.json (%d) ===" % len(missing))
     print("   see docs/Block Notes.md for what a block needs\n")
     for block in missing:
         print("   " + block)
@@ -178,58 +183,43 @@ def report_overrun(uvs):
 
 
 def report_tables(defs, shapes, uvs):
+    ## a form's cubes and windows are one entry in block_geometry.json, so the
+    ## two column tables it is read into cannot disagree; what can go wrong is a
+    ## family named in block_definition.json with no geometry at all
     used = {v for v in defs.values() if v != "ignore"}
-    print("=== shape families with no block_shapes entry ===")
+    print("=== shape families with no entry in block_geometry.json ===")
     print("   " + (", ".join(sorted(used - set(shapes))) or "none"))
-    print("\n=== shape families with no block_uv entry ===")
-    print("   " + (", ".join(sorted(used - set(uvs))) or "none"))
-    print("\n=== block_shapes variants that fall back to the default UV ===")
-    print("   Expected, not broken. Each of these variants either has no cubes at all")
-    print("   or has the same cube sizes as its default in different positions, so the")
-    print("   default UV window is the right one. A variant whose cubes are a different")
-    print("   SIZE needs its own block_uv entry - that is the case worth catching.")
-    found = False
-    for shape in sorted(shapes):
-        if shape not in uvs:
-            continue
-        extra = sorted(set(shapes[shape]) - set(uvs[shape]))
-        if extra:
-            found = True
-            print("   %-20s missing %s" % (shape, extra if len(extra) < 8 else "%d variants" % len(extra)))
-    if not found:
-        print("   none")
 
 
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--gaps", action="store_true",
-                        help="list blocks the community pack defines and Scaffold does not")
+                        help="list blocks the game's resource pack defines and Scaffold does not")
     parser.add_argument("--tables", action="store_true",
-                        help="check block_shapes against block_uv")
+                        help="list families with no geometry, and windows that read past their own tile")
     args = parser.parse_args()
 
-    defs = jsonc.load(os.path.join(PACKAGE, "lookups/block_definition.json"))
+    defs = lookup.unwrap("block_definition.json",
+                         jsonc.load(os.path.join(PACKAGE, "lookups/block_definition.json")))
     ours = Pack(OURS)
-    comm = Pack(COMM) if os.path.isdir(COMM) and os.path.isfile(os.path.join(COMM, "blocks.json")) else None
+    comm = Pack(SOURCE) if os.path.isdir(SOURCE) and os.path.isfile(os.path.join(SOURCE, "blocks.json")) else None
 
     if args.gaps:
         if comm is None:
-            sys.exit("CommunityVanillaResourcePack is not checked out.\n"
-                     "  git submodule update --init CommunityVanillaResourcePack")
+            sys.exit(sources.missing(SOURCE))
         report_gaps(defs, comm)
         return
     if args.tables:
-        uvs = jsonc.load(os.path.join(PACKAGE, "lookups/block_uv.json"))
-        report_tables(defs,
-                      jsonc.load(os.path.join(PACKAGE, "lookups/block_shapes.json")),
-                      uvs)
+        from scaffold import block_geometry
+        shapes, uvs = block_geometry.load()
+        report_tables(defs, shapes, uvs)
         report_overrun(uvs)
         return
 
     unresolved = report_broken(
         defs, ours, comm,
-        jsonc.load(os.path.join(PACKAGE, "lookups/block_uv.json")))
+        __import__("scaffold.block_geometry", fromlist=["load"]).load()[1])
     sys.exit(1 if unresolved else 0)
 
 

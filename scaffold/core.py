@@ -8,9 +8,13 @@ from shutil import copyfile
 
 import nbtlib.nbt
 
+from scaffold import dust
+from scaffold import lookup
 from scaffold.pack import animation_class
 from scaffold.pack import armor_stand_class
 from scaffold.pack import armor_stand_geo_class as asgc
+from scaffold import block_geometry
+from scaffold import block_upgrade
 from scaffold.pack import big_render_controller as brc
 from scaffold.pack import manifest
 from scaffold.pack import render_controller_class as rcc
@@ -18,6 +22,7 @@ from scaffold import paths
 from scaffold.pack import structure_reader
 from scaffold.pack import tech_pack
 from scaffold import block_list
+from scaffold import marks
 from scaffold import tweaks
 from scaffold import version
 debug=False
@@ -35,37 +40,10 @@ debug=False
 ## `structure.entities`, with a world position of its own and nothing in
 ## `block_indices` to mark it. A cushion is the only one of those so far.
 
-## Which field of a block entity names the form its block takes. A block entity
-## carries a great deal that has nothing to do with how a block looks, such as a
-## chest's contents or a sign's text, so only the fields named here are read.
-BLOCK_ENTITY_SHAPES = {"CopperGolemStatue": "Pose", "Banner": "Base"}
-
-## Which field of a block entity names a form outright, in place of the one its
-## `BLOCK_ENTITY_SHAPES` field chose. An ominous banner is not a colour: it is a
-## banner the game draws from a sheet of its own, and `Type` is what says so. A
-## banner carrying `Patterns` is the same case from the other end, because a
-## ghost block cannot composite six patterns and their colours as a pack is
-## built, so it is drawn with a mark of Scaffold's own instead.
-##
-## A field mapped to a dict is read for its value; one mapped to a string only
-## has to be there and say something. The first that answers wins.
-## A lectern is the same shape from the other end: nothing in its states says
-## whether anybody put a book on it, and the block entity carries both a
-## `hasBook` flag and the book itself. The flag is read first and answers for
-## both of its values, so a lectern that says it is empty stays empty whatever
-## else is left beside it; the book itself is the fallback, for a lectern
-## written without the flag at all.
-BLOCK_ENTITY_INSTEAD = {"Banner": (("Type", {"1": "illager"}),
-                             ("Patterns", "designed")),
-                        "Lectern": (("hasBook", {"1": "book",
-                                                 "0": "default"}),
-                                    ("book", "book"))}
-
-## Which field of a block entity names something that goes *with* the block's
-## own shape state rather than instead of it. A bed keeps its colour beside the
-## block and which half it is in its states, and the shape wants both, so the
-## two are joined the way two shape states are.
-BLOCK_ENTITY_ADDS = {"Bed": "color"}
+## Which form a block entity chooses -- a banner's colour, a statue's pose, a
+## bed's dye, whether a lectern holds a book -- is part of the family's rules in
+## block_geometry.json (`data`), beside the forms it chooses between. What is
+## named here is what a block entity hands the drawing besides a form.
 
 ## Which field of a block entity holds a colour of its own rather than one of a
 ## list. A dyed cauldron keeps a whole RGB, which no lookup table could carry a
@@ -79,17 +57,64 @@ BLOCK_ENTITY_TINTS = {"Cauldron": "CustomColor"}
 ## block in the same place and by its own family. That is what makes every
 ## pottable plant work without a variant apiece.
 BLOCK_ENTITY_HOLDS = {"FlowerPot": "PlantBlock"}
+## the state a held plant is drawn with, which its family's `pick` reads to
+## draw it the size it is in a pot
+POTTED = "scaffold:potted"
 
-## Which field turns its block, for the blocks whose states do not say. A head
-## standing on the floor can face any of sixteen ways and keeps that in the
-## block entity, the way a sign keeps its text; the states carry only which of
-## the six faces it is fixed to. The number beside the field is the facing that
-## means "standing on the floor", because a head on a wall is turned by the wall
-## it is on and the entity reads zero.
+## Which field of a block entity is a yaw, for the blocks whose states do not
+## say which way they face. A head standing on the floor can face any of sixteen
+## ways and keeps that in the block entity, the way a sign keeps its text; the
+## states carry only which of the six faces it is fixed to. The number beside the
+## field is the facing that means "standing on the floor", because a head on a
+## wall is turned by the wall it is on and the entity reads zero. The yaw is
+## handed to `make_block` on top of whatever the states turn the block by, as a
+## block angle: see `head_yaw`.
 BLOCK_ENTITY_ROTATIONS = {"Skull": ("Rotation", 1)}
 
-## a head turns in sixteen steps, the same as a sign
-SPIN_STEP = 22.5
+## Which fields of a block entity name the block it is joined to. A chest set
+## beside another of its kind becomes one half of a double chest, and each
+## half's entity keeps the other's world position. Nothing in the states says
+## which half a block is, so `paired` works it out and hands it to the rules as
+## the entity's `pair` field, `left` or `right` as seen from in front.
+BLOCK_ENTITY_PAIRS = {"Chest": ("pairx", "pairz")}
+
+## The world step, (x, z), toward the left hand of somebody standing in front of
+## a block that faces each way: in front of a chest facing north they stand north
+## of it looking south, and their left hand is east.
+LEFT_HAND = {"north": (1, 0), "south": (-1, 0), "east": (0, 1), "west": (0, -1)}
+
+
+def paired(struct, x, y, z, block, entity):
+    """The block entity, with `pair` added when the block is half of a pair.
+
+    A half is only drawn as one when its partner is in the structure, beside
+    it, and the same block: a chest whose other half was left outside the
+    captured box is drawn whole rather than as half of something missing.
+    """
+    fields = BLOCK_ENTITY_PAIRS.get(str(entity.get("id", ""))) if entity else None
+    if not fields or not all(f in entity for f in fields):
+        return entity
+    facing = _plain(block.get("states", {}).get("minecraft:cardinal_direction", ""))
+    if facing not in LEFT_HAND:
+        return entity
+    origin = getattr(struct, "origin", (0, 0, 0))
+    step = (int(entity[fields[0]]) - int(origin[0]) - x,
+            int(entity[fields[1]]) - int(origin[2]) - z)
+    left = LEFT_HAND[facing]
+    if step == left:
+        side = "right"
+    elif step == (-left[0], -left[1]):
+        side = "left"
+    else:
+        return entity
+    size = struct.get_size()
+    there = (x + step[0], z + step[1])
+    if not (0 <= there[0] < size[0] and 0 <= there[1] < size[2]):
+        return entity
+    if struct.get_block(there[0], y, there[1])["name"] != block["name"]:
+        return entity
+    return dict(entity, pair=side)
+
 
 ## **What Scaffold draws that is not a block.** An entity is kept apart from the
 ## blocks entirely: a structure records it in `structure.entities` as a whole
@@ -124,20 +149,26 @@ ENTITY_MODELS = {
     },
 }
 
-## how far round one step of an entity's rotation is. An entity carries a float
-## yaw rather than one of four states, and a quarter is as fine as a block shaped
-## like a cell can be drawn, so the yaw is rounded to one of four.
-ENTITY_QUARTER = 90
+def entity_yaw(yaw):
+    """An entity's yaw, as the block angle `make_block` turns a family by.
 
-
-def entity_turn(yaw):
-    """An entity's yaw as one of the four turns a rotation table names.
-
-    Minecraft's yaw is 0 at south and climbs clockwise through west, which is
-    the order every compass rotation table here is written in, so the rounded
-    number is the key to look up.
+    An entity faces a way given as an angle rather than as one of a block's
+    states, so it is not looked up anywhere: the angle is the turn. An entity's
+    yaw is 0 facing south and 90 facing west. A block angle is Minecraft's for a
+    block -- 0 is the rest pose, facing north, and 90 faces west -- so the two
+    run the same way round from different starting points.
     """
-    return str(int(round((yaw % 360) / ENTITY_QUARTER) * ENTITY_QUARTER) % 360)
+    return (180 - float(yaw)) % 360
+
+
+def head_yaw(rotation):
+    """A head's `Rotation`, as the block angle `make_block` turns it by.
+
+    A head on the floor whose `Rotation` is 0 faces north, which is a block's
+    rest pose, and the number climbs clockwise seen from above, through east,
+    which is the other way round from a block angle.
+    """
+    return (-float(rotation)) % 360
 
 
 def entity_form(entity, model):
@@ -264,6 +295,173 @@ def _plain(value):
     return text.strip("'\"")
 
 
+def _variant(block):
+    """The variant a skipped block is listed under: its texture state, if any."""
+    state = block_geometry.variant_state(block["name"])
+    if state is not None and state in block.get("states", {}):
+        return [state, block["states"][state]]
+    return "default"
+
+
+_families = None
+
+
+## **Water is one body, not a stack of cubes.** Each cell of water is drawn as
+## a box, and two boxes side by side put two faces between them that a ghost
+## blends twice; so a face against more water is left out. Water with water
+## above it fills its cell, and the surface stands lower, as the game draws it.
+## The only thing asked of a neighbour is whether water is in it, as a block
+## or as what a block stands in, so nothing here knows any block.
+LIQUIDS = ("minecraft:water", "minecraft:flowing_water")
+COVERED = "scaffold:covered"
+SIDES = {"east": (1, 0, 0), "west": (-1, 0, 0), "up": (0, 1, 0), "down": (0, -1, 0),
+         "south": (0, 0, 1), "north": (0, 0, -1)}
+
+
+def _shape(struct):
+    return getattr(getattr(struct, "cube", None), "shape", None) or getattr(
+        getattr(struct, "blocks", None), "shape", None)
+
+
+def block_at(struct, x, y, z):
+    """The block at a cell of a structure, or None outside it."""
+    shape = _shape(struct)
+    if shape is None or not all(0 <= v < n for v, n in zip((x, y, z), shape)):
+        return None
+    try:
+        return struct.get_block(x, y, z)
+    except (IndexError, KeyError):
+        return None
+
+
+def _water_at(struct, x, y, z):
+    found = block_at(struct, x, y, z)
+    if found is None:
+        return False
+    if found["name"] in LIQUIDS:
+        return True
+    liquid = struct.get_liquid(x, y, z) if hasattr(struct, "get_liquid") else None
+    return liquid is not None and liquid["name"] in LIQUIDS
+
+
+def whole_cube(armorstand, block):
+    """Whether a block is drawn as one cube filling its cell, near enough: what
+    the dust rules take for a block that carries power."""
+    name = block["name"].replace("minecraft:", "")
+    if name not in armorstand.defs:
+        return False
+    try:
+        form = armorstand.choose(name, block.get("states") or {})[0]
+        shape = armorstand.block_shapes[armorstand.defs[name]][form]
+    except (KeyError, IndexError, TypeError):
+        return False
+    sizes = shape.get("size") or []
+    return len(sizes) == 1 and all(v >= 0.9 for v in sizes[0])
+
+
+## **Water is drawn after the block standing in it, and its top before it when
+## the top shows through the block.** A ghost is blended, so what is drawn first
+## is depth tested against nothing and what comes after is tested against it:
+## water's sides stand outside the block, and drawn after it let it show
+## through. So the water is drawn in the block's own bone, straight after it,
+## and, top and all, after every plane when the block is planes, a copper bar
+## or kelp, which are drawn after the blocks. Its top stands inside
+## a block that reaches above it, and drawn after it is hidden by every clear
+## texel of the block's top, a grate's or a leaf's: under a block that covers
+## the surface and whose top has clear texels, the top is drawn before
+## everything. A block whose top is solid covers it either way, and a block
+## that shows something below the surface has the top drawn after.
+SIDES_PLAIN, SIDES_LATE = "water", "water_late"
+SURFACE_PLAIN, SURFACE_LATE, SURFACE_EARLY = (
+    "water_surface", "water_surface_late", "water_surface_early")
+
+
+def water_families(armorstand, struct, x, y, z):
+    """(sides, top): the families that draw the water at x, y, z."""
+    found = block_at(struct, x, y, z)
+    if found is None or found["name"] in LIQUIDS:
+        return SIDES_PLAIN, SURFACE_PLAIN
+    shape = _shape_of(armorstand, found)
+    if shape is None:
+        return SIDES_PLAIN, SURFACE_PLAIN
+    ## a block that is all planes, a copper bar or kelp, has all of its water
+    ## drawn after every plane
+    if all(min(size) == 0 for size in shape[0]["size"]):
+        return SIDES_LATE, SURFACE_LATE
+    if _covers(shape, _surface_height(armorstand)) and _clear_top(armorstand, found):
+        return SIDES_PLAIN, SURFACE_EARLY
+    return SIDES_PLAIN, SURFACE_PLAIN
+
+
+def _shape_of(armorstand, block):
+    """(shape, up windows) of the form a block is drawn with, or None."""
+    name = block["name"].replace("minecraft:", "")
+    if name not in armorstand.defs:
+        return None
+    try:
+        form = armorstand.choose(name, block.get("states") or {})[0]
+        family = armorstand.defs[name]
+        return (armorstand.block_shapes[family][form],
+                armorstand.block_uv[family][form]["uv_sizes"]["up"])
+    except (KeyError, IndexError, TypeError):
+        return None
+
+
+def _surface_height(armorstand):
+    shape = armorstand.block_shapes[SURFACE_PLAIN]["default"]
+    return shape["offsets"][0][1] if "offsets" in shape else 0.75
+
+
+def _covers(found, surface):
+    """Whether nothing of a block that faces up stands below `surface`, and
+    something of it reaches above."""
+    shape, ups = found
+    offsets = shape.get("offsets") or [[0, 0, 0]] * len(shape["size"])
+    tops = [offsets[i][1] + size[1] for i, size in enumerate(shape["size"])]
+    shown = [tops[i] for i in range(len(tops)) if i < len(ups) and any(ups[i])]
+    if shown:
+        return min(shown) >= surface
+    return max(tops) >= surface
+
+
+_CLEAR = {}
+
+
+def _clear_top(armorstand, block):
+    """Whether the picture a block declares for its top has clear texels."""
+    name = block["name"].replace("minecraft:", "")
+    path = (armorstand.get_block_texture_paths(name) or {}).get("up")
+    if not path:
+        return False
+    if path not in _CLEAR:
+        from PIL import Image
+        try:
+            source = armorstand.texture_file(asgc.split_window(path)[0])
+            tile = Image.open(source).convert("RGBA").crop((0, 0, 16, 16))
+            _CLEAR[path] = tile.getextrema()[3][0] < 255
+        except (OSError, TypeError, ValueError):
+            _CLEAR[path] = False
+    return _CLEAR[path]
+
+
+def water_sides(struct, x, y, z):
+    """The sides of a cell of water that more water is against."""
+    return {side for side, (dx, dy, dz) in SIDES.items()
+            if _water_at(struct, x + dx, y + dy, z + dz)}
+
+
+def _rules(name, armorstand=None):
+    """The rules of the family a block id is drawn by."""
+    global _families
+    if armorstand is not None:
+        family = armorstand.defs.get(name.replace("minecraft:", ""))
+        return armorstand.rules.get(family, {})
+    if _families is None:
+        _families = (lookup.entries("block_definition.json"), block_geometry.rules())
+    definition, rules = _families
+    return rules.get(definition.get(name.replace("minecraft:", "")), {})
+
+
 class UnsupportedBlock:
     """
     Holds all the properties of an unsupported block.
@@ -288,8 +486,6 @@ class UnsupportedBlock:
     def __hash__(self):
         return hash((frozenset(self.block["name"]), self.variant))
 
-with open(paths.lookup("nbt_defs.json")) as f:
-    nbt_def = json.load(f)
 class Scaffold:
     def __init__(self,pack_name):
         ## pack_name names the outputs the user gets; the pack tree itself is
@@ -314,6 +510,8 @@ class Scaffold:
         self.opacity=asgc.DEFAULT_ALPHA
         self.longestY=0
         self.unsupported_blocks=[]
+        ## the rules dust is joined by; an add-on's blocks are added to these
+        self.dust = dust.Connections()
         self.all_blocks={}
         self.icon=paths.lookup("pack_icon.png")
         self.dead_blocks={}
@@ -389,7 +587,13 @@ class Scaffold:
 
     def get_tweaks(self):
         """The tweaks this pack will be built with, after conflicts."""
-        return list(self.tweaks)
+        return self.tweaks_used()
+
+    def tweaks_used(self):
+        """The tweaks actually applied: none when low geometry is on, since a
+        tweak repaints and reshapes the detailed forms that low geometry
+        replaces. The ones chosen are kept for a build without it."""
+        return [] if self.low_geometry else list(self.tweaks)
 
     def set_tech_pack(self,enabled=True):
         """Bundle the Bedrock Technical Resource Pack into this pack.
@@ -543,8 +747,14 @@ class Scaffold:
             inside = entity[held]
             name = inside.get("name") if hasattr(inside,"get") else None
             if name:
-                drawn.append(({"name": str(name),
-                               "states": inside.get("states", {})}, {}))
+                ## a pot keeps its plant the way the game named it when the
+                ## pot was saved, so it is translated like a palette entry
+                plant = block_upgrade.upgrade(
+                    {"name": str(name), "states": inside.get("states", {})})
+                ## and the plant is marked as potted, which a family with a
+                ## potted form draws smaller and standing on the soil
+                plant["states"] = dict(plant.get("states", {}), **{POTTED: True})
+                drawn.append((plant, {}))
         return drawn
 
     def _add_blocks_to_geo(self,struct2make,model_name,export_big=False):
@@ -552,7 +762,7 @@ class Scaffold:
         if export_big:
             self.structure_files[model_name]['offsets'][0]-=xlen.item()+7
             self.structure_files[model_name]['offsets'][2]-=zlen.item()+7
-        armorstand = asgc.ArmorStandGeo(model_name,alpha = self.opacity, size=[xlen, ylen, zlen], offsets=self.structure_files[model_name]['offsets'], low_geometry=self.low_geometry, tweaks=self.tweaks)
+        armorstand = asgc.ArmorStandGeo(model_name,alpha = self.opacity, size=[xlen, ylen, zlen], offsets=self.structure_files[model_name]['offsets'], low_geometry=self.low_geometry, tweaks=self.tweaks_used())
 
         ## the animation only needs the layers of the tallest model; a
         ## shorter one that follows needs a subset of what is already there
@@ -580,25 +790,21 @@ class Scaffold:
                 ## entity data of its own
                 entity={}
                 if hasattr(struct2make,"get_block_entity"):
-                    entity=struct2make.get_block_entity(x, y, z)
+                    entity=paired(struct2make, x, y, z, block,
+                                  struct2make.get_block_entity(x, y, z))
                 ## one position may draw more than one block: a filled flower
                 ## pot is the pot and whatever is planted in it
                 for drawn, beside in self._drawn_at(block, entity):
                     blk_name=drawn["name"].replace("minecraft:", "")
-                    blockProp=self._process_block(drawn, beside)
-                    rot = blockProp[0]
-                    top = blockProp[1]
-                    variant = blockProp[2]
-                    open_bit = blockProp[3]
-                    data = blockProp[4]
-                    hinge = blockProp[5]
-                    tint = blockProp[6]
                     if debug:
-                        armorstand.make_block(x, y, z, blk_name, rot = rot, top = top,variant = variant, trap_open=open_bit, data=data, hinge=hinge, big = export_big, tint=tint)
+                        self.draw_block(armorstand, x, y, z, blk_name, drawn, beside, export_big,
+                                        struct=struct2make)
                     else:
                         try:
-                            armorstand.make_block(x, y, z, blk_name, rot = rot, top = top,variant = variant, trap_open=open_bit, data=data, hinge=hinge, big = export_big, tint=tint)
+                            self.draw_block(armorstand, x, y, z, blk_name, drawn, beside, export_big,
+                                            struct=struct2make)
                         except Exception as e:
+                            variant = _variant(drawn)
                             unsupported = UnsupportedBlock((x,y,z), drawn, variant)
                             self.unsupported_blocks.append(unsupported)
                             if drawn["name"] not in self.dead_blocks.keys():
@@ -611,6 +817,22 @@ class Scaffold:
                             if variant not in self.dead_blocks[drawn["name"]].keys():
                                 self.dead_blocks[drawn["name"]][variant]=0
                             self.dead_blocks[drawn["name"]][variant]+=1
+                ## and the water a waterlogged block stands in, which the
+                ## structure keeps in a second layer rather than in its states
+                liquid = (struct2make.get_liquid(x, y, z)
+                          if hasattr(struct2make, "get_liquid") else None)
+                if liquid is not None and liquid["name"] != block["name"]:
+                    try:
+                        self.draw_block(armorstand, x, y, z,
+                                        liquid["name"].replace("minecraft:", ""),
+                                        liquid, None, export_big,
+                                        struct=struct2make)
+                    except Exception:
+                        pass
+                ## and whatever a tweak draws beside the block from what its
+                ## entity says; see scaffold/marks.py
+                self._draw_marks(armorstand, struct2make, x, y, z, block,
+                                 entity, export_big)
             ## consider temp file
         ## and whatever stands in the structure that is not a block. A big
         ## build reads through a combined reader, which merges several files
@@ -628,6 +850,23 @@ class Scaffold:
             armorstand.export(self.work_dir)
             self.animation.export(self.work_dir)
         return counted
+
+    @staticmethod
+    def _draw_marks(armorstand, struct, x, y, z, block, entity, big=False):
+        """Draw the marks a tweak defines for this block, if any does.
+
+        A mark is not a block anybody placed, so one that fails is passed over
+        rather than reported as skipped.
+        """
+        for mark in marks.made(struct, x, y, z, block, entity):
+            if mark["name"] not in armorstand.defs:
+                continue
+            try:
+                armorstand.make_block(x, y, z, mark["name"],
+                                      states=mark["states"], big=big, beside=True)
+            except Exception:
+                if debug:
+                    raise
 
     def _add_entities_to_geo(self, struct2make, armorstand, export_big=False):
         """Draw the entities Scaffold knows, and count them for the list.
@@ -647,7 +886,7 @@ class Scaffold:
             form = entity_form(entity, model)
             try:
                 armorstand.make_block(x, y, z, model["block"],
-                                      rot=entity_turn(entity["yaw"]),
+                                      yaw=entity_yaw(entity["yaw"]),
                                       data=form, big=export_big,
                                       lift=entity.get("lift") or 0.0)
             except Exception:
@@ -692,7 +931,7 @@ class Scaffold:
                  "geometry=" + ("low" if self.low_geometry else "high"),
                  ## the order matters, because two tweaks touching one texture
                  ## are applied in it, so it is not sorted
-                 "tweaks=" + (",".join(getattr(self, "tweaks", ())) or "none"),
+                 "tweaks=" + (",".join(self.tweaks_used() if hasattr(self, "tweaks") else ()) or "none"),
                  "big=" + (",".join(str(v) for v in self.big_offset)
                            if getattr(self, "big_offset", None) else "off")]
         for name in sorted(self.structure_files):
@@ -716,13 +955,29 @@ class Scaffold:
         whole catalogue, so somebody reading it can tell which files came from
         where.
         """
-        if not self.tweaks:
+        used = self.tweaks_used()
+        if not used:
             return
-        lines = ["This pack includes textures from Bedrock Tweaks.", ""]
-        lines += ["  " + name for name in self.tweaks]
-        lines += ["", "Bedrock Tweaks and Vanilla Tweaks:"]
-        lines += ["  " + link for link in tweaks.CREDIT_LINKS]
-        lines.append("")
+        lines = []
+        bedrock = [k for k in used if tweaks.tab(k) == "tweaks"]
+        redstone = [k for k in used if tweaks.tab(k) == "redstone"]
+        if bedrock:
+            lines += ["This pack includes textures from Bedrock Tweaks.", ""]
+            lines += ["  " + name for name in bedrock]
+            lines += [""]
+            lines += list(tweaks.CREDIT_LINES)
+            lines.append("")
+        if redstone:
+            ## Redstone Tweaks is CC BY-NC-SA 4.0: the author, the licence and
+            ## that the pack may not be sold all travel with it
+            lines += ["This pack includes textures from Redstone Tweaks by "
+                      "RexxStone, with settings by KikuGie, converted for "
+                      "Scaffold, and drawings in the same style, all under "
+                      "CC BY-NC-SA 4.0. It may not be sold.", ""]
+            lines += ["  " + name for name in redstone]
+            lines += [""]
+            lines += ["  " + link for link in tweaks.REDSTONE_CREDIT_LINKS]
+            lines.append("")
         path = os.path.join(self.work_dir, "credits.txt")
         with open(path, "w", encoding="utf-8", newline="\n") as f:
             f.write("\n".join(lines))
@@ -739,7 +994,7 @@ class Scaffold:
                                            if self.tech_pack == tech_pack.FULL
                                            else None),
                         fingerprint=self.fingerprint(),
-                        tweaks=self.tweaks)
+                        tweaks=self.tweaks_used())
         self._write_tweak_credits()
         copyfile(self.icon, f"{self.work_dir}/pack_icon.png")
         larger_render = paths.lookup("armor_stand.larger_render.geo.json")
@@ -773,122 +1028,60 @@ class Scaffold:
 
 
         return finished
-    def _process_block(self,block,entity=None):
-        shape_states = []
+    def draw_block(self, armorstand, x, y, z, blk_name, block, entity=None, big=False,
+                   struct=None):
+        """Draw one block from its states and its block entity.
+
+        The family's rules choose the form, the turn and the textures, inside
+        `make_block`; what is settled here is what a block entity hands the
+        drawing besides a form: a colour to tint with and a yaw. Water is also
+        told where more water is, from `struct`: see `water_sides`.
+        """
+        tint, yaw = self._process_block(block, entity, armorstand)
+        states, hidden = block["states"], ()
+        if struct is not None and block["name"] in LIQUIDS:
+            hidden = water_sides(struct, x, y, z)
+            if "up" in hidden:
+                states = dict(states, **{COVERED: True})
+        ## dust is told which of its sides join something; see scaffold/dust.py
+        if struct is not None and self.dust.is_dust(block):
+            states = dict(states, **self.dust.sides(
+                lambda *at: block_at(struct, *at), x, y, z,
+                lambda found: whole_cube(armorstand, found)))
+        family = top_family = None
+        if struct is not None and block["name"] in LIQUIDS:
+            family, top_family = water_families(armorstand, struct, x, y, z)
+        armorstand.make_block(x, y, z, blk_name, states=states,
+                              entity=entity, big=big, tint=tint, yaw=yaw, hidden=hidden,
+                              family=family)
+        ## and water's top, unless more water is above it; see `water_families`
+        if struct is not None and block["name"] in LIQUIDS and "up" not in hidden:
+            armorstand.make_block(x, y, z, blk_name, states=states, big=big, tint=tint,
+                                  family=top_family)
+
+    def _process_block(self, block, entity=None, armorstand=None):
+        """(tint, yaw): what a block's entity says beyond its form."""
         tint = None
-        rot = None
-        top = False
-        open_bit = False
-        hinge = False
-        data=0
-        variant="default"
-        for key in nbt_def.keys():
-            if nbt_def[key]== "variant" and key in block["states"].keys():
-                variant = [key,block["states"][key]]
-            if nbt_def[key] == "rot" and key in block["states"].keys():
+        yaw = None
+        if not entity:
+            return tint, yaw
+        ## A dyed cauldron keeps a whole colour, which no table could carry a
+        ## texture for, so the tile is tinted as it goes into the atlas and
+        ## every colour in a structure lands there as a tile of its own.
+        marker = BLOCK_ENTITY_TINTS.get(str(entity.get("id","")))
+        if marker is not None and marker in entity:
+            tint = int(entity[marker])
+        ## A head on the floor turns by the yaw its entity keeps, and one on a
+        ## wall by its facing alone.
+        turned = BLOCK_ENTITY_ROTATIONS.get(str(entity.get("id","")))
+        if turned is not None and turned[0] in entity:
+            rules = _rules(block["name"], armorstand)
+            if block_geometry.turn(rules, block["states"]) == turned[1]:
                 try:
-                    rot = int(block["states"][key])
-                except (TypeError, ValueError):
-                    rot = str(block["states"][key])
-                
-            if nbt_def[key]== "top" and key in block["states"].keys():
-                top_state = block["states"][key]
-                if key == "minecraft:vertical_half":
-                    top = str(top_state).lower() == "top"
-                else:
-                    top = bool(top_state)
-            if nbt_def[key]== "open_bit" and "open_bit" in block["states"].keys():
-                open_bit = bool(block["states"][key])
-            if nbt_def[key]== "hinge" and key in block["states"].keys():
-                hinge = bool(block["states"][key])
-            if nbt_def[key]== "data" and key in block["states"].keys():
-                data = int(block["states"][key])
-            if nbt_def[key]== "shape" and key in block["states"].keys():
-                ## A state that names one of a block's forms rather than a
-                ## number: which way a bell is mounted, whether a campfire is
-                ## burning. Several of them on one block are joined in the order
-                ## the states are named, so "0-1" always means the same pair.
-                shape_states.append((key, _plain(block["states"][key])))
-            if key == "rail_direction" and key in block["states"].keys():
-                data = str(block["states"][key].as_unsigned)
-                if "rail_data_bit" in block["states"].keys():
-                    data += "-"+str(block["states"]["rail_data_bit"].as_unsigned)
-
-        ## the shape a state asks for outranks a plain number, since a block
-        ## carrying one is not described by its default form
-        if shape_states:
-            data = "-".join(value for _key, value in sorted(shape_states))
-
-        ## A block carrying two rotation states is turned by only one of them.
-        ## A hanging sign has both, and which one applies is attached_bit: a
-        ## sign fixed to the underside of a block turns in sixteen steps with
-        ## ground_sign_direction, and one swinging from a chain or hung on a
-        ## wall turns with facing_direction, the other reading zero. The
-        ## block_rotation entries for those forms scope the four values to them,
-        ## since 2 means something different in each numbering.
-        states = block["states"]
-        if ("ground_sign_direction" in states.keys()
-                and "facing_direction" in states.keys()
-                and not bool(states.get("attached_bit", 0))):
-            rot = int(states["facing_direction"])
-
-        ## and what the block entity says outranks both: it is the only record
-        ## of the pose a statue was placed in, of a banner's colour, and of the
-        ## way a head standing on the floor is turned
-        if entity:
-            marker = BLOCK_ENTITY_SHAPES.get(str(entity.get("id","")))
-            if marker is not None and marker in entity:
-                data = _plain(entity[marker])
-            joined = BLOCK_ENTITY_ADDS.get(str(entity.get("id","")))
-            if joined is not None and joined in entity:
-                data = "{}-{}".format(data, _plain(entity[joined]))
-            ## and a field that names a form outright replaces whatever the
-            ## one above chose. A banner that is ominous or carries patterns is
-            ## not any of the sixteen dyes.
-            for marker, named in BLOCK_ENTITY_INSTEAD.get(
-                    str(entity.get("id", "")), ()):
-                if marker not in entity:
-                    continue
-                held = entity[marker]
-                if isinstance(named, dict):
-                    form = named.get(_plain(held))
-                elif len(held) if hasattr(held, "__len__") else held:
-                    form = named
-                else:
-                    form = None
-                if form is not None:
-                    data = form
-                    break
-            ## A cauldron's water may be dyed, and the dye is a whole colour in
-            ## the block entity rather than a state of its own, so the block
-            ## says only "water". The form becomes `dyed`, whose liquid asks for
-            ## a tint, and the colour itself is handed on: Scaffold builds the
-            ## pack, so the tile is tinted on the way into the atlas and every
-            ## colour in a structure lands there as a tile of its own.
-            marker = BLOCK_ENTITY_TINTS.get(str(entity.get("id","")))
-            if marker is not None and marker in entity:
-                tint = int(entity[marker])
-                if str(data).startswith("water-"):
-                    data = "dyed" + str(data)[len("water"):]
-            spin = BLOCK_ENTITY_ROTATIONS.get(str(entity.get("id","")))
-            if spin is not None and spin[0] in entity and rot == spin[1]:
-                try:
-                    ## named apart from the facings, which are numbers too: a
-                    ## head fixed to the north wall reads 2, and so would the
-                    ## second of sixteen steps round
-                    step = int(round(float(entity[spin[0]]) / SPIN_STEP)) % 16
-                    rot = "spin%d" % step
+                    yaw = head_yaw(entity[turned[0]])
                 except (TypeError, ValueError):
                     pass
-
-        if "wood_type" in block["states"].keys():
-            variant = ["wood_type",block["states"]["wood_type"]]
-            if block["name"] == "minecraft:wood":
-                keys = block["states"]["wood_type"]
-                if bool(block["states"]["stripped_bit"]):
-                    keys+="_stripped"
-                variant = ["wood",keys]
-        return [rot, top, variant, open_bit, data, hinge, tint]
+        return tint, yaw
     def get_nametags(self):
         """The name tags in this pack, in the order they were added."""
         return list(self.structure_files.keys())

@@ -21,11 +21,16 @@ def list_tweaks():
     from scaffold import tweaks
 
     english = lang_parse.parse()["en_US"]
-    print("Bedrock Tweaks this build offers, for --tweaks:")
-    for key in tweaks.offered():
-        print("  %-36s %s" % (key, english.get("tweak " + key, key)))
-    print("\nTextures by Bedrock Tweaks and Vanilla Tweaks. A pack built with "
-          "any of\nthem credits them, which their licence asks for.")
+    for tab, title in (("tweaks", "Bedrock Tweaks"), ("redstone", "Clearer Redstone")):
+        print("%s this build offers, for --tweaks:" % title)
+        for key in tweaks.offered():
+            if tweaks.tab(key) == tab:
+                print("  %-36s %s" % (key, english.get("tweak " + key, key)))
+        print()
+    print("Textures by Bedrock Tweaks and Vanilla Tweaks, and by Redstone Tweaks\n"
+          "(RexxStone, CC BY-NC-SA 4.0). A pack built with any of them credits\n"
+          "them, which their licences ask for. Where both change one block, the\n"
+          "Clearer Redstone option is the one drawn.")
 
 
 def build(args):

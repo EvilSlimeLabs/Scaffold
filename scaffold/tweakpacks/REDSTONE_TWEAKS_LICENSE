@@ -1,0 +1,169 @@
+Clearer Redstone
+================
+
+The textures in the folders of the Clearer Redstone options are Redstone Tweaks
+by RexxStone, with settings by KikuGie, converted for Scaffold, and drawings made
+for Scaffold in the same style. Redstone Tweaks is licensed under the Creative
+Commons Attribution-NonCommercial-ShareAlike 4.0 International licence, and so
+are these textures, the drawn ones included:
+
+    https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Redstone Tweaks: https://modrinth.com/resourcepack/redstone-tweaks
+
+A pack built with any Clearer Redstone option carries this credit in its
+description and in its credits.txt, and may not be sold.
+
+Redstone Tweaks' own credits follow.
+
+____  __________  _______________  _   ________   _______       ___________    __ _______
+     / __ \/ ____/ __ \/ ___/_  __/ __ \/ | / / ____/  /_  __/ |     / / ____/   |  / //_/ ___/
+    / /_/ / __/ / / / /\__ \ / / / / / /  |/ / __/      / /  | | /| / / __/ / /| | / ,<  \__ \
+   / _, _/ /___/ /_/ /___/ // / / /_/ / /|  / /___     / /   | |/ |/ / /___/ ___ |/ /| |___/ /
+  /_/ |_/_____/_____//____//_/  \____/_/ |_/_____/    /_/    |__/|__/_____/_/  |_/_/ |_/____/
+   __          __   ___          __  ___  __        ___
+  |__) \ /    |__) |__  \_/ \_/ /__`  |  /  \ |\ | |__	     Version 2.5.6 - Minecraft 26.3
+  |__)  |     |  \ |___ / \ / \ .__/  |  \__/ | \| |___
+
+
+---------------------------------------------------------- THANK YOU ----------------------------------------------------------
+
+  ...for downloading my Resource Pack!
+
+  I put a lot of passion and effort into creating Redstone Tweaks, so if you decide to use it in your online content (YouTube
+  videos, Twitch streams etc.) I'd be really grateful if you could give it a shout-out or a short mention.
+  If you want to support me, simply paste the following text into your description:
+
+  Resource Pack: Redstone Tweaks by RexxStone
+  https://modrinth.com/resourcepack/redstone-tweaks/
+  
+
+----------------------------------------------------------- CREDITS -----------------------------------------------------------
+
+  Redstone Tweaks is a massive project! Naturally, I took some inspiration and used textures, models and blockstate files from
+  other creators. Go check them all out!
+
+  > Vanilla Tweaks:
+    > https://vanillatweaks.net/
+
+  > Beatso ("Little Improvements: Redstone"):
+    > https://planetminecraft.com/member/beatso/
+    > https://planetminecraft.com/texture-pack/little-improvements-redstone/
+
+  > CreativityShark ("Visual Sensors"):
+    > https://planetminecraft.com/member/creativity_shark/
+    > https://planetminecraft.com/texture-pack/visual-sensors/
+
+  > metamilo:
+    > https://www.youtube.com/metamilo
+
+  > KikuGie (initial ResPackOpts config):
+    > https://modrinth.com/user/KikuGie
+
+  > Kyouju_Redstone ("Mk.2 Redstone"):
+    > https://www.youtube.com/@Kyouju_Redstone
+    > https://modrinth.com/resourcepack/mk2-redstone
+
+  > voltavidTony (lang-gen tool):
+    > https://github.com/voltavidTony
+    > https://github.com/voltavidTony/lang-gen
+
+  > Based on original textures by Mojang Studios
+
+  > Special thanks to my Discord moderator Junq for helping out with some of the textures!
+
+
+---------------------------------------------------- RESOURCE PACK OPTIONS ----------------------------------------------------
+
+  Thanks to KikuGie, Redstone Tweaks lets you select and modify textures in-game by making use of the ResPackOpts mod.
+  Once installed, you should see a 'settings' icon directly in the Resource Pack selection screen.
+  The following features can all be toggled and adjusted using this method.
+
+
+--------------------------------------------------------- FEATURE LIST --------------------------------------------------------
+
+  REDSTONE (Primary features)
+  > Bee Nest & Hive: Show comparator output
+    > Front texture from Vanilla Tweaks - 'Visual Honey Stages': https://vanillatweaks.net/share#IVlYRU
+  > Bell: Show powered (disabled by default)
+  > Cake: Show comparator output
+  > Cauldron: Show comparator output
+    > Model based on Vanilla Tweaks - 'Visual Cauldron Stages': https://vanillatweaks.net/share#1PkWty
+  > Composter: Show comparator output
+    > Model based on Vanilla Tweaks - 'Visual Composter Stages': https://vanillatweaks.net/share#bOVyoP
+  > Crafter: Show triggered & crafting
+  > Daylight Detector: Show signal strength
+    > Inspired by Creativity Shark - 'Visual Sensors': https://planetminecraft.com/texture-pack/visual-sensors/
+  > Detector Rail: Show powered
+  > Dropper & Dispenser: Show triggered & direction
+    > Based on Beatso - 'Little Improvements: Redstone': https://planetminecraft.com/texture-pack/little-improvements-redstone/
+  > Furnace, Blast Furnace & Smoker: Show lit (disabled by default)
+  > Hopper: Show locked & direction
+    > Inspired by Vanilla Tweaks - 'Directional Hoppers': https://vanillatweaks.net/share#yOs5l5
+  > Iron Door: Show powered
+  > Jukebox: Show playing
+  > Leaves: Show distance from log
+  > Lectern: Show powered
+  > Lever: Show powered & back texture
+    > Inspired by Vanilla Tweaks - 'Groovy Levers': https://vanillatweaks.net/share#IuDbJq
+  > Note Block: Show powered, note & instrument
+    > Note inspired by Vanilla Tweaks - 'Note Block Banners' (older version, no longer available for download)
+    > Power indicator by Kyouju_Redstone - 'Mk.2 Redstone': https://modrinth.com/resourcepack/mk2-redstone
+  > Observer: Show direction & powered
+    > Model and top texture based on Vanilla Tweaks - 'Directional Observers': https://vanillatweaks.net/share#8fTBuk
+  > Pistons: Show powered & sticky
+    > Model based on Vanilla Tweaks - 'Sticky Piston Sides': https://vanillatweaks.net/share#IqH92q
+  > Redstone Comparator: Show mode & bottom texture
+    > Bottom texture based on an idea by metamilo: https://www.youtube.com/metamilo
+  > Redstone Dust: Show signal strength
+    > Model based on Vanilla Tweaks - 'Redstone Power Levels': https://vanillatweaks.net/share#jwIvYo
+  > Redstone Lamp: Full square texture (disabled by default)
+  > Redstone Ore: Show lit
+    > From Vanilla Tweaks - 'Unlit Redstone Ore': https://vanillatweaks.net/share#7W2Rkt
+  > Redstone Repeater: Show delay & bottom texture
+    > Bottom texture based on an idea by metamilo: https://www.youtube.com/metamilo
+  > Respawn Anchor: Show comparator output
+  > Scaffolding: Show distance
+  > Sculk Sensor & Calibrated Sculk Sensor: Show signal strength & cooldown
+  > Target: Show signal strength
+    > Based on Beatso - 'Little Improvements: Redstone': https://planetminecraft.com/texture-pack/little-improvements-redstone/
+  > Trapped Chest: Show trapped
+  > Tripwire & Tripwire Hook: Show triggered & connected
+  > Weighted Pressure Plates: Show signal strength
+
+  OUTLINES
+  > Concrete (includes slabs & stairs)
+  > Concrete Powder (disabled by default)
+  > Terracotta (disabled by default)
+  > Wool (includes slabs & stairs)
+  
+  EXTRA (Advanced options & features)
+  > Dropper & Dispenser: Power indicators
+  > Hopper: Power indicators
+  > Iron Trapdoor: Replace with redstone lamp (disabled by default)
+  > Leaves: Only show persistent distance
+  > Map: Hide icons (disabled by default)
+
+  STYLE (Modify textures for active features)
+  > Additional (comparator output) info (e.g. cauldron displays '0' when empty)
+    > Available for Bee Nest & Hive, Cake, Cauldron, Composter, Leaves, Redstone Dust, Respawn Anchor, Scaffolding,
+      Sculk Sensors, Target & Weighted Pressure Plates (all disabled by default)
+  > Texture adjustments
+    > Available for Cauldron, Composter, Dropper & Dispenser, Note Block, Observer, Pistons, Comparator, Redstone Dust
+      & Repeater
+
+  TOOLTIPS
+  > Activation duration tooltips for various (input) items
+  > Jukebox: Comparator output guide
+  > Music Discs: Comparator output & duration
+  > Sculk Sensors: Frequency guide
+  > Comparator output charts in all supported containers
+    > Additional brewing guide initially based on Vanilla Tweaks - 'Brewing Guide': https://vanillatweaks.net/share#1UIXIt
+
+
+--------------------------------------------------- WHY ARE YOU STILL HERE? ---------------------------------------------------
+
+  Oh wow, you really made it this far down the list. Hats off to you! Now go and check out all these features in game!
+
+  Thanks for all the support!
+  - RexxStone

@@ -50,6 +50,9 @@ DESCRIPTION_LIMIT = 25
 ## Tweaks. This is that credit, and `core` also writes a `credits.txt` into the
 ## pack, which the licence asks for by name.
 TWEAKS_CREDIT = "Textures from Bedrock Tweaks (bedrocktweaks.net)"
+## and Redstone Tweaks', CC BY-NC-SA 4.0, whose licence asks for the author and
+## the licence by name, for a pack built with any Clearer Redstone option
+REDSTONE_CREDIT = "Textures from Redstone Tweaks by RexxStone (CC BY-NC-SA 4.0)"
 
 
 def derived_pack_uuids(pack_name):
@@ -106,8 +109,12 @@ def build_description(nameTags=(), user_text="", tech_pack_version=None,
         lines.append("Nametags: {}".format(", ".join(nameTags)))
     if tech_pack_version:
         lines.append("TechPack {} included".format(tech_pack_version))
-    if tweaks:
+    from scaffold import tweaks as tweak_packs
+    used = tweak_packs.credits(tweaks)
+    if "tweaks" in used:
         lines.append(TWEAKS_CREDIT)
+    if "redstone" in used:
+        lines.append(REDSTONE_CREDIT)
     lines.append(credits_line())
     return "\n".join(lines)
 

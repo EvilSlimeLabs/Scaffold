@@ -3,22 +3,35 @@ import os
 import re
 import unittest
 
+from tools.blocks import tables
 from scaffold import paths
 from scaffold.pack import armor_stand_geo_class as asgc
+from scaffold import lookup
 
 ## Education Edition and other blocks no vanilla pack ships textures for. They
 ## are declared so a structure containing one is named rather than mysterious,
 ## and they will never resolve. tools/audit_blocks.py holds the same list.
-UNRESOLVABLE = re.compile(r"^(element_\d+|chemistry_table|chemical_heat"
-                          r"|hard_(stained_)?glass(_pane)?"
-                          r"|colored_torch_\w+|underwater_torch"
+UNRESOLVABLE = re.compile(r"^(element_\d+|chemistry_table|compound_creator|material_reducer|element_constructor"
+                          r"|lab_table|chemical_heat|hard_(\w+_)?(stained_)?glass(_pane)?"
+                          r"|colored_torch_\w+|underwater_torch|underwater_tnt"
                           r"|coral_(fan_)?pink_dead)$")
+
+
+## the three tables a family's geometry is written in, which are read the way
+## the family was authored: a family turned to Minecraft's rest pose as it was
+## written is turned back, so what is checked here is the layout its generator
+## describes. What a block looks like once drawn is `make_block`'s, and the
+## tests that need that call it.
+GEOMETRY = ("block_shapes", "block_uv", "block_rotation")
 
 
 def load(name):
     # through paths, so the suite does not depend on where it was run from
+    if name in GEOMETRY:
+        return tables.load({"block_shapes": tables.SHAPES, "block_uv": tables.UV,
+                            "block_rotation": tables.ROTATION}[name])
     with open(paths.lookup(name + ".json"), encoding="utf-8") as f:
-        return json.load(f)
+        return lookup.unwrap(name + ".json", json.load(f))
 
 
 class LookupTableTests(unittest.TestCase):
@@ -82,29 +95,20 @@ class GeneratorTests(unittest.TestCase):
     quietly.
     """
 
-    def test_the_carved_pumpkin_faces_a_half_turn_from_its_neighbours(self):
-        # **A pumpkin is a half turn from `furnace` and `observer`, and it is
-        # meant to be.** It carries the same six `facing_direction` words, so
-        # matching them looks like the right answer, and it was what this test
-        # held before. In game the pumpkin still faced backwards while those two
-        # were right, so the two are not one fault in a shared place. What
-        # matters is that the half turn is written into the table rather than
-        # added to it: added, it corrects on one run and breaks on the next.
+    def test_the_carved_pumpkin_wears_its_face_on_the_north(self):
+        # **A pumpkin's face is declared on its south slot**, and a block at
+        # rest looks north, so its north face reads the south slot and its
+        # table is Minecraft's own; the half turn lives in the faces, written
+        # out rather than added to anything.
         rotation = load("block_rotation")
-        turning = ("south", "east", "west", "north")
-        for neighbour in ("furnace", "observer"):
-            for word in turning:
-                with self.subTest(neighbour=neighbour, facing=word):
-                    self.assertEqual(
-                        (rotation["carved_pumpkin"][word][1]
-                         - rotation[neighbour][word][1]) % 360, 180,
-                        "carved_pumpkin is no longer a half turn from %s"
-                        % neighbour)
-        # the two that are a turn about x are shared with them untouched, since
-        # a pumpkin has no facing that uses them
-        for word in ("up", "down"):
-            self.assertEqual(rotation["carved_pumpkin"][word],
-                             rotation["furnace"][word])
+        standard = {"north": [0, 0, 0], "west": [0, 90, 0],
+                    "south": [0, 180, 0], "east": [0, 270, 0]}
+        for word in ("south", "east", "west", "north"):
+            with self.subTest(facing=word):
+                self.assertEqual(rotation["carved_pumpkin"][word],
+                                 standard[word])
+        written = load("block_uv")["carved_pumpkin"]["default"]["overwrite"]
+        self.assertEqual(written["north"], ["@south"])
 
 
 class BlockBuildTests(unittest.TestCase):
@@ -138,10 +142,23 @@ class BlockBuildTests(unittest.TestCase):
         self.assertTrue(self.geo.blocks)
 
     def test_legacy_slab_ids_build_in_both_halves(self):
-        for name in ("stone_slab", "stone_slab2", "stone_slab3", "stone_slab4",
-                     "petrified_oak_slab"):
-            for top in (False, True):
-                self.build(name, top=top)
+        # an old stone slab is one id and a material state; it reaches the
+        # tables as the slab Mojang names today, and that has to build
+        from scaffold import block_upgrade
+        import nbtlib
+
+        for name, state, value in (("stone_slab", "stone_slab_type", "quartz"),
+                                   ("stone_slab2", "stone_slab_type_2", "purpur"),
+                                   ("stone_slab3", "stone_slab_type_3", "andesite"),
+                                   ("stone_slab4", "stone_slab_type_4", "stone"),
+                                   ("stone_slab", "stone_slab_type", "wood")):
+            for half in (0, 1):
+                entry = block_upgrade.upgrade({
+                    "name": "minecraft:" + name,
+                    "states": {state: nbtlib.String(value),
+                               "top_slot_bit": nbtlib.Byte(half)}})
+                self.build(entry["name"].replace("minecraft:", ""),
+                           states=entry["states"])
 
     def test_the_new_shape_families_build(self):
         for name in ("oak_shelf", "sulfur_spike", "copper_golem_statue",
@@ -248,7 +265,7 @@ class PlantTests(unittest.TestCase):
                                   "%s/%s has no turn, so it is a plus"
                                   % (family, form))
                     for turn in body["rotation"][:2]:
-                        self.assertEqual(turn[1], 45,
+                        self.assertEqual(abs(turn[1]), 45,
                                          "%s/%s is square to the block"
                                          % (family, form))
 
@@ -282,11 +299,11 @@ class PlantTests(unittest.TestCase):
                         "the flower is not on the east face: %s" % faces["east"][-1])
         self.assertTrue(faces["west"][-1].endswith("sunflower_back"),
                         "the back is not on the west face: %s" % faces["west"][-1])
-        # and the two sides read the picture opposite ways, because the faces of
-        # a plane run their windows in opposite directions
+        # and each side reads its own picture forwards, the way Java's model
+        # reads it: every face is the right way round from outside
         windows = load("block_uv")["sunflower"]["top"]["uv_sizes"]
         self.assertGreater(windows["east"][-1][0], 0)
-        self.assertLess(windows["west"][-1][0], 0)
+        self.assertGreater(windows["west"][-1][0], 0)
 
     def test_the_sunflowers_head_leans_back_east_of_the_stem(self):
         # The stem is a two pixel column up the middle and the flower's disc is
@@ -331,8 +348,9 @@ class FootprintTests(unittest.TestCase):
     sweeping the tables.
     """
 
-    FOOTPRINT = ("stairs", "standing_sign", "wall_sign", "fence",
-                 "fence_gate", "button")
+    ## the families still painted by where their cubes sit; the ones drawn
+    ## from Java's models read the windows the model gives them
+    FOOTPRINT = ("standing_sign", "wall_sign")
     FACES = ("up", "down", "north", "south", "east", "west")
 
     @staticmethod
@@ -350,6 +368,25 @@ class FootprintTests(unittest.TestCase):
             return [across, 1 - up - tall], [wide, tall]
         return [over, 1 - up - tall], [deep, tall]
 
+    @classmethod
+    def windows_for(cls, face, size, at):
+        """Every window that reads the cube's own place in the tile.
+
+        Measured from the near side or from the far side of the block -- a
+        family painted `behind` takes the far one -- and read forwards or
+        backwards both ways.
+        """
+        wide, tall, deep = size
+        across, up, over = at
+        found = []
+        for x, z in ((across, over), (1 - across - wide, 1 - over - deep)):
+            offset, span = cls.window(face, size, (x, up, z))
+            found.append((offset, span))
+            found.append(([offset[0] + span[0], offset[1] + span[1]],
+                          [-span[0], -span[1]]))
+        return [([round(n, 6) for n in o], [round(n, 6) for n in w])
+                for o, w in found]
+
     def test_a_face_reads_the_cube_it_belongs_to(self):
         shapes = load("block_shapes")
         windows = load("block_uv")
@@ -359,15 +396,11 @@ class FootprintTests(unittest.TestCase):
                 for index, (size, at) in enumerate(zip(body["size"],
                                                        body["offsets"])):
                     for face in self.FACES:
-                        offset, span = self.window(face, size, at)
+                        read = ([round(n, 6) for n in entry["offset"][face][index]],
+                                [round(n, 6) for n in entry["uv_sizes"][face][index]])
                         with self.subTest(family=family, form=form,
                                           cube=index, face=face):
-                            self.assertEqual(
-                                [round(n, 6) for n in entry["offset"][face][index]],
-                                [round(n, 6) for n in offset])
-                            self.assertEqual(
-                                [round(n, 6) for n in entry["uv_sizes"][face][index]],
-                                [round(n, 6) for n in span])
+                            self.assertIn(read, self.windows_for(face, size, at))
 
     def test_every_face_has_a_window_for_every_cube(self):
         # make_block reads uv_idx off the up list and then uses it for all six
@@ -485,8 +518,12 @@ class MountingTests(unittest.TestCase):
             carried = len(shapes[variant]["size"])
             for face, textures in entry["overwrite"].items():
                 for index in range(2, carried):
+                    ## a face the model leaves out is not drawn at all
+                    if not any(entry["uv_sizes"][face][index]):
+                        continue
+                    texture = textures[index] if index < len(textures) else "default"
                     self.assertNotIn(
-                        textures[index], bell,
+                        "@" + face if texture == "default" else texture, bell,
                         "%s: what carries the bell reads the bell on %s"
                         % (variant, face))
 
@@ -497,51 +534,48 @@ class MountingTests(unittest.TestCase):
         # out of its block entirely
         shapes = load("block_shapes")["door"]
         shut = shapes["default"]
-        # a quarter turn clockwise from the side it used to sit on, which a
-        # world showed was where it belongs
+        # against the east side of the block, which a world showed was where
+        # it belongs
         self.assertEqual([off[0] for off in shut["offsets"]],
-                         [0.8125, 0.8125], "the panel is not on the x side")
-        for variant in ("open", "open_hinged"):
+                         [0.0, 0.0], "the panel is not on the east side")
+        self.assertEqual([size[0] for size in shut["size"]],
+                         [0.1875, 0.1875], "the panel does not run along z")
+        for variant in ("lower-north-1-0", "lower-north-1-1"):
             self.assertEqual([size[2] for size in shapes[variant]["size"]],
                              [0.1875, 0.1875],
                              "%s is not a quarter turn round" % variant)
         for variant, form in shapes.items():
+            if variant == "top":
+                continue
             self.assertEqual([form["center"][0], form["center"][2]], [0.5, 0.5],
                              "%s turns about something other than the middle"
                              % variant)
 
-    def test_a_doors_edges_read_its_frame_and_not_its_panel(self):
-        # a door is three pixels thick and every one of its six faces read the
-        # whole picture, which squeezes the door into three pixels and puts a
-        # row of panels down each edge and across the top
-        entry = load("block_uv")["door"]["default"]
+    def test_a_doors_sides_read_the_picture_under_them(self):
+        # Every side reads the columns of the picture its own stretch of the
+        # block spans, seen from outside, and a shut door flips one side, or
+        # every other side when it is hinged the other way. Shut facing north
+        # the panel stands at the east edge: its east and west faces are the
+        # whole picture, the west one flipped, and its edges are the three
+        # columns at that edge.
+        entry = load("block_uv")["door"]["lower-north-0-0"]
         for index in (0, 1):
-            # shut, the panel is on the x faces and its picture is mirrored: a
-            # window that starts at the far edge and runs back
-            self.assertEqual(entry["uv_sizes"]["east"][index], [-1.0, 1.0],
-                             "the outward face is not read the other way round")
-            self.assertEqual(entry["offset"]["east"][index], [1.0, 0.0])
-            self.assertEqual(entry["uv_sizes"]["west"][index], [1.0, 1.0],
-                             "the inward face is mirrored as well")
-            ## **The two long edges are not the same edge, and the two short
-            ## ones carry no ornament.** A door's picture has its hinge down
-            ## the left of the tile and its handle down the right, so reading
-            ## the same strip for both put hinges on the handle side; and the
-            ## top and bottom of the picture are plain, so a vertical strip
-            ## there put a hinge across the head and foot of every door.
-            for face in ("north", "south"):
-                self.assertEqual(entry["uv_sizes"][face][index], [0.1875, 1.0],
-                                 "%s reads more than one edge" % face)
-            for face in ("up", "down"):
-                self.assertEqual(entry["uv_sizes"][face][index], [1.0, 0.1875],
-                                 "%s reads a standing strip, not a flat one"
-                                 % face)
-            self.assertNotEqual(entry["offset"]["north"][index],
-                                entry["offset"]["south"][index],
-                                "both long edges read the same strip")
-        # the two halves have a picture each, and neither is left to the block's
-        # own faces, which would put the lower one on the top of the door
-        self.assertEqual(entry["overwrite"]["up"], ["@down", "@north"])
+            self.assertEqual(entry["uv_sizes"]["east"][index], [1.0, 1.0])
+            self.assertEqual(entry["uv_sizes"]["west"][index], [-1.0, 1.0])
+            self.assertEqual(entry["offset"]["north"][index], [0.8125, 0.0])
+            self.assertEqual(entry["uv_sizes"]["north"][index], [0.1875, 1.0])
+            self.assertEqual([abs(n) for n in entry["uv_sizes"]["south"][index]],
+                             [0.1875, 1.0])
+        ## the ends are a plain strip of the picture turned along the panel,
+        ## the bottom one under the lower half and the top one over the upper;
+        ## where the halves meet nothing is drawn
+        self.assertEqual(entry["uv_sizes"]["down"][0], [0.1875, 1.0])
+        self.assertEqual(entry["uv_sizes"]["up"][1], [0.1875, 1.0])
+        self.assertEqual(entry["uv_sizes"]["up"][0], [0, 0])
+        self.assertEqual(entry["uv_sizes"]["down"][1], [0, 0])
+        hinged = load("block_uv")["door"]["lower-north-0-1"]
+        self.assertEqual(hinged["uv_sizes"]["west"][0], [1.0, 1.0])
+        self.assertEqual(hinged["uv_sizes"]["east"][0], [-1.0, 1.0])
 
     def test_a_copper_golem_statue_is_the_model_the_game_draws(self):
         # four poses, four geometry files, nine or eleven cubes each with the
@@ -590,7 +624,7 @@ class MountingTests(unittest.TestCase):
 
         # six tentacles lying flat on the ground, three long, two across and
         # one deep: two out of each of the three blank sides and none out of
-        # the face, which is south
+        # the face, which at rest is north
         tentacles = [cube for cube in cubes if cube is not body]
         self.assertEqual(len(tentacles), 6, "a dried ghast has six tentacles")
         near, far = body[0][2], body[0][2] + body[1][2]
@@ -604,24 +638,29 @@ class MountingTests(unittest.TestCase):
                 sides["west" if at[0] < body[0][0] else "east"] += 1
             else:
                 sides["north" if at[2] < near else "south"] += 1
-        self.assertEqual(sides["south"], 0,
+        self.assertEqual(sides["north"], 0,
                          "a tentacle comes out of the ghast's face")
-        self.assertEqual([sides["west"], sides["east"], sides["north"]],
+        self.assertEqual([sides["west"], sides["east"], sides["south"]],
                          [2, 2, 2], "the three blank sides take two each")
         self.assertLessEqual(far, 1.0)
 
         entry = load("block_uv")["dried_ghast"]["default"]
         for face in ("north", "south", "east", "west", "up", "down"):
-            self.assertEqual(entry["uv_sizes"][face][0], [0.625, 0.625],
+            offset, span = entry["offset"][face][0], entry["uv_sizes"][face][0]
+            ## the top and bottom read the picture backwards, from its far corner
+            low = [min(o, o + w) for o, w in zip(offset, span)]
+            self.assertEqual([abs(n) for n in span], [0.625, 0.625],
                              "the body reads past the picture on %s" % face)
-            self.assertEqual(entry["offset"][face][0], [0.0, 0.0])
+            self.assertEqual(low, [0.0, 0.0])
         # the tentacles keep the block's own faces, so they follow the
         # rehydration level with the rest of it
         for face in ("north", "south", "east", "west", "up", "down"):
+            written = entry["overwrite"].get(face, [])
             for index in range(1, len(cubes)):
-                self.assertTrue(
-                    entry["overwrite"][face][index].startswith("@"),
-                    "a tentacle names a texture of its own")
+                ## a face reading its own slot is written plain
+                texture = written[index] if index < len(written) else "default"
+                self.assertTrue(texture == "default" or texture.startswith("@"),
+                                "a tentacle names a texture of its own")
 
     def test_a_campfire_sits_its_logs_in_ash(self):
         # the log tile is three pictures stacked: the bark, the cut end beside
@@ -632,8 +671,7 @@ class MountingTests(unittest.TestCase):
         self.assertEqual(len(out), 5, "the ash and four logs")
         ash = min(out, key=lambda cube: cube[1][1])
         self.assertEqual(ash[0][1], 0, "the ash is not on the floor")
-        self.assertEqual([ash[1][0], ash[1][2]], [1.0, 1.0],
-                         "the ash does not reach the edges of the block")
+        self.assertEqual(ash[1][1], 1 / 16.0, "the ash is not a pixel deep")
 
         logs = [cube for cube in out if cube is not ash]
         under = [cube for cube in logs if cube[0][1] == 0]
@@ -730,7 +768,10 @@ class MountingTests(unittest.TestCase):
         written = load("block_uv")["grindstone"]["standing"]["overwrite"]
         wheel = len(shapes["standing"]["size"]) - 1
         for face in ("north", "south", "east", "west", "up", "down"):
-            self.assertNotIn(written[face][wheel], ("default", "@north", "@down"),
+            texture = written[face][wheel] if wheel < len(written[face]) else "default"
+            ## a face written plain reads its own slot
+            texture = "@" + face if texture == "default" else texture
+            self.assertNotIn(texture, ("@north", "@down"),
                              "the wheel wears a pivot or a leg on %s" % face)
 
     def test_a_grindstone_puts_its_legs_where_it_is_fixed(self):
@@ -742,11 +783,12 @@ class MountingTests(unittest.TestCase):
                                 "a grindstone %s looks like one %s" % (one, other))
 
     def test_a_hanging_sign_shows_how_it_is_hung(self):
-        # named by attached_bit and hanging: chains under a block, a shortened
-        # pair and a bar when attached to it, and the same again with the bar
-        # run out to the edges when mounted on a wall
+        # named by attached_bit and hanging, as the entity model draws it:
+        # two chains of two crossed planes under a block, the one V of chain
+        # when attached to it, and the plank with the two chains under it
+        # when mounted on a wall
         forms = self.forms("oak_hanging_sign", ("0-1", "1-1", "0-0"))
-        self.assertEqual([len(form) for form in forms.values()], [3, 4, 4])
+        self.assertEqual([len(form) for form in forms.values()], [5, 2, 6])
         self.assertNotEqual(forms["0-1"], forms["1-1"])
         self.assertNotEqual(forms["1-1"], forms["0-0"])
 
@@ -757,8 +799,6 @@ class MountingTests(unittest.TestCase):
         # beam spans two walls.
         under = self.cubes("oak_hanging_sign", data="1-1")
         wall = self.cubes("oak_hanging_sign", data="0-0")
-        self.assertEqual(len(wall), len(under),
-                         "the wall form carries a piece the other does not")
         widest = max(size[0] for _at, size in wall)
         self.assertEqual(widest, 1.0, "nothing on the wall form reaches a wall")
         self.assertLess(max(size[0] for _at, size in under), widest,
@@ -770,14 +810,12 @@ class MountingTests(unittest.TestCase):
         # block above turns in sixteen steps with ground_sign_direction, and
         # every other mounting turns with facing_direction, which is why the
         # two numberings cannot share a rotation entry.
-        from scaffold import core
-
-        wall = {"states": {"attached_bit": 0, "hanging": 0,
-                           "facing_direction": 4, "ground_sign_direction": 0}}
-        fixed = {"states": {"attached_bit": 1, "hanging": 1,
-                            "facing_direction": 0, "ground_sign_direction": 10}}
-        self.assertEqual(core.Scaffold._process_block(None, wall)[0], 4)
-        self.assertEqual(core.Scaffold._process_block(None, fixed)[0], 10)
+        wall = {"attached_bit": 0, "hanging": 0,
+                "facing_direction": 4, "ground_sign_direction": 0}
+        fixed = {"attached_bit": 1, "hanging": 1,
+                 "facing_direction": 0, "ground_sign_direction": 10}
+        self.assertEqual(self.geo.choose("oak_hanging_sign", wall)[1], 4)
+        self.assertEqual(self.geo.choose("oak_hanging_sign", fixed)[1], 10)
 
     def test_each_mounting_turns_by_its_own_numbering(self):
         def angle(variant, rot):
@@ -787,10 +825,12 @@ class MountingTests(unittest.TestCase):
             group = list(self.geo.blocks.values())[0]
             return group["cubes"][0]["rotation"]
 
-        # 4 is west to a wall sign and 90 degrees round to an attached one
-        self.assertEqual(angle("0-0", 4), [0, 90, 0])
-        self.assertEqual(angle("1-1", 4), [0, 90.0, 0])
-        self.assertEqual(angle("1-1", 10), [0, 225.0, 0])
+        # 4 is west to a wall sign, and to an attached one four sixteenths of
+        # a turn from south, which is west too: 90 to Minecraft, which a bone
+        # draws as 270. 10 is two sixteenths past north, 315 to Minecraft.
+        self.assertEqual(angle("0-0", 4), [0, 270, 0])
+        self.assertEqual(angle("1-1", 4), [0, 270, 0])
+        self.assertEqual(angle("1-1", 10), [0, 45, 0])
 
     def test_a_lit_campfire_is_the_one_with_a_fire_on_it(self):
         # the logs barely differ between lit and out, so the flame is what
@@ -804,11 +844,15 @@ class MountingTests(unittest.TestCase):
         # the lower block of a door draws both halves and the upper draws
         # nothing, but the open forms used to be settled first, so an open door
         # was drawn twice, once by each of its blocks, in the same place
-        for hinge in (False, True):
-            self.assertEqual(len(self.cubes("iron_door", rot=1, top=True,
-                                            trap_open=True, hinge=hinge)), 1)
-        self.assertEqual(len(self.cubes("iron_door", rot=1, top=True)), 1)
-        self.assertEqual(len(self.cubes("iron_door", rot=1, trap_open=True)), 2)
+        def door(**states):
+            states["minecraft:cardinal_direction"] = "west"
+            return self.cubes("iron_door", states=states)
+
+        for hinge in (0, 1):
+            self.assertEqual(len(door(upper_block_bit=1, open_bit=1,
+                                      door_hinge_bit=hinge)), 0)
+        self.assertEqual(len(door(upper_block_bit=1)), 0)
+        self.assertEqual(len(door(upper_block_bit=0, open_bit=1)), 2)
 
     def test_a_dyed_cauldron_is_drawn_in_its_own_colour(self):
         # a cauldron's dye is a whole RGB in the block entity, not one of a
@@ -820,24 +864,22 @@ class MountingTests(unittest.TestCase):
 
         pack = core.Scaffold.__new__(core.Scaffold)
         states = {"cauldron_liquid": "water", "fill_level": 4}
-        plain = core.Scaffold._process_block(
-            pack, {"name": "minecraft:cauldron", "states": states},
-            {"id": "Cauldron"})
-        self.assertEqual(plain[4], "water-4")
-        self.assertIsNone(plain[6], "an undyed cauldron carries a colour")
+        block = {"name": "minecraft:cauldron", "states": states}
+        undyed = {"id": "Cauldron"}
+        self.assertEqual(self.geo.choose("cauldron", states, undyed)[0], "water-4")
+        self.assertIsNone(core.Scaffold._process_block(pack, block, undyed)[0],
+                          "an undyed cauldron carries a colour")
 
         seen = {}
         for colour in (0xFF3030, 0x3030FF):
-            props = core.Scaffold._process_block(
-                pack, {"name": "minecraft:cauldron", "states": states},
-                {"id": "Cauldron", "CustomColor": colour})
-            self.assertEqual(props[4], "dyed-4",
+            entity = {"id": "Cauldron", "CustomColor": colour}
+            self.assertEqual(self.geo.choose("cauldron", states, entity)[0], "dyed-4",
                              "a dyed cauldron does not change liquid")
             self.geo.blocks = {}
             self.geo.uv_map = {}
             self.geo.uv_array = None
-            self.geo.make_block(0, 0, 0, "cauldron", data=props[4],
-                                tint=props[6])
+            core.Scaffold.draw_block(pack, self.geo, 0, 0, 0, "cauldron",
+                                     block, entity)
             named = [n for n in self.geo.uv_map if "~" in n]
             self.assertEqual(len(named), 1, "the water does not carry a colour")
             row = self.geo.uv_map[named[0]]
@@ -853,20 +895,19 @@ class MountingTests(unittest.TestCase):
         # shape states are. There is one set of tiles per colour: the game holds
         # a model each rather than tinting anything, and a ghost block has
         # nothing to tint at run time either.
-        from scaffold import core
-
-        pack = core.Scaffold.__new__(core.Scaffold)
         for half, base, colour in ((0, 11, "blue"), (1, 5, "lime")):
-            data = core.Scaffold._process_block(
-                pack, {"name": "minecraft:bed",
-                       "states": {"head_piece_bit": half, "direction": 0}},
-                {"id": "Bed", "color": base})[4]
+            data = self.geo.choose(
+                "bed", {"head_piece_bit": half, "direction": 0},
+                {"id": "Bed", "color": base})[0]
             self.assertEqual(data, "%d-%d" % (half, base))
             self.geo.blocks = {}
             self.geo.uv_map = {}
             self.geo.uv_array = None
             self.geo.make_block(0, 0, 0, "bed", data=data)
-            worn = {n.split("/")[-1] for n in self.geo.uv_map if "bed_" in n}
+            ## a tile turned for a face that reads it a quarter round is
+            ## still the same tile
+            worn = {n.split("/")[-1].partition("^")[0]
+                    for n in self.geo.uv_map if "bed_" in n}
             self.assertEqual(len(worn), 3, "a bed reads three of its tiles")
             for name in worn:
                 self.assertTrue(name.startswith("bed_%s_" % colour), name)
@@ -879,14 +920,16 @@ class MountingTests(unittest.TestCase):
         # at each corner, which is one end seen from outside, so a block has two
         # and they stand at the end away from the other half.
         shapes = load("block_shapes")["bed"]
-        for variant, at in (("0-14", 0.0), ("1-14", 0.8125)):
+        ## the bed lies along z with its head to the north, so the foot's legs
+        ## stand at its south end and the head's at its north
+        for variant, at in (("0-14", 0.8125), ("1-14", 0.0)):
             form = shapes[variant]
             self.assertEqual(len(form["size"]), 3, "a mattress and two legs")
             legs = [off for off, size in zip(form["offsets"], form["size"])
                     if size[1] < 0.25]
             self.assertEqual(len(legs), 2)
             for leg in legs:
-                self.assertEqual(leg[0], at,
+                self.assertEqual(leg[2], at,
                                  "the legs of %s are at the wrong end" % variant)
 
         written = load("block_uv")["bed"]["0-14"]["overwrite"]
@@ -910,7 +953,9 @@ class MountingTests(unittest.TestCase):
             self.assertEqual(entry["uv_sizes"]["north"][0][1], tall,
                              "stage %s reads the pod at the wrong height"
                              % stage)
-            self.assertEqual(entry["offset"]["up"][0], [0.0, 0.0],
+            offset, span = entry["offset"]["up"][0], entry["uv_sizes"]["up"][0]
+            self.assertEqual([min(o, o + w) for o, w in zip(offset, span)],
+                             [0.0, 0.0],
                              "stage %s does not take its top from the corner"
                              % stage)
             self.assertNotEqual(entry["offset"]["north"][0], [0.0, 0.0],
@@ -969,7 +1014,7 @@ class MountingTests(unittest.TestCase):
         self.assertEqual(len(self.cubes("piglin_head", rot=1)), 6)
         self.assertEqual(len(self.cubes("dragon_head", rot=1)), 7)
         floor = self.cubes("skeleton_skull", rot=1)
-        wall = self.cubes("skeleton_skull", rot=3)
+        wall = self.cubes("skeleton_skull", states={"facing_direction": 3})
         self.assertNotEqual(floor, wall, "a wall head hangs where it is fixed")
 
     def test_a_head_reads_every_face_of_its_sheet(self):
@@ -1059,23 +1104,20 @@ class MountingTests(unittest.TestCase):
                     "the bottle on plate %d does not turn with its arm" % plate)
 
     def test_a_head_on_the_floor_stands_on_the_floor(self):
-        # **A floor head arrives as `spinN`, not as 1.** Which of sixteen ways
-        # it faces is in the block entity rather than the states, so `core.py`
-        # hands the turn over as `spin0` to `spin15`, and the plain 1 is only
-        # what a head with no entity beside it keeps. `make_block` read anything
-        # that was not 1 as a wall value, so every skull anybody had actually
-        # placed on the ground was drawn four pixels up and four back.
-        for rot in ["1"] + ["spin%d" % n for n in range(0, 16, 5)]:
-            with self.subTest(rot=rot):
+        # A floor head keeps facing 1 whichever of sixteen ways it looks; the
+        # way it looks is its block entity's yaw, on top. A head that took any
+        # value but 1 for a wall would be drawn four pixels up and four back.
+        for yaw in (None, 0.0, 112.5, 225.0, 337.5):
+            with self.subTest(yaw=yaw):
                 floor = min(o[1] * 16 for o, _s in self.cubes("skeleton_skull",
-                                                              rot=rot))
+                                                              rot=1, yaw=yaw))
                 self.assertEqual(round(floor, 3), 0.0,
-                                 "a head turned %s hangs in the air" % rot)
+                                 "a head at yaw %s hangs in the air" % yaw)
         # and one on a wall is still lifted clear of it
         for rot in ("2", "3", "4", "5"):
             with self.subTest(rot=rot):
-                floor = min(o[1] * 16 for o, _s in self.cubes("skeleton_skull",
-                                                              rot=rot))
+                floor = min(o[1] * 16 for o, _s in self.cubes(
+                    "skeleton_skull", states={"facing_direction": int(rot)}))
                 self.assertGreater(floor, 0, "a head on a wall sits on the floor")
 
     def test_a_dragon_head_is_bigger_than_the_block_it_is_placed_on(self):
@@ -1091,8 +1133,9 @@ class MountingTests(unittest.TestCase):
                       for o, s in self.cubes("dragon_head", rot=1)))
                  for i in range(3)]
         across, tall, deep = [(round(a, 1), round(b, 1)) for a, b in reach]
+        # the snout out the front, which at rest is north, toward -z
         self.assertEqual([across, tall, deep],
-                         [(-6.0, 6.0), (0.0, 15.0), (-4.5, 18.0)])
+                         [(-6.0, 6.0), (0.0, 15.0), (-18.0, 4.5)])
         self.assertGreater(deep[1] - deep[0], 16, "the snout is inside the block")
         # **and it stands on the floor.** A ghost block reaching down into the
         # block underneath reads as belonging to that block rather than to this
@@ -1113,7 +1156,8 @@ class MountingTests(unittest.TestCase):
         for name, rot in cases:
             for axis, (low, high) in enumerate(limits):
                 reach = [(origin[axis] * 16, (origin[axis] + size[axis]) * 16)
-                         for origin, size in self.cubes(name, rot=rot)]
+                         for origin, size in self.cubes(
+                             name, states={"facing_direction": rot})]
                 self.assertGreaterEqual(min(a for a, _ in reach), low - 0.01,
                                         "%s at %s runs past %s" % (name, rot, axis))
                 self.assertLessEqual(max(b for _, b in reach), high + 0.01,
@@ -1216,17 +1260,13 @@ class MountingTests(unittest.TestCase):
         self.assertEqual(len(cloths), 3, "the dye does not reach the cloth")
 
     def test_a_banner_is_drawn_in_the_colour_its_block_entity_names(self):
-        from scaffold import core
-
-        pack = core.Scaffold.__new__(core.Scaffold)
         # `Base` is the dye's own number, which runs the opposite way round
         # from wool's: 0 is black and 15 is white. An ominous banner and one
         # carrying patterns are not a dye at all and have sheets of their own.
         for base, colour in ((0, "black"), (6, "cyan"), (15, "white")):
             entity = {"id": "Banner", "Base": base}
-            data = core.Scaffold._process_block(
-                pack, {"name": "minecraft:standing_banner",
-                       "states": {"ground_sign_direction": 0}}, entity)[4]
+            data = self.geo.choose("standing_banner",
+                                   {"ground_sign_direction": 0}, entity)[0]
             self.geo.blocks = {}
             self.geo.uv_map = {}
             self.geo.uv_array = None
@@ -1248,9 +1288,8 @@ class MountingTests(unittest.TestCase):
                                 "illager"),
                                ({"id": "Banner", "Base": 0,
                                  "Patterns": [{"Color": 1}]}, "designed")):
-            data = core.Scaffold._process_block(
-                pack, {"name": "minecraft:standing_banner",
-                       "states": {"ground_sign_direction": 0}}, entity)[4]
+            data = self.geo.choose("standing_banner",
+                                   {"ground_sign_direction": 0}, entity)[0]
             self.geo.blocks = {}
             self.geo.uv_map = {}
             self.geo.uv_array = None
@@ -1359,14 +1398,18 @@ class MountingTests(unittest.TestCase):
         # standing on the floor keeps its sixteen steps in the block entity
         from scaffold import core
 
-        entity = {"id": "Skull", "Rotation": 90.0}
-        rot = core.Scaffold._process_block(
-            core.Scaffold.__new__(core.Scaffold),
-            {"name": "minecraft:skeleton_skull",
-             "states": {"facing_direction": 1}}, entity)[0]
-        self.assertEqual(rot, "spin4", "ninety degrees is the fourth step")
-        # and it is named apart from the facings, which are numbers too
-        self.assertNotEqual(rot, 4)
+        processor = core.Scaffold.__new__(core.Scaffold)
+        floor = {"name": "minecraft:skeleton_skull", "states": {"facing_direction": 1}}
+        self.assertEqual(self.geo.choose("skeleton_skull", floor["states"])[1], 1,
+                         "it is still a head on the floor")
+        told = core.Scaffold._process_block(processor, floor, {"id": "Skull", "Rotation": 90.0})
+        # Rotation climbs clockwise seen from above and a block angle the
+        # other way, so a quarter turn east is three quarters as a block's
+        self.assertEqual(told[1], 270.0, "and the entity's angle is its yaw")
+        # a head on a wall is turned by the wall, whatever its entity says
+        wall = {"name": "minecraft:skeleton_skull", "states": {"facing_direction": 3}}
+        told = core.Scaffold._process_block(processor, wall, {"id": "Skull", "Rotation": 90.0})
+        self.assertIsNone(told[1])
 
     def test_a_sheet_texture_is_read_a_window_at_a_time(self):
         # A hanging sign's texture is an entity sized sheet carrying the bar,
@@ -1378,12 +1421,13 @@ class MountingTests(unittest.TestCase):
                          ("blocks/oak", (4, 12)))
 
         self.cubes("oak_hanging_sign", data="0-0")
-        self.cubes("oak_hanging_sign", data="0-1")
-        windows = [name for name in self.geo.uv_map if "#" in name]
-        self.assertEqual(len(set(windows)), 3,
-                         "the board, the bar and the chains are three windows")
-        self.assertEqual(len(set(self.geo.uv_map[name] for name in windows)), 3,
-                         "each window should be a tile of its own")
+        self.cubes("oak_hanging_sign", data="1-1")
+        windows = {name for name in self.geo.uv_map if "#" in name}
+        for corner in ("#2,14", "#4,0", "#14,6"):
+            self.assertTrue(any(name.endswith(corner) for name in windows),
+                            "nothing reads the sheet from %s" % corner)
+        self.assertEqual(len(set(self.geo.uv_map[name] for name in windows)),
+                         len(windows), "each window should be a tile of its own")
 
     def test_a_shelf_is_the_case_its_sheet_draws(self):
         # `shapes/shelf_facing_east.json` in bedrock-samples gives the block a
@@ -1396,8 +1440,8 @@ class MountingTests(unittest.TestCase):
         shapes = load("block_shapes")["shelf"]["default"]
         self.assertEqual(len(shapes["size"]), 3,
                          "a floor, a ceiling and a back")
-        deep = max(off[2] + size[2] for off, size
-                   in zip(shapes["offsets"], shapes["size"]))
+        ## against the south side of the block, so measured from z 16
+        deep = 1 - min(off[2] for off in shapes["offsets"])
         self.assertAlmostEqual(deep, 5 / 16,
                                msg="the voxel shape is five deep")
         boards = [size for size in shapes["size"] if size[2] == 5 / 16]
@@ -1413,21 +1457,23 @@ class MountingTests(unittest.TestCase):
         # shaded interior across the bottom half for the faces that look into a
         # compartment. Taking the whole tile puts the compartments on all six.
         self.geo.blocks = {}
-        self.geo.make_block(0, 0, 0, "oak_shelf", rot="south")
+        self.geo.make_block(0, 0, 0, "oak_shelf", rot="north")
         cubes = list(self.geo.blocks.values())[0]["cubes"]
         # a board shows all three regions: the front picture forward, planks
         # backward and to the sides, the shaded interior on the one face that
-        # looks into a compartment
+        # looks into a compartment. Facing north it is at rest, front north.
         cube = max(cubes, key=lambda one: one["origin"][1])
-        # a uv corner names a tile in the sheet and the fraction is the window
-        # within it; the sheet is a grid, so both halves of the corner count
-        tiles = {face: asgc.atlas_index(*cube["uv"][face]["uv"])
+        # the tile a window reads is the one its middle is in: a window running
+        # backwards starts at its far edge, which is the next tile along
+        tiles = {face: asgc.atlas_index(
+                     cube["uv"][face]["uv"][0] + cube["uv"][face]["uv_size"][0] / 2.0,
+                     cube["uv"][face]["uv"][1] + cube["uv"][face]["uv_size"][1] / 2.0)
                  for face in ("north", "south", "east", "west", "up", "down")}
         self.assertNotEqual(tiles["north"], tiles["south"],
                             "the back of a shelf is not its front")
         self.assertEqual(len(set(tiles.values())), 3,
                          "the front, the planks and the interior")
-        self.assertEqual(tiles["north"], tiles["up"],
+        self.assertEqual(tiles["south"], tiles["up"],
                          "the outward faces are all planks")
         self.assertEqual(tiles["up"], tiles["east"], "both planks, one tile")
         self.assertNotIn(tiles["down"], (tiles["north"], tiles["south"]),
@@ -1450,7 +1496,8 @@ class MountingTests(unittest.TestCase):
                   if "___" in name]
         self.assertEqual(len(nested), 1, "one bone for the block, not one a cube")
         self.assertEqual(len(nested[0]["cubes"]), 2, "both flame quads are in it")
-        self.assertEqual(nested[0]["rotation"], [0, 270, 0])
+        # east is 270 to Minecraft, which a bone draws as 90
+        self.assertEqual(nested[0]["rotation"], [0, 90, 0])
 
     def test_a_cube_that_turns_on_its_own_is_drawn_once(self):
         # a cube carrying its own rotation goes into a nested bone, and leaving
@@ -1462,11 +1509,11 @@ class MountingTests(unittest.TestCase):
                              "%s gains cubes when it is turned" % name)
 
     def test_a_wall_mounting_sits_against_the_wall_behind_it(self):
-        # A block fixed to a wall fills the near side of its own block, so the
-        # wall is the block behind it and the face looks along +z, which is
-        # where the rotation tables put south. Mounted at the far side instead,
-        # the block is drawn against the wall opposite the one it is on and
-        # every one of its four facings is half a turn out.
+        # A block fixed to a wall fills the south side of its own block, so the
+        # wall is the block behind it and the face looks north, where a block
+        # at rest looks. Mounted at the far side instead, the block is drawn
+        # against the wall opposite the one it is on and every one of its four
+        # facings is half a turn out.
         shapes = load("block_shapes")
         for family, variant in (("wall_sign", "default"), ("shelf", "default"),
                                 ("bell", "side"), ("grindstone", "side"),
@@ -1474,13 +1521,15 @@ class MountingTests(unittest.TestCase):
             form = shapes[family][variant]
             ## a tripwire hook's shaft leans, and the box it is cut from starts
             ## a hair outside the block before it turns; the plate on the wall
-            ## is what has to sit at z 0
-            offsets = (form["offsets"][:1] if family == "tripwire_hook"
-                       else form["offsets"])
-            nearest = min(off[2] for off in offsets)
-            self.assertEqual(nearest, 0,
-                             "%s %s is mounted on the far wall"
-                             % (family, variant))
+            ## is what has to reach z 16
+            turns = form.get("rotation") or [[0, 0, 0]] * len(form["size"])
+            pieces = [(off, size) for off, size, turn
+                      in zip(form["offsets"], form["size"], turns)
+                      if family != "tripwire_hook" or not any(turn)]
+            farthest = max(off[2] + size[2] for off, size in pieces)
+            self.assertAlmostEqual(farthest, 1.0,
+                                   msg="%s %s is mounted on the far wall"
+                                   % (family, variant))
 
     def test_a_tripwire_hook_leans_by_what_is_tied_to_it(self):
         # attached_bit and powered_bit are both shape states, so a hook with
@@ -1488,15 +1537,11 @@ class MountingTests(unittest.TestCase):
         # lists of cubes rather than one turned. The plate is the same in all
         # three, and the shaft is what leans.
         shapes = load("block_shapes")["tripwire_hook"]
-        leans = {name: form["rotation"][1][0]
+        forms = {name: (form["offsets"], form.get("rotation"))
                  for name, form in shapes.items() if name != "default"}
-        self.assertEqual(len(set(leans.values())), 3,
-                         "two of the three forms lean the same way")
-        self.assertGreater(leans["0-0"], 0, "a loose hook points down")
-        self.assertLess(leans["1-1"], leans["1-0"],
-                        "an engaged hook does not drop past a tied one")
-        plates = {tuple(form["offsets"][0]) for form in shapes.values()}
-        self.assertEqual(len(plates), 1, "the plate moved between states")
+        self.assertEqual(len(forms), 4)
+        seen = [repr(form) for form in forms.values()]
+        self.assertEqual(len(set(seen)), 4, "two of the forms are the same")
 
     def test_a_rod_wears_its_own_texture_on_each_of_its_pieces(self):
         # a lightning rod is a wide base with a thin rod out of it, and the two
@@ -1506,8 +1551,8 @@ class MountingTests(unittest.TestCase):
         shapes = load("block_shapes")["lightning_rod"]["default"]
         uv = load("block_uv")["lightning_rod"]["default"]
         for index, size in enumerate(shapes["size"]):
-            for face, (across, down) in (("south", (0, 1)), ("up", (0, 2))):
-                self.assertEqual(uv["uv_sizes"][face][index],
+            for face, (across, down) in (("north", (0, 1)), ("up", (0, 2))):
+                self.assertEqual([abs(n) for n in uv["uv_sizes"][face][index]],
                                  [size[across], size[down]],
                                  "cube %d reads the wrong window for %s"
                                  % (index, face))
@@ -1575,7 +1620,9 @@ class MountingTests(unittest.TestCase):
                            "states": {"flower_type": "orchid"}}})
         self.assertEqual(len(planted), 2)
         self.assertEqual(planted[0][0], pot)
-        self.assertEqual(planted[1][0]["name"], "minecraft:red_flower")
+        # a pot saved before the flowers had ids of their own holds the old
+        # name, and it is translated the way a palette entry is
+        self.assertEqual(planted[1][0]["name"], "minecraft:blue_orchid")
         self.assertEqual(planted[1][1], {},
                          "the plant is not handed the pot's own entity")
 
@@ -1602,6 +1649,10 @@ class MountingTests(unittest.TestCase):
         written = entry["overwrite"]
         for face in ("up", "down", "north", "south", "east", "west"):
             for index, texture in enumerate(written[face]):
+                ## the body's north wall reads its own slot, the wall texture,
+                ## and so is written plain
+                if (face, index) == ("north", 0):
+                    continue
                 self.assertNotEqual(texture, "default",
                                     "cube %d reads %s as a plain tile"
                                     % (index, face))
@@ -1627,20 +1678,30 @@ class MountingTests(unittest.TestCase):
         both = sum(len(group["cubes"]) for group in self.geo.blocks.values())
         self.assertGreater(both, pot, "the plant added nothing to the pot")
 
-    def test_a_head_on_the_floor_starts_half_a_turn_round(self):
-        # A block at rest faces south. A skull whose block entity Rotation is
-        # zero faces north, which is why every floor turn carries the extra
-        # half; without it every head in a build faces away from where it was
-        # placed. That is an observation from the game rather than something
-        # the tables can be read for, so it is written down here.
-        turns = load("block_rotation")["skull_player"]
-        self.assertEqual(turns["spin0"], [0, 180, 0])
-        # and the plain facing, which a floor head with no block entity beside
-        # it falls back to, has to be the same turn as the first step
-        self.assertEqual(turns["1"], turns["spin0"])
+    def test_a_head_on_the_floor_rests_facing_north(self):
+        # A block at rest faces north, and so does a skull whose block entity
+        # Rotation is zero, so a head on the floor takes no turn of its own and
+        # its Rotation is the whole of it. That a zero faces north is an
+        # observation from the game rather than something the tables can be
+        # read for, so it is written down here.
+        from scaffold import block_geometry
+        turns = block_geometry.rotations()["skull_player"]
+        self.assertEqual(turns["1"], [0, 0, 0])
+
+        def turned(yaw):
+            self.geo.blocks = {}
+            self.geo.make_block(0, 0, 0, "player_head", rot=1, yaw=yaw)
+            group = next(g for g in self.geo.blocks.values() if g.get("rotation")
+                         or any(c.get("rotation") for c in g.get("cubes", [])))
+            cube = next((c for c in group.get("cubes", []) if c.get("rotation")), group)
+            return round(cube["rotation"][1] % 360, 3)
+
+        # a yaw is a Minecraft angle, which a bone draws the other way round
+        self.assertEqual(turned(None), 0)
+        self.assertEqual(turned(0.0), 0)
+        self.assertEqual(turned(22.5), 337.5)
         # the sixteen steps go the whole way round, once each
-        steps = [tuple(turns["spin%d" % n]) for n in range(16)]
-        self.assertEqual(len(set(steps)), 16)
+        self.assertEqual(len({turned(n * 22.5) for n in range(16)}), 16)
 
 
 
@@ -1725,11 +1786,8 @@ class GeometryDetailTests(unittest.TestCase):
     def tables(self):
         import json
         from scaffold import paths
-        with open(paths.lookup("block_shapes.json")) as handle:
-            shapes = json.load(handle)
-        with open(paths.lookup("block_uv.json")) as handle:
-            uv = json.load(handle)
-        return shapes, uv
+        from scaffold import block_geometry
+        return block_geometry.load()
 
     def test_every_simplified_shape_is_in_both_tables(self):
         # a family described in one table and not the other silently falls back
@@ -1754,7 +1812,19 @@ class GeometryDetailTests(unittest.TestCase):
             if not name.endswith(asgc.LOW_SUFFIX):
                 continue
             found += 1
-            detailed = shapes[name[:-len(asgc.LOW_SUFFIX)]]["default"]["size"]
+            family = name[:-len(asgc.LOW_SUFFIX)]
+            ## a block drawn as its inventory picture is a box and a quad a
+            ## face, and one drawn as another of its own forms is that form
+            from tools.blocks.simplify import ICON_FAMILIES, AS_FORM, FLATTENED
+            if family in ICON_FAMILIES or family in AS_FORM:
+                continue
+            detailed = shapes[family]["default"]["size"]
+            ## a bowl flattened to planes keeps its count of pieces, and a
+            ## plane draws two faces where a box draws six
+            if family in FLATTENED:
+                self.assertTrue(all(min(size) == 0 for size in body["default"]["size"]),
+                                "%s's walls are not flattened" % name)
+                continue
             self.assertLess(len(body["default"]["size"]), len(detailed),
                             "%s is no simpler than what it replaces" % name)
         self.assertGreater(found, 0, "no simplified shapes at all")
@@ -1776,10 +1846,8 @@ class ChiseledBookshelfTests(unittest.TestCase):
         # books_stored is a six bit number, so there are sixty-four of them
         import json
         from scaffold import paths
-        with open(paths.lookup("block_shapes.json")) as handle:
-            shapes = json.load(handle)["chiseled_bookshelf"]
-        with open(paths.lookup("block_uv.json")) as handle:
-            uv = json.load(handle)["chiseled_bookshelf"]
+        from scaffold import block_geometry
+        shapes, uv = (t["chiseled_bookshelf"] for t in block_geometry.load())
         for mask in range(64):
             self.assertIn(str(mask), shapes)
             self.assertIn(str(mask), uv)
@@ -1793,8 +1861,8 @@ class ChiseledBookshelfTests(unittest.TestCase):
         import json
         import os
         from scaffold import paths
-        with open(paths.lookup("block_uv.json")) as handle:
-            uv = json.load(handle)["chiseled_bookshelf"]
+        from scaffold import block_geometry
+        uv = block_geometry.load()[1]["chiseled_bookshelf"]
         for mask in ("0", "63"):
             for texture in uv[mask]["overwrite"]["north"]:
                 self.assertTrue(
@@ -1875,6 +1943,24 @@ class LayeringTests(unittest.TestCase):
         # the entry points answer it differently, so cli.main must not decide
         from scaffold import cli
         self.assertEqual(cli.main([]), cli.NOTHING_ASKED)
+
+
+
+class GamePackTests(unittest.TestCase):
+    """Every block the game's own resource pack declares is one Scaffold can
+    draw: it has a definition, or it is an old id `block_upgrades.json` turns
+    into one as a structure is read. A block from a new update fails here until
+    it is added, rather than being quietly left out of every pack."""
+
+    def test_every_block_the_game_declares_is_covered(self):
+        from tools import sources
+        from tools.checks import game_pack
+        found = game_pack.coverage()
+        if found is None:
+            self.skipTest(sources.missing(sources.resource_pack("blocks.json")))
+        self.assertEqual(sorted(found[2]), [],
+                         "the game declares blocks Scaffold cannot draw: "
+                         "add them to the tables, or a rule to block_upgrades.json")
 
 
 if __name__ == "__main__":

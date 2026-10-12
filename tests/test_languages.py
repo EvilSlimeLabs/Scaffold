@@ -70,12 +70,13 @@ class SpecialLanguageTests(unittest.TestCase):
         cls.english = cls.table["en_US"]
         cls.lang_fun = tool("tools.app.transforms")
 
-    ## Two proper names and the three axis letters, which stay as they are, and
+    ## Four proper names -- the last two the tweak dialog's tabs, which are
+    ## named for the packs on them -- and the three axis letters, which stay as they are, and
     ## the key that describes the language rather than labels anything.
     ## "OK" is the same word in a pirate's mouth as in anyone else's, and the
     ## transforms are word substitutions: there is nothing in it to change
     LEFT_ALONE = {"title", "techpack", "tweaks", "axis x", "axis y", "axis z",
-                  "ok"}
+                  "ok", "tweaks tab bedrock", "tweaks tab redstone"}
     LEFT_ALONE |= set(lang_parse.META)
     ## **Every tweak's name is a proper name.** They are the titles Bedrock
     ## Tweaks publishes those packs under, and somebody looking one up on their

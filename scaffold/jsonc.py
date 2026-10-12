@@ -2,7 +2,7 @@
 
 Vanilla's own packs are not strict JSON: they carry `//` and `/* */` comments,
 the occasional trailing comma, and a UTF-8 BOM. `json.load` rejects all three,
-so anything reading `CommunityVanillaResourcePack/blocks.json` or its
+so anything reading the game's `blocks.json` or its
 `terrain_texture.json` has to come through here.
 """
 import json

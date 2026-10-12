@@ -53,7 +53,8 @@ class OrientationTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.quads, cls.atlas = render.mesh("lectern", rot=0)
+        ## at rest, which is facing north
+        cls.quads, cls.atlas = render.mesh("lectern")
         cls.frame = render._frame(cls.quads)
 
     def view(self, name):
@@ -65,21 +66,21 @@ class OrientationTests(unittest.TestCase):
         # `lectern_base` carries a red inlay across the bottom of the tile and
         # it belongs at the front of the block. It came out at the back until
         # the window was turned over, which is what says an up face runs its v
-        # toward -z rather than +z. The view puts -z at the top of the picture.
+        # toward -z rather than +z. The view puts -z, the front, at the top.
         above = self.view("up")
         half = above.shape[0] // 2
-        self.assertEqual(redness(above[:half]), 0,
+        self.assertEqual(redness(above[half:]), 0,
                          "the base's inlay is at the back of the block")
-        self.assertGreater(redness(above[half:]), 0,
+        self.assertGreater(redness(above[:half]), 0,
                            "the base's inlay is not on the block at all")
 
     def test_the_post_carries_its_books_on_the_front_only(self):
         # `lectern_front` is two eight wide pictures side by side, the shelf on
         # the left and plain wood on the right. A face reading the whole tile
         # put books on every side of the post.
-        self.assertGreater(greenness(self.view("south")), 0,
+        self.assertGreater(greenness(self.view("north")), 0,
                            "the post has no books on its front")
-        self.assertEqual(greenness(self.view("north")), 0,
+        self.assertEqual(greenness(self.view("south")), 0,
                          "the post has books on its back as well")
 
     def test_every_view_of_a_block_shares_one_frame(self):
@@ -110,7 +111,8 @@ class AgreesWithTheGameTests(unittest.TestCase):
         # are placed by `spun` and turned by a cube rotation of the opposite
         # sign, which is what the game wants; drawn with the sign as written,
         # the two turned arms and their bottles came out square across their
-        # own plate. `render.TURN_SIGNS` is what corrects it.
+        # own plate. `render._spin` turning y the right handed way is what
+        # draws it as the game does.
         import math
 
         quads, _atlas = render.mesh("brewing_stand", data="1-1-1")
@@ -189,8 +191,9 @@ class AgreesWithTheGameTests(unittest.TestCase):
         quads, atlas = render.mesh("standing_banner", data="designed")
         frame = render._frame(quads)
         mirrored = art.transpose(Image.FLIP_LEFT_RIGHT)
-        for view, wanted, named in (("south", art, "the design"),
-                                    ("north", mirrored, "its mirror")):
+        ## at rest, which is facing north
+        for view, wanted, named in (("north", art, "the design"),
+                                    ("south", mirrored, "its mirror")):
             shot = render.draw(quads, atlas, view, 8, (255, 0, 255), frame)
             grid = np.asarray(shot.convert("RGB"))
             solid = np.any(grid != (255, 0, 255), axis=2)
@@ -212,12 +215,14 @@ class AgreesWithTheGameTests(unittest.TestCase):
 
     def test_a_sunflowers_head_faces_east_and_tips_upward(self):
         # the one block whose z turn is settled in game, and the reason
-        # `TURN_SIGNS` negates y alone: negating all three squares the arms up
-        # and leaves this looking at the floor
-        quads, _atlas = render.mesh("sunflower", top=True)
+        # `render._spin` turns y alone the right handed way: turning all three
+        # that way squares the arms up and leaves this looking at the floor
+        quads, _atlas = render.mesh("sunflower", data="top")
         best = None
         for points, _uvs, normal, face in quads:
-            if face not in ("east", "west") or normal[0] <= 0:
+            ## the stem's crossed planes face east too, a quarter round; the
+            ## head faces it nearly square
+            if face not in ("east", "west") or normal[0] <= 0.8:
                 continue
             edges = [np.linalg.norm(points[(n + 1) % 4] - points[n])
                      for n in range(4)]

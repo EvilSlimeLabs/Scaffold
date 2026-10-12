@@ -54,12 +54,15 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
 
+from tools import sources
+
 from scaffold.core import ENTITY_MODELS
+from scaffold import lookup
 
 LOOKUPS = os.path.join(ROOT, "scaffold", "lookups")
 DEFINITION = os.path.join(LOOKUPS, "block_definition.json")
 BLOCK_LIST = os.path.join(LOOKUPS, "block_list.json")
-LANG = os.path.join(ROOT, "bedrock-samples", "resource_pack", "texts", "en_US.lang")
+LANG = sources.resource_pack("texts", "en_US.lang")
 
 ## Bedrock's item texts still spell two dyes the way they were spelled before
 ## the colours were renamed, so a form named for the modern colour has to ask
@@ -169,7 +172,7 @@ def main():
         return
 
     names = Names(read_lang())
-    defs = json.load(io.open(DEFINITION, encoding="utf-8"))
+    defs = lookup.unwrap("block_definition.json", lookup.load(DEFINITION))
     table = json.load(io.open(BLOCK_LIST, encoding="utf-8"),
                       object_pairs_hook=collections.OrderedDict)
     told = table["names"]
@@ -186,12 +189,11 @@ def main():
             continue
         key = "minecraft:" + block
         if key in told:
-            ## **An entry of variants with no default is still a gap.** The
-            ## flattened ids -- carpet, red_flower, every stone_block_slab --
-            ## are named a variant at a time because the id alone does not say
-            ## what the block is made of, and one that ever turned up without
-            ## its variant state would fall back to showing its own id. Filling
-            ## the default costs a line and closes that.
+            ## **An entry of variants with no default is still a gap.** An id
+            ## named a variant at a time, because the id alone does not say what
+            ## the block is, would fall back to showing its own id the day it
+            ## turned up without its variant state. Filling the default costs a
+            ## line and closes that.
             if isinstance(told[key], dict) and "default" not in told[key]:
                 found = names.of(block) or {}
                 told[key]["default"] = found.get("default") or title(block)

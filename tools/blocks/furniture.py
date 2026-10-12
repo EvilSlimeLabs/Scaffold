@@ -26,10 +26,11 @@ sys.path.insert(0, ROOT)
 
 from tools.blocks import tables as lookup_writer
 from tools.blocks.geometry import Cube, FACES, build, on_sheet
+from tools.blocks import tables as _tables
 
 LOOKUPS = os.path.join(ROOT, "scaffold", "lookups")
-SHAPES = os.path.join(LOOKUPS, "block_shapes.json")
-UV = os.path.join(LOOKUPS, "block_uv.json")
+SHAPES = lookup_writer.SHAPES
+UV = lookup_writer.UV
 DEFINITION = os.path.join(LOOKUPS, "block_definition.json")
 ROTATION = os.path.join(LOOKUPS, "block_rotation.json")
 
@@ -46,26 +47,14 @@ def write(family, forms, center=(8, 8, 8)):
 
 
 def define(blocks, family):
-    table = json.load(io.open(DEFINITION, encoding="utf-8"))
-    for block in blocks:
-        table[block] = family
-    body = json.dumps(table, indent="\t", ensure_ascii=False,
-                      separators=(",", ":"))
-    io.open(DEFINITION, "w", encoding="utf-8", newline="").write(body + "\n")
+    """Point block ids at a shape family."""
+    _tables.define(blocks, family)
 
 
 def turns(family, table):
-    """Give a family a rotation entry, numbers and words alike."""
-    stored = json.load(io.open(ROTATION, encoding="utf-8"))
-    stored[family] = table
+    """Give a family a rotation entry: Minecraft's angles, or the name of the
+    state whose own angles it turns by."""
     lookup_writer.put(ROTATION, family, table, tight=True)
-
-
-## the four ways a block that faces one way can be turned, both as Bedrock's
-## numbers and as the words newer versions write instead
-FACING = {"0": [0, 0, 0], "1": [0, 90, 0], "2": [0, 180, 0], "3": [0, 270, 0],
-          "south": [0, 0, 0], "west": [0, 90, 0], "north": [0, 180, 0],
-          "east": [0, 270, 0]}
 
 
 # --- daylight detector ------------------------------------------------------
@@ -79,16 +68,6 @@ DAYLIGHT_INVERTED = {"default": [Cube(
     texture={"up": BLOCKS % "daylight_detector_inverted_top",
              "down": "default", "north": "default", "south": "default",
              "east": "default", "west": "default"})]}
-
-
-# --- spore blossom ----------------------------------------------------------
-#
-# It hangs from the ceiling: a small base against the block above and the
-# blossom itself spread flat below it. Not a cube, which is what it was.
-SPORE_BLOSSOM = {"default": [
-    Cube((4, 3, 4), (6, 13, 6), BLOCKS % "spore_blossom_base"),
-    Cube((14, 0.2, 14), (1, 12.8, 1), BLOCKS % "spore_blossom",
-         window={face: (1, 1, 14, 14) for face in FACES})]}
 
 
 # --- lectern ----------------------------------------------------------------
@@ -107,9 +86,9 @@ SPORE_BLOSSOM = {"default": [
 #                   the other three sides the quarter under it
 #   lectern_base    planks, with the red inlay across the bottom of the tile
 #
-# **The front is south.** The desk leans -22 about x, which drops its +z edge,
-# and `FACING` turns the block from there, so the low side of the desk and the
-# books on the post both face +z.
+# **The front is north**, where a block at rest faces. The desk leans 22 about
+# x, which drops its north edge, so the low side of the desk and the books on
+# the post both face north.
 LECTERN_WHOLE = (0, 0, 16, 16)
 
 ## the post: `lectern_front` is two 8 wide pictures side by side
@@ -123,7 +102,7 @@ LECTERN_BACK = (8, 0, 8, 16)        # the back, which is plain
 ## **The two sides are the same picture facing opposite ways.** A cube's east
 ## and west faces run their windows in opposite directions round the box, so one
 ## picture laid on both has its shading pointing to the front on one side and to
-## the back on the other. The west face reads its eight pixels from the far end
+## the back on the other. The east face reads its eight pixels from the far end
 ## back, which is what a negative width does, and the post is then the same from
 ## either side.
 LECTERN_POST_SIDE = (0, 0, 8, 16, 90)
@@ -139,14 +118,15 @@ LECTERN_DESK_SIDE = (0, 4, 16, 4)
 ## land on three sides of the block and miss the fourth.
 LECTERN_BAND = (0, 13, 16, 2)
 LECTERN_PLANK = (0, 9, 16, 2)
-LECTERN_UNDER = (0, 0, 16, 12)
 
-## **The top faces read their tile turned over.** An up face runs its v from the
-## block's south edge to its north one, so a picture laid out the way it is seen
-## from the front arrives back to front. A negative size in the window turns it
-## round; the width stays positive so only the one axis is mirrored.
-LECTERN_TOP_TURNED = (16, 16, -16, -16)
-LECTERN_BASE_TURNED = (0, 16, 16, -16)
+## **The flat faces read their tiles backwards.** An up face runs its v from the
+## block's south edge to its north one and a down face the other way, so a
+## picture laid out the way it is seen from the front arrives back to front.
+## A negative size in the window turns it round.
+LECTERN_BASE_TOP = (16, 0, -16, 16)
+LECTERN_PLANK_FLAT = (16, 11, -16, -2)
+LECTERN_UNDER = (16, 12, -16, -12)
+LECTERN_BACKWARDS = (16, 16, -16, -16)
 
 LECTERN = {"default": [
     ## The base. Its underside is planks rather than `lectern_base`: the game
@@ -158,8 +138,8 @@ LECTERN = {"default": [
         "up": BLOCKS % "lectern_base", "down": BLOCKS % "planks_oak",
         "north": BLOCKS % "lectern_base", "south": BLOCKS % "lectern_base",
         "east": BLOCKS % "lectern_base", "west": BLOCKS % "lectern_base"},
-         window={"up": LECTERN_BASE_TURNED, "down": LECTERN_WHOLE,
-                 "south": LECTERN_BAND, "north": LECTERN_PLANK,
+         window={"up": LECTERN_BASE_TOP, "down": LECTERN_BACKWARDS,
+                 "north": LECTERN_BAND, "south": LECTERN_PLANK,
                  "east": LECTERN_PLANK, "west": LECTERN_PLANK}),
     ## The post. It runs up to the underside of the desk rather than stopping at
     ## the top of its own block: the desk is tilted, so its back edge lifts, and
@@ -168,26 +148,26 @@ LECTERN = {"default": [
         "up": BLOCKS % "lectern_base", "down": BLOCKS % "lectern_base",
         "north": BLOCKS % "lectern_front", "south": BLOCKS % "lectern_front",
         "east": BLOCKS % "lectern_sides", "west": BLOCKS % "lectern_sides"},
-         window={"up": LECTERN_PLANK, "down": LECTERN_PLANK,
-                 "south": LECTERN_BOOKS, "north": LECTERN_BACK,
-                 "east": LECTERN_POST_SIDE,
-                 "west": LECTERN_POST_SIDE_BACK}),
+         window={"up": LECTERN_PLANK_FLAT, "down": LECTERN_PLANK_FLAT,
+                 "north": LECTERN_BOOKS, "south": LECTERN_BACK,
+                 "east": LECTERN_POST_SIDE_BACK,
+                 "west": LECTERN_POST_SIDE}),
     ## The desk.
     Cube((16, 4, 14), (0, 12, 1), texture={
         "up": BLOCKS % "lectern_top", "down": BLOCKS % "lectern_base",
         "north": BLOCKS % "lectern_sides", "south": BLOCKS % "lectern_sides",
         "east": BLOCKS % "lectern_sides", "west": BLOCKS % "lectern_sides"},
-         window={"up": LECTERN_TOP_TURNED, "down": LECTERN_UNDER,
-                 "south": LECTERN_DESK_FRONT, "north": LECTERN_DESK_SIDE,
+         window={"up": LECTERN_WHOLE, "down": LECTERN_UNDER,
+                 "north": LECTERN_DESK_FRONT, "south": LECTERN_DESK_SIDE,
                  "east": LECTERN_DESK_SIDE, "west": LECTERN_DESK_SIDE},
-         rotation=(-22, 0, 0))]}
+         rotation=(22, 0, 0))]}
 
 ## --- the book on it --------------------------------------------------------
 ##
 ## A lectern's book is not in its states. The block carries which way it faces
 ## and whether it is powered, and whether anybody put a book on it is in the
-## block entity beside it, the way a sign keeps its text; `core`s
-## `BLOCK_ENTITY_INSTEAD` reads it and names this form.
+## block entity beside it, the way a sign keeps its text; the family's
+## `instead` rule reads it and names this form.
 ##
 ## The book is drawn the way the game draws it: two covers open flat with a
 ## sheaf of pages on each, lying along the desk and leaning with it. Vanilla
@@ -208,11 +188,11 @@ BOOK_PAGES_LEFT = (0, 10) + BOOK_PAGES
 BOOK_PAGES_RIGHT = (12, 10) + BOOK_PAGES
 
 ## how thick a leaf is drawn, and how far above the desk the book sits. The
-## desk's own top is at 16 and leans -22 about its middle, so the book leans
+## desk's own top is at 16 and leans 22 about its middle, so the book leans
 ## with it and is written just clear of the surface.
 BOOK_LEAF = 0.2
 BOOK_ON = 16.1
-BOOK_LEAN = (-22, 0, 0)
+BOOK_LEAN = (22, 0, 0)
 
 
 def leaf(size, at, region):
@@ -220,20 +200,25 @@ def leaf(size, at, region):
 
     Only the two large faces are ever seen -- the leaf is a fifth of a pixel
     thick -- so all six take the same region rather than four of them reading a
-    strip of whatever they happen to sit over.
+    strip of whatever they happen to sit over. The top and the bottom read it
+    backwards, as every flat face here does.
     """
     name, window = on_sheet(BOOK_SHEET, region, BOOK_SIZE)
+    x, y, wide, tall = window
+    flat = (x + wide, y + tall, -wide, -tall)
     return Cube((size[0], BOOK_LEAF, size[1]), at, texture=name,
-                window={face: window for face in FACES}, rotation=BOOK_LEAN)
+                window={face: flat if face in ("up", "down") else window
+                        for face in FACES}, rotation=BOOK_LEAN)
 
 
 ## the covers first and the pages a hair above them, so the pages win where the
 ## two overlap
+## the left half of the sheet is the book's west half, the high side of x
 LECTERN_BOOK = LECTERN["default"] + [
-    leaf(BOOK_COVER, (2, BOOK_ON, 3), BOOK_COVER_LEFT),
-    leaf(BOOK_COVER, (8, BOOK_ON, 3), BOOK_COVER_RIGHT),
-    leaf(BOOK_PAGES, (3, BOOK_ON + BOOK_LEAF, 4), BOOK_PAGES_LEFT),
-    leaf(BOOK_PAGES, (8, BOOK_ON + BOOK_LEAF, 4), BOOK_PAGES_RIGHT)]
+    leaf(BOOK_COVER, (8, BOOK_ON, 3), BOOK_COVER_LEFT),
+    leaf(BOOK_COVER, (2, BOOK_ON, 3), BOOK_COVER_RIGHT),
+    leaf(BOOK_PAGES, (8, BOOK_ON + BOOK_LEAF, 4), BOOK_PAGES_LEFT),
+    leaf(BOOK_PAGES, (3, BOOK_ON + BOOK_LEAF, 4), BOOK_PAGES_RIGHT)]
 
 LECTERN["book"] = LECTERN_BOOK
 
@@ -265,27 +250,28 @@ CONDUIT_BASE = BLOCKS % "conduit_base"
 CLOSED = BLOCKS % "conduit_closed"
 OPEN = BLOCKS % "conduit_open"
 CAGE = 6
-CAGE_ART = {"up": (CAGE, 0, CAGE, CAGE), "down": (CAGE * 2, 0, CAGE, CAGE),
-            "west": (0, CAGE, CAGE, CAGE), "south": (CAGE, CAGE, CAGE, CAGE),
-            "east": (CAGE * 2, CAGE, CAGE, CAGE),
-            "north": (CAGE * 3, CAGE, CAGE, CAGE)}
+CAGE_AT = {"up": (CAGE, 0), "down": (CAGE * 2, 0), "west": (0, CAGE),
+           "south": (CAGE, CAGE), "east": (CAGE * 2, CAGE),
+           "north": (CAGE * 3, CAGE)}
+## The sheet is wider than a tile, so a face past x16 reads a tile cut from
+## further along it: the left sixteen columns or the right sixteen.
+CAGE_TILE = {face: 0 if at[0] + CAGE <= 16 else 8 for face, at in CAGE_AT.items()}
+CAGE_ART = {face: (at[0] - CAGE_TILE[face], at[1], CAGE, CAGE)
+            for face, at in CAGE_AT.items()}
+CAGE_TEXTURE = {face: "%s#%d,0" % (CONDUIT_BASE, CAGE_TILE[face])
+                for face in CAGE_AT}
 SHELL = {face: (0, 0, 8, 8) for face in FACES}
 
 CONDUIT = {
-    "0": [Cube((CAGE, CAGE, CAGE), ((16 - CAGE) // 2,) * 3, CONDUIT_BASE,
+    "0": [Cube((CAGE, CAGE, CAGE), ((16 - CAGE) // 2,) * 3, CAGE_TEXTURE,
                window=CAGE_ART)],
-    "1": [Cube((CAGE, CAGE, CAGE), ((16 - CAGE) // 2,) * 3, CONDUIT_BASE,
+    "1": [Cube((CAGE, CAGE, CAGE), ((16 - CAGE) // 2,) * 3, CAGE_TEXTURE,
                window=CAGE_ART),
           Cube((8, 8, 8), (4, 4, 4), OPEN, window=SHELL)],
 }
 CONDUIT["default"] = CONDUIT["0"]
 
-## A conduit has no direction in its states, so nothing turns it today. The
-## table is here so that a state which does turn up finds an entry rather than
-## leaving the block unrotated and silent: both the four cardinals and the
-## sixteen steps a sign uses.
-CONDUIT_TURNS = dict(FACING)
-CONDUIT_TURNS.update({str(n): [0, round(n * 22.5, 1), 0] for n in range(16)})
+## A conduit has no direction in its states, so it has no rotation table.
 
 
 # --- beds -------------------------------------------------------------------
@@ -293,13 +279,12 @@ CONDUIT_TURNS.update({str(n): [0, round(n * 22.5, 1), 0] for n in range(16)})
 # Two blocks, head and foot, each a mattress on two legs. Bedrock tells the
 # halves apart with `head_piece_bit`, which arrives as the shape variant.
 #
-# **A bed lies along x, with its head at x16.** The tiles say so: on
-# `bed_head_top` and `bed_head_side` the pillow is the right half of the
-# picture, and on `bed_head_side` the leg is the last three pixels of it, so the
-# picture runs foot to head across its own width. A face's window runs along x
-# on the top and along the block's own axis on the sides, so a bed lying along z
-# has its pillow painted down one side of the mattress instead of across the
-# head of it.
+# **A bed lies along z, with its head to the north**, the way a bed at rest
+# faces. Its tiles run foot to head across their own width: on `bed_head_top`
+# and `bed_head_side` the pillow is the right half of the picture, and on
+# `bed_head_side` the leg is the last three pixels of it. So the top reads its
+# tile a quarter turned, and the long sides, east and west, read theirs along
+# the bed.
 #
 # **Two legs a block, not four.** `bed_feet_end` carries a leg at each corner,
 # which is one end of the bed seen from outside, and `bed_feet_side` carries one,
@@ -317,8 +302,8 @@ LEG = 3
 #
 # **And one long side has to read its picture the other way round.** The two
 # faces of a box opposite each other run their windows in opposite directions,
-# so the pillow ends up at the head on one and at the foot on the other. A
-# window that starts at the far edge and runs back is how Bedrock reads a
+# so the pillow ends up at the head on one and at the foot on the other. The
+# west side starts at the far edge and runs back, which is how Bedrock reads a
 # picture mirrored.
 BED_FACE = (0, 7, 16, BED_TALL)         # the mattress, on the side and the end
 BED_BACK = (16, 7, -16, BED_TALL)       # the same, the other way round
@@ -326,8 +311,8 @@ BED_BACK = (16, 7, -16, BED_TALL)       # the same, the other way round
 
 ## A bed's colour is in the block entity, not in its states, and there is one
 ## set of tiles per colour: `tools/textures/beds.py` recolours the red
-## tiles the pack ships. `core.BLOCK_ENTITY_ADDS` joins the colour to the half, so a
-## variant is named `<head_piece_bit>-<colour>`.
+## tiles the pack ships. The family's `entity_add` rule joins the colour to the
+## half, so a form is named `<head_piece_bit>-<colour>`.
 BED_COLOURS = ["white", "orange", "magenta", "light_blue", "yellow", "lime",
                "pink", "gray", "silver", "cyan", "purple", "blue", "brown",
                "green", "red", "black"]
@@ -336,8 +321,9 @@ BED_COLOURS = ["white", "orange", "magenta", "light_blue", "yellow", "lime",
 def bed(part, head, colour):
     """One block of a bed: the mattress, and the two legs at its outer end.
 
-    `head` says which end of the block the legs stand at, which is the end away
-    from the other half, and which end of the tile their picture is at.
+    `head` says which end of the tile the legs' picture is at: 0 for the foot,
+    whose legs stand at the south end of the block, and the far end for the
+    head, whose legs stand at the north.
     """
     named = "bed_%s_%s_%%s" % (colour, part)
     top = BLOCKS % (named % "top")
@@ -345,16 +331,18 @@ def bed(part, head, colour):
     end = BLOCKS % (named % "end")
     mattress = Cube((16, BED_TALL, 16), (0, BED_UP, 0), texture={
         "up": top, "down": BLOCKS % "planks_oak",
-        ## the bed lies along x, so its ends are the x faces and its long sides
-        ## the z ones
-        "east": end, "west": end, "north": side, "south": side},
-        window={"up": (0, 0, 16, 16), "down": (0, 0, 16, 16),
-                "east": BED_FACE, "west": BED_FACE,
-                "north": BED_FACE, "south": BED_BACK})
+        ## the bed lies along z, so its ends are the z faces and its long sides
+        ## the x ones
+        "north": end, "south": end, "east": side, "west": side},
+        window={"up": (0, 0, 16, 16, 90), "down": (0, 0, 16, 16, 270),
+                "north": BED_FACE, "south": BED_FACE,
+                "east": BED_FACE, "west": BED_BACK})
     leg_art = (head, 16 - LEG, LEG, LEG)
-    legs = [Cube((LEG, BED_UP, LEG), (head, 0, z), side,
-                 window={face: leg_art for face in FACES})
-            for z in (0, 16 - LEG)]
+    flat = {"up": (0, head, LEG, LEG, 90),
+            "down": (16 - LEG, 16 - LEG - head, LEG, LEG, 270)}
+    legs = [Cube((LEG, BED_UP, LEG), (x, 0, 16 - LEG - head), side,
+                 window=dict({face: leg_art for face in FACES}, **flat))
+            for x in (0, 16 - LEG)]
     return [mattress] + legs
 
 
@@ -367,10 +355,10 @@ BEDS["0"] = bed("feet", 0, "red")
 BEDS["1"] = bed("head", 16 - LEG, "red")
 BEDS["default"] = BEDS["0"]
 
-## The model lies along x while the tables put a block at rest facing south, so
-## every facing carries the quarter turn that takes +x round to +z.
-BED_FACING = {name: [0, (turn[1] + 270) % 360, 0]
-              for name, turn in FACING.items()}
+## A dyed bed carries `direction` and a straw bed `minecraft:cardinal_direction`,
+## and both turn by Minecraft's own angles for them.
+BED_FACING = "direction"
+STRAW_BED_FACING = "minecraft:cardinal_direction"
 
 
 # --- straw beds -------------------------------------------------------------
@@ -392,61 +380,47 @@ BED_FACING = {name: [0, (turn[1] + 270) % 360, 0]
 # still takes the depth it stands at, so a fringe of crossing planes would cut
 # holes in the mattress it stands on rather than feathering its edge.
 #
-# **Mojang's bed lies along z with the pillow at +z and this table's lies along
-# x with the head at x16**, the way the dyed bed here already does, so the two
-# share BED_FACING rather than needing a rotation table apiece. `straw_round`
-# carries a box that quarter turn: +z goes to +x, which trades the four side
-# faces round in pairs and turns the top and the bottom within their own tiles.
+# **It lies along z with its head to the north**, as the dyed bed does. Each
+# face reads the rectangle Mojang's model gives the face of that name, and the
+# tops read theirs backwards.
 STRAW_SHEET = "textures/blocks/straw_bed"
 STRAW_WIDE = 64
 
-## The joints never show: the foot's +z face and the head's -z face are the two
-## halves pressed together, and the head base's +z face is under the pillow.
+## The joints never show: the foot's north face and the head's south face are the
+## two halves pressed together, and the head base's north face is under the
+## pillow.
 ## Mojang leaves them out of the model altogether; they are drawn here with the
 ## straw side, because a cube has six faces whether or not anything sees them.
 STRAW_HIDDEN = (16, 41, 16, 4)
 
-## (size, where it sits, the rectangle each face reads) in Mojang's own space
+## (size, where it sits, the rectangle each face reads)
 STRAW_FORMS = {
     ## head_piece_bit 0, the foot: one box filling the block
     "0": [((16, 4, 16), (0, 0, 0),
            {"north": (16, 41, 16, 4), "south": STRAW_HIDDEN,
             "east": (0, 41, 16, 4), "west": (32, 41, 16, 4),
-            "up": (16, 25, 16, 16), "down": (32, 25, 16, 16)})],
-    ## head_piece_bit 1, the head: a low half, and the pillow on the end of it
-    "1": [((16, 4, 8), (0, 0, 0),
+            "up": (32, 41, -16, -16), "down": (32, 25, 16, 16)})],
+    ## head_piece_bit 1, the head: a low half, and the pillow on the north end
+    "1": [((16, 4, 8), (0, 0, 8),
            {"north": STRAW_HIDDEN, "south": STRAW_HIDDEN,
             "east": (0, 21, 8, 4), "west": (24, 21, 8, 4),
-            "up": (8, 13, 16, 8), "down": (24, 13, 16, 8)}),
-          ((16, 5, 8), (0, 0, 8),
+            "up": (24, 21, -16, -8), "down": (24, 13, 16, 8)}),
+          ((16, 5, 8), (0, 0, 0),
            {"north": (8, 8, 16, 5), "south": (32, 8, 16, 5),
             "east": (0, 8, 8, 5), "west": (24, 8, 8, 5),
-            "up": (8, 0, 16, 8), "down": (24, 0, 16, 8)})],
+            "up": (24, 8, -16, -8), "down": (24, 0, 16, 8)})],
 }
 
-## a quarter turn about y sends the face at +z to +x, and so on round
-STRAW_ROUND = {"east": "south", "west": "north", "north": "east",
-               "south": "west", "up": "up", "down": "down"}
 
-
-def straw_round(size, at, faces):
-    """Mojang's box, carried the quarter turn that lays the bed along x."""
-    wide, tall, deep = size
-    across, up, over = at
+def straw_box(size, at, faces):
+    """One box of the straw bed, each face reading its own rectangle."""
     texture, window = {}, {}
     for face in FACES:
-        region = faces[STRAW_ROUND[face]]
-        texture[face], window[face] = on_sheet(STRAW_SHEET, region, STRAW_WIDE)
-        if face in ("up", "down"):
-            ## the tile turns with the block, and a turned tile measures its
-            ## window across what used to be its height
-            x, y, w, h = window[face]
-            window[face] = (16 - y - h, x, h, w, 90)
-    return Cube((deep, tall, wide), (over, up, 16 - across - wide),
-                texture=texture, window=window)
+        texture[face], window[face] = on_sheet(STRAW_SHEET, faces[face], STRAW_WIDE)
+    return Cube(size, at, texture=texture, window=window)
 
 
-STRAW_BEDS = {half: [straw_round(*box) for box in boxes]
+STRAW_BEDS = {half: [straw_box(*box) for box in boxes]
               for half, boxes in STRAW_FORMS.items()}
 ## a straw bed carries no block entity at all, so unlike the dyed bed there is
 ## nothing to fall back from; the foot is what an unstated one comes up as
@@ -459,19 +433,17 @@ def main():
     write("daylight_inverted", DAYLIGHT_INVERTED)
     define(["daylight_detector_inverted"], "daylight_inverted")
 
-    write("spore_blossom", SPORE_BLOSSOM)
-    define(["spore_blossom"], "spore_blossom")
 
     write("lectern", LECTERN)
     write("enchanting_table", ENCHANTING)
     write("conduit", CONDUIT)
-    turns("conduit", CONDUIT_TURNS)
+    lookup_writer.unturn("conduit")
     write("bed", BEDS)
     ## a lectern and a bed both face somewhere; an enchanting table does not
-    turns("lectern", FACING)
+    turns("lectern", "minecraft:cardinal_direction")
     turns("bed", BED_FACING)
     write("straw_bed", STRAW_BEDS)
-    turns("straw_bed", BED_FACING)
+    turns("straw_bed", STRAW_BED_FACING)
     define(["straw_bed"], "straw_bed")
     print("now re-run tools/blocks/simplify.py")
 

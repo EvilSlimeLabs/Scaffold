@@ -32,6 +32,7 @@ import json
 import os
 import re
 
+from scaffold import block_upgrade
 from scaffold import paths
 
 ## What the file is called wherever a user puts one. The same name in both
@@ -87,11 +88,14 @@ def table(reload=False):
         if not theirs:
             continue
         for block, told in (theirs.get("names") or {}).items():
-            if isinstance(told, dict):
-                names.setdefault(block, {}).update(told)
-            else:
-                ## a bare string is the shorthand for "whatever variant"
-                names.setdefault(block, {})["default"] = told
+            ## a bare string is the shorthand for "whatever variant"
+            if not isinstance(told, dict):
+                told = {"default": told}
+            ## a file written against an id Mojang has since renamed or split
+            ## is read as the id a structure's blocks now arrive under
+            for variant, name in told.items():
+                now, form = block_upgrade.list_key(block, variant)
+                names.setdefault(now, {})[form] = name
         if theirs.get("categories"):
             categories = list(theirs["categories"])
 
@@ -102,9 +106,10 @@ def table(reload=False):
 def split(key):
     """A block list key, as the id and the variant it was counted under.
 
-    Two variants of one block are two lines on a list -- a sunflower and a
-    peony are both `minecraft:double_plant` and nobody is gathering "double
-    plant" -- so the variant travels with the id and is split off here.
+    Two variants of one block can be two lines on a list, so the variant travels
+    with the id and is split off here. Few blocks have one any more: an old
+    structure's `double_plant` or `stone_block_slab` reaches the list already
+    split into the blocks Mojang names today, by `block_upgrade`.
     """
     block, slash, variant = str(key).partition("/")
     return block, (variant if slash else "default")
@@ -126,10 +131,9 @@ def _matches(pattern, block):
     write by hand. The `minecraft:` on the front is optional, because nobody
     wants to type it forty times.
 
-    **A star does not cross the slash.** That is what makes `*/quartz` mean "a
-    quartz one of anything" rather than "anything ending in quartz": without it
-    `*/brick` would match `stone_block_slab/nether_brick` by letting the star
-    swallow the separator and half the variant with it.
+    **A star does not cross the slash.** That is what makes `*/cracked` mean "a
+    cracked one of anything" rather than "anything ending in cracked": without
+    it the star would swallow the separator and part of the variant with it.
     """
     wanted = str(pattern)
     if ":" not in wanted:
@@ -141,11 +145,9 @@ def _matches(pattern, block):
 def category_of(key):
     """The heading this block goes under. The first match wins.
 
-    Matched against the id, and against the id and variant together, because
-    some blocks keep what they are made of in the variant rather than in the
-    id: every stone slab Bedrock wrote before the names were flattened is a
-    `stone_block_slab`, and only the variant says whether it is quartz or
-    sandstone or cobblestone.
+    Matched against the id, and against the id and variant together, because a
+    block that keeps something in its variant, such as how cracked a turtle egg
+    is, can be sorted by it.
     """
     block, variant = split(key)
     both = "%s/%s" % (block, variant) if variant != "default" else None

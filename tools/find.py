@@ -32,6 +32,7 @@ from scaffold import paths
 ## the one list of blocks no pack ships textures for, borrowed rather than
 ## written again: a third copy of it would be a third thing to keep in step
 from tools.checks.render import UNRESOLVABLE
+from scaffold import lookup
 
 ## A block with this family is declared so a structure holding one is named
 ## rather than mysterious, and is not drawn at all.
@@ -57,7 +58,7 @@ def _ordered(variants):
 
 def _read(name):
     with io.open(paths.lookup(name + ".json"), encoding="utf-8") as f:
-        return json.load(f)
+        return lookup.unwrap(name + ".json", json.load(f))
 
 
 def _patterned(search):
@@ -88,7 +89,8 @@ def _rank(search, fields):
 
 def blocks(search):
     """Every block whose id, list name or shape family answers the search."""
-    families, shapes, names = (_read("block_definition"), _read("block_shapes"),
+    from scaffold import block_geometry
+    families, shapes, names = (_read("block_definition"), block_geometry.load()[0],
                                _read("block_list")["names"])
     ## `minecraft:lectern` and `lectern` should find the same block, since one
     ## is what the game prints and the other is what the tables hold
@@ -139,7 +141,7 @@ def block_neighbours(search):
 def textures(search):
     """Every picture in the vanilla pack whose path answers the search.
 
-    What a `block_uv.json` overwrite entry names is a path under the pack with
+    What a face's texture in `block_geometry.json` names is a path under the pack with
     no extension -- `textures/blocks/planks_oak` -- so that is what this prints,
     ready to paste. The size comes with it because it decides how the entry has
     to be written: only the top left sixteen square of a file becomes a tile, so

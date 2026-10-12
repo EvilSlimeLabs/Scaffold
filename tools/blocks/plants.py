@@ -41,9 +41,10 @@ from tools.blocks.geometry import Cube, FACES
 
 BLOCKS = "textures/blocks/%s"
 
-## A quad is a plane: thin enough to have no edge worth seeing. The same
-## hundredth of a block the tables have always given a plant.
-THIN = 0.16
+## A quad is a plane, with no thickness and only its two faces drawn, which is
+## also what lets a pack cut it down to the part of its picture with anything
+## in it.
+THIN = 0
 
 ## **How long a quad is once it is turned.** Vanilla runs its quads from 0.8 to
 ## 15.2 and stretches them as it turns them, so they finish on the block's
@@ -73,10 +74,13 @@ def crossed(texture, window=None, tall=16):
     out of its own flower.
     """
     window = window or {face: (0, 16 - tall, 16, tall) for face in FACES}
+
+    def only(faces):
+        return {face: (window[face] if face in faces else (0, 0, 0, 0)) for face in FACES}
     return [Cube((THIN, tall, LONG), (8 - THIN / 2.0, 0, 8 - LONG / 2.0),
-                 texture, window=window, rotation=(0, TURN, 0)),
+                 texture, window=only(("east", "west")), rotation=(0, TURN, 0)),
             Cube((LONG, tall, THIN), (8 - LONG / 2.0, 0, 8 - THIN / 2.0),
-                 texture, window=window, rotation=(0, TURN, 0))]
+                 texture, window=only(("north", "south")), rotation=(0, TURN, 0))]
 
 
 # --- the plants that are only their cross ------------------------------------
@@ -113,90 +117,12 @@ CAVE_VINES_HEAD_BERRIES = {"default": crossed(BERRY_HEAD)}
 # entirely on side -- for a lilac the side texture is the sunflower's back.
 DOUBLE_PLANT = {"default": crossed("default"), "top": crossed("default")}
 
-
-# --- the sunflower, which has a face ------------------------------------------
+# --- kelp ---------------------------------------------------------------------
 #
-# Every other double plant is its cross and nothing else. A sunflower carries a
-# flower head as well: a plane of its own leaning back off the stem, yellow on
-# the side it faces and green behind. Bedrock keeps the two pictures in
-# `sunflower_additional`, a list of two, and a block reads a list by its variant
-# -- which for a sunflower is the one index that means "sunflower". There is no
-# variant that reaches the second entry, so the head names both outright.
-#
-# It is a family of its own for the same reason: the head belongs to one variant
-# of `double_plant` and a shape family cannot vary by variant, only by state. The
-# flattened block id `sunflower` is what modern structures carry, and
-# `blocks.json` gives it its own textures. A structure written before the
-# flattening holds `double_plant` with `double_plant_type`, and that keeps the
-# plain cross.
-SUN = BLOCKS % "double_plant_sunflower_%s"
-
-## Where the head sits: a plane standing from y4 to y20, so the flower finishes
-## above its own block the way the game draws it, and squarely on the block's
-## north-south middle.
-HEAD_TALL = 16
-HEAD_WIDE = 16
-HEAD_FOOT = 4
-
-## **And a little east of the stem, so the two do not cross.** The stem is a
-## two pixel column up the middle of the block and the flower's disc is the
-## middle eight pixels of its own tile, so a head on the middle line puts green
-## through the bottom of the flower.
-##
-## **East is the low side of x here, because a cube's offset inside its block is
-## not mirrored and the block itself is.** `armor_stand_geo_class` writes a
-## cube's origin as `-1*(x + offsets[0]) + xoff`: the block's place in the grid
-## is negated, which is what turns structure x into Bedrock's model x, and the
-## cube's own offset within the block is added to that untouched. So a cube
-## written east of the middle of its block comes out west of it in game, while
-## the picture on its faces stays where the table put it. Ten read as two pixels
-## west; six is two pixels east.
-HEAD_EAST = 6
-
-## **It leans back, and the yellow face looks upward.** A quarter of a right
-## angle about the north-south axis.
-##
-## **The sign is positive for the same reason east is the low side of x.** The
-## block is mirrored in x on its way into the model, and a mirror reverses every
-## turn about y and about z. `spun` and `tools/checks/render.py` both work in the
-## table's own space, where this reads as leaning the wrong way; in game it is
-## the lean the flower wants. A negative angle here puts the flower's face at the
-## floor.
-HEAD_LEAN = 22.5
-
-## **The two sides of the head read the picture opposite ways.** A plane's faces
-## run their windows in opposite directions, so the back takes a window that
-## starts at the far edge and runs back -- which is how Bedrock reads a picture
-## mirrored -- and the front takes the plain one. The other four faces are the
-## head's rim, a fifth of a pixel thick.
-HEAD_ART = dict(WHOLE_TILE, west=(16, 0, -16, 16))
-HEAD_FACES = dict({face: SUN % "front" for face in FACES}, west=SUN % "back")
-
-
-def head():
-    """The flower itself: a plane facing east and leaning back over the stem.
-
-    Turned about its own middle, which is where Bedrock turns a cube carrying a
-    rotation and no pivot of its own, so the plane stays exactly where it is
-    written here and only tilts. Turning it about the middle of the block
-    instead would drag it off the stem by an amount nobody reading this could
-    predict.
-    """
-    return Cube((THIN, HEAD_TALL, HEAD_WIDE),
-                (HEAD_EAST - THIN / 2.0, HEAD_FOOT, 8 - HEAD_WIDE / 2.0),
-                HEAD_FACES, window=HEAD_ART, rotation=(0, 0, HEAD_LEAN))
-
-
-## **The upper stem stops where the flower starts.** `double_plant_sunflower_top`
-## is empty above its eighth row -- the stalk only reaches the flower's underside
-## -- and the flower's own disc starts at y8. Left a full sixteen tall, the empty
-## top half of each stem quad crossed the flower and blanked the parts of it
-## behind, because a transparent texel still takes the depth it stands at.
-## Cropped to eight, the stalk meets the disc exactly and the two never cross.
-STEM_TALL = 8
-
-SUNFLOWER = {"default": crossed("@down"),
-             "top": crossed("@up", tall=STEM_TALL) + [head()]}
+# Kelp is the crossed planes, but the tip of a stalk reads `kelp_top_bulb`, a
+# list with an entry per `kelp_age`, so it picks its picture by that state. Age
+# 25 Kelp adds the flowering tip as the twenty-sixth.
+KELP = {"default": crossed("default")}
 
 
 def main():
@@ -208,9 +134,11 @@ def main():
     tables.unturn("cross_texture")
 
     tables.write("double_plant", DOUBLE_PLANT)
+    tables.write("kelp", KELP)
+    tables.rules("kelp", texture_by={"state": "kelp_age"})
+    tables.unturn("kelp")
+    tables.define(["kelp"], "kelp")
 
-    tables.write("sunflower", SUNFLOWER)
-    tables.define(["sunflower"], "sunflower")
 
     tables.write("cave_vines_berries", CAVE_VINES_BERRIES)
     tables.define(["cave_vines_body_with_berries"], "cave_vines_berries")

@@ -28,13 +28,14 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
 
+from tools import sources
+
 PACK = os.path.join(ROOT, "scaffold", "Vanilla_Resource_Pack")
 BLOCKS = os.path.join(PACK, "textures", "blocks")
 BANNERS = os.path.join(PACK, "textures", "entity", "banner")
 BASE = os.path.join(BANNERS, "banner_base.tga")
 
-## Bedrock's dye order, which `Base` counts in and which `variants.json` already
-## keys wool and every other dyed block by
+## Bedrock's dye order, which `Base` counts in
 COLOURS = ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink",
            "gray", "silver", "cyan", "purple", "blue", "brown", "green", "red",
            "black"]
@@ -91,7 +92,7 @@ def tint(sheet, colour):
 # It goes below the sheet rather than in it. Both marked sheets keep vanilla's
 # 64 by 64 layout in their top half, so the post and the bar are read by the
 # same windows as every other banner's, and carry the design under it.
-COMMUNITY = os.path.join(ROOT, "CommunityVanillaResourcePack", "textures",
+GAME = sources.resource_pack("textures",
                          "entity", "banner", "banner_illager.tga")
 LOGO = os.path.join(ROOT, "scaffold", "images", "evilslimelabs-logo3.png")
 FRONT = (1, 1, 21, 41)      # the face of the cloth, which is what a design is on
@@ -145,7 +146,7 @@ def logo_on(cloth):
 def main():
     if not os.path.isfile(BASE):
         raise SystemExit(
-            "No %s. Copy it out of the community submodule first." % BASE)
+            "No %s. Copy it out of the game's resource pack first." % BASE)
     sheet = Image.open(BASE).convert("RGBA")
     print("dyeing %s, %dx%d" % (os.path.basename(BASE), *sheet.size))
     for index, colour in enumerate(COLOURS):
@@ -162,11 +163,11 @@ def main():
     print("      %-12s %s, %dx%d" % ("designed", os.path.basename(path),
                                      *made.size))
 
-    if not os.path.isfile(COMMUNITY):
+    if not os.path.isfile(GAME):
         print("      no %s; the ominous banner keeps whatever is there"
-              % os.path.basename(COMMUNITY))
+              % os.path.basename(GAME))
         return
-    ominous = Image.open(COMMUNITY).convert("RGBA")
+    ominous = Image.open(GAME).convert("RGBA")
     path = os.path.join(BANNERS, "banner_illager.png")
     made = written(ominous, ominous.crop(FRONT))
     made.save(path)

@@ -1,16 +1,13 @@
-"""Bring Vanilla_Resource_Pack/ up to date from the community submodule.
+"""Bring Vanilla_Resource_Pack/ up to date from the game's resource pack.
 
     python -m tools.vendor.vanilla_pack                    report, change nothing
     python -m tools.vendor.vanilla_pack --apply            take the stale textures
     python -m tools.vendor.vanilla_pack --add-block oak_shelf stone_slab
     python -m tools.vendor.vanilla_pack --add-block ... --apply
-    python -m tools.vendor.vanilla_pack --source mojang --add-block poplar_planks
 
-`--source` picks which submodule --add-block reads from. The community pack is
-the default, and is the one the stale-texture report compares against, because
-it is the pack this one was hand-merged out of. It lags a Minecraft release by
-weeks, so a block from the update that just shipped is only in bedrock-samples,
-which is Mojang's own and carries the behaviour pack beside it.
+The game's resource pack is the one `pyproject.toml`'s `[tool.scaffold.sources]`
+names, Mojang's own `bedrock-samples` today, which is current the day an update
+ships: see `tools/sources.py`.
 
 Vanilla_Resource_Pack/ is a trimmed vanilla pack that has been hand-merged for
 years, and some of its textures are deliberately not vanilla any more. Copying
@@ -19,7 +16,7 @@ classifies every differing texture before it moves anything.
 
 A texture is KEPT when any of these holds:
 
-  * the community ships it greyscale and this pack's copy is not. Vanilla tints
+  * the game ships it greyscale and this pack's copy is not. Vanilla tints
     those at runtime from the biome colormap, and a ghost block cannot run the
     colormap, so Scaffold bakes the tint in
   * this pack's copy is more opaque. Some textures are solid on purpose so the
@@ -43,14 +40,14 @@ import sys
 ## jsonc lives in the package rather than here: the program reads Bedrock's
 ## permissive JSON at runtime too, so it is shipped code, not a tool
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from tools import sources
 from scaffold import jsonc
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OURS = os.path.join(ROOT, "scaffold", "Vanilla_Resource_Pack")
-COMM = os.path.join(ROOT, "CommunityVanillaResourcePack")
-MOJANG = os.path.join(ROOT, "bedrock-samples", "resource_pack")
-SOURCES = {"community": COMM, "mojang": MOJANG}
+SOURCE = sources.resource_pack()
 OUR_BLOCKS = os.path.join(OURS, "textures", "blocks")
-COMM_BLOCKS = os.path.join(COMM, "textures", "blocks")
+SOURCE_BLOCKS = os.path.join(SOURCE, "textures", "blocks")
 
 ## Commits that imported or reverted a whole vanilla pack. A texture touched
 ## only by these is vanilla-as-shipped and may be replaced; anything else in its
@@ -63,8 +60,14 @@ ALWAYS_KEEP = {
     "grass_side.png", "grass_side_snowed.png", "grass_top.png", "none.png",
     ## outlined and made see-through by tools/textures/water.py. These are the
     ## one pair that is deliberately *less* opaque than vanilla, so the opacity
-    ## test above would hand them back to the community pack every sync.
+    ## test above would hand them back to the game's pack every sync.
     "water_still_grey.png", "water_flow_grey.png",
+    ## widened by tools/textures/chests.py to carry a double chest's two halves
+    ## beside the single front
+    "chest_front.png", "trapped_chest_front.png",
+    "copper_chest_inventory_front.png", "exposed_copper_chest_inventory_front.png",
+    "weathered_copper_chest_inventory_front.png",
+    "oxidized_copper_chest_inventory_front.png",
 }
 
 ## RTX and deferred-rendering companions. The generator never reads them and
@@ -114,7 +117,7 @@ def classify_textures():
     """-> (keep, stale, encoding_only) lists of (relpath, reason)."""
     import numpy
 
-    ours, theirs = relpaths(OUR_BLOCKS), relpaths(COMM_BLOCKS)
+    ours, theirs = relpaths(OUR_BLOCKS), relpaths(SOURCE_BLOCKS)
     subjects = git_subjects()
     keep, stale, encoding = [], [], []
 
@@ -137,7 +140,7 @@ def classify_textures():
         reasons = []
         if a.shape == b.shape:
             if is_greyscale(b) and not is_greyscale(a):
-                reasons.append("community is greyscale, ours is pre-tinted")
+                reasons.append("the game's is greyscale, ours is pre-tinted")
             if a[..., 3].mean() > b[..., 3].mean() + 1:
                 reasons.append("ours is more opaque (%.0f vs %.0f)"
                                % (a[..., 3].mean(), b[..., 3].mean()))
@@ -154,8 +157,8 @@ def classify_textures():
 
 
 def missing_textures():
-    """Textures the community pack has and this one does not, RTX aside."""
-    ours, theirs = relpaths(OUR_BLOCKS), relpaths(COMM_BLOCKS)
+    """Textures the game's pack has and this one does not, RTX aside."""
+    ours, theirs = relpaths(OUR_BLOCKS), relpaths(SOURCE_BLOCKS)
     return sorted(r for r in theirs
                   if r not in ours and not r.endswith(SKIP_SUFFIXES))
 
@@ -171,7 +174,7 @@ def texture_names(blocks, block):
     return []
 
 
-def plan_blocks(names, source=COMM):
+def plan_blocks(names, source=SOURCE):
     """What it would take to support `names`: entries and files to copy in."""
     comm_blocks = jsonc.load(os.path.join(source, "blocks.json"))
     comm_terrain = jsonc.load(os.path.join(source, "textures/terrain_texture.json"))["texture_data"]
@@ -204,7 +207,7 @@ def plan_blocks(names, source=COMM):
     return plan
 
 
-def apply_blocks(plan, source=COMM):
+def apply_blocks(plan, source=SOURCE):
     import json
     added = []
     if plan["blocks"]:
@@ -257,20 +260,11 @@ def main():
     parser.add_argument("--add-block", nargs="+", metavar="BLOCK", default=[],
                         help="also pull in the blocks.json, terrain_texture and texture "
                              "files for these block ids")
-    parser.add_argument("--source", choices=sorted(SOURCES), default="community",
-                        help="which submodule --add-block reads from "
-                             "(default: community)")
     parser.add_argument("--quiet-keep", action="store_true",
                         help="summarise the kept textures instead of listing them")
     args = parser.parse_args()
-    source = SOURCES[args.source]
-    if args.add_block and not os.path.isdir(source):
-        sys.exit("the %s pack is not checked out; git submodule update --init %s"
-                 % (args.source, os.path.relpath(source, ROOT)))
-
-    if not os.path.isdir(COMM_BLOCKS):
-        sys.exit("CommunityVanillaResourcePack is not checked out.\n"
-                 "  git submodule update --init CommunityVanillaResourcePack")
+    if not os.path.isdir(SOURCE_BLOCKS):
+        sys.exit(sources.missing(SOURCE))
 
     keep, stale, encoding = classify_textures()
     if args.quiet_keep:
@@ -286,8 +280,8 @@ def main():
 
     plan = None
     if args.add_block:
-        plan = plan_blocks(args.add_block, source)
-        print("\n=== ADD BLOCKS (from the %s pack) ===" % args.source)
+        plan = plan_blocks(args.add_block, SOURCE)
+        print("\n=== ADD BLOCKS ===")
         print("   blocks.json entries:     %d" % len(plan["blocks"]))
         print("   terrain_texture entries: %d" % len(plan["terrain"]))
         print("   texture files:           %d" % len(plan["files"]))
@@ -299,12 +293,12 @@ def main():
               % (len(stale), " and the blocks above" if plan else ""))
         return
 
-    ours, theirs = relpaths(OUR_BLOCKS), relpaths(COMM_BLOCKS)
+    ours, theirs = relpaths(OUR_BLOCKS), relpaths(SOURCE_BLOCKS)
     for rel, _ in stale:
         shutil.copyfile(theirs[rel], ours[rel])
     print("\ncopied %d stale textures" % len(stale))
     if plan:
-        for line in apply_blocks(plan, source):
+        for line in apply_blocks(plan, SOURCE):
             print("added %s" % line)
     print("\nRun tools/checks/blocks.py next to confirm everything still resolves.")
 
