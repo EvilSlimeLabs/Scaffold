@@ -8,8 +8,10 @@ them over as `scaffold:dust_<side>`, each `none`, `side` or `up`; the family's
 `side-none-up-none`. A dust joined to nothing is the whole cross, as Bedrock
 draws it.
 
-Dust reads the block's own two pictures, the cross on its top slot and the
-line on its side slot, so a tweak that repaints either repaints the dust:
+Dust reads the game's grey cross and line, `redstone_dust_cross_grey` and
+`redstone_dust_line_grey`, tinted by the colour its power gives it, so every
+power level draws in its own shade. A tweak that repaints the dust keeps grey
+copies under the same names, which are read first, so it is tinted the same:
 
   a straight run   dust joined along one axis only, one end or both: the line
                    across the whole block, turned a quarter for north and
@@ -36,9 +38,9 @@ JOINS = ("none", "side", "up")
 LIFT = 0.01
 OFF_WALL = 0.01
 NOTHING = {"uv": [0, 0], "size": [0, 0]}
-READ = {"slot": "up"}
-## the line, which the block declares on its sides
-LINE = {"slot": "north"}
+READ = {"texture": "textures/blocks/redstone_dust_cross_grey", "tint": True}
+## the line, which the game draws a straight run with
+LINE = {"texture": "textures/blocks/redstone_dust_line_grey", "tint": True}
 ## pixel boxes on the floor, (x0, z0, x1, z1), in a .geo.json's frame, where
 ## east is the low side of x and north the low side of z
 MIDDLE = (4, 4, 12, 12)

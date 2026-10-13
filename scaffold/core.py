@@ -1043,11 +1043,20 @@ class Scaffold:
             hidden = water_sides(struct, x, y, z)
             if "up" in hidden:
                 states = dict(states, **{COVERED: True})
-        ## dust is told which of its sides join something; see scaffold/dust.py
-        if struct is not None and self.dust.is_dust(block):
-            states = dict(states, **self.dust.sides(
-                lambda *at: block_at(struct, *at), x, y, z,
-                lambda found: whole_cube(armorstand, found)))
+        ## dust is told which of its sides join something: what the structure
+        ## saved when it saved any, and otherwise worked out from the blocks
+        ## round it; and it is tinted the colour its power gives it. See
+        ## scaffold/dust.py
+        if self.dust.is_dust(block):
+            joins = dust.saved(states)
+            if joins is None and struct is not None:
+                joins = self.dust.sides(
+                    lambda *at: block_at(struct, *at), x, y, z,
+                    lambda found: whole_cube(armorstand, found))
+            if joins:
+                states = dict(states, **joins)
+            if tint is None and dust.SIGNAL in states:
+                tint = dust.colour(states[dust.SIGNAL])
         family = top_family = None
         if struct is not None and block["name"] in LIQUIDS:
             family, top_family = water_families(armorstand, struct, x, y, z)

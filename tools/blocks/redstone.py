@@ -110,6 +110,20 @@ def dust(reader, option):
     middle, reading the down slot, declared the same way."""
     entry = copy.deepcopy(reader.families["red_dust"])
     entry["texture_by"] = {"state": "redstone_signal"}
+    ## Scaffold's own dust reads the game's grey pictures, tinted by its power;
+    ## the option's are already drawn per signal, so they are read untinted
+    ## from the slots it declares them on
+    from tools.blocks import dust as plain_dust
+    slots = {plain_dust.READ["texture"]: "up", plain_dust.LINE["texture"]: "north"}
+    for section in ("forms", "low"):
+        for form in entry.get(section, {}).values():
+            for cube in form["cubes"]:
+                for face in cube["faces"].values():
+                    found = face.get("texture") or {}
+                    if found.get("texture") in slots:
+                        face["texture"] = dict(
+                            {"slot": slots[found["texture"]]},
+                            **{k: v for k, v in found.items() if k not in ("texture", "tint")})
     names = {"up": "%s_dust" % option, "side": "%s_line" % option}
     terrain = {names["up"]: {"textures": [texture(option, "dust_%d" % p) for p in range(16)]},
                names["side"]: {"textures": [texture(option, "line_%d" % p) for p in range(16)]}}

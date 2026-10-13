@@ -782,6 +782,10 @@ class Grid:
     def size(self):
         return (self.wide, self.tiers * TIER, self.wide)
 
+    ## how far above its block a ghost is drawn; a plot holding a whole
+    ## structure raises it to clear the structure's own height
+    lift = GHOST
+
     @property
     def top(self):
         """The first height above everything the plot draws, ghosts included."""
@@ -794,7 +798,7 @@ class Grid:
         middle = self.wide // 2
         if (middle - 1) % self.pitch == 0:
             middle += 1
-        return (middle, (self.tiers // 2) * TIER + 1 + GHOST, middle)
+        return (middle, (self.tiers // 2) * TIER + 1 + self.lift, middle)
 
     def labels(self):
         """The rows each tier labels: the blocks' and the ghosts', as heights
@@ -803,7 +807,7 @@ class Grid:
         for tier in range(self.tiers):
             base = tier * TIER + 1
             found.append((base, REAL))
-            found.append((base + GHOST, GHOST_LABEL))
+            found.append((base + self.lift, GHOST_LABEL))
         return found
 
     def add(self, family, case):
@@ -928,14 +932,15 @@ class StructureGrid(Grid):
     each block on a barrier: for blocks whose states only hold beside the
     neighbours they were saved with, such as string and stair corners."""
 
-    def __init__(self, path, title=None):
+    def __init__(self, path, title=None, tweak=None):
         from scaffold.pack.structure_reader import StructureFile
         found = StructureFile(path)
         sx, sy, sz = found.size
-        if sy > GHOST - 1:
-            sys.exit("%s is %d tall; a plot holds %d" % (path, sy, GHOST - 1))
         super().__init__(1, 1, 1, title or os.path.splitext(os.path.basename(path))[0])
         self._wide = max(sx, sz) + 2
+        ## the ghost one block clear of the structure's top
+        self.lift = max(GHOST, sy + 1)
+        self._tall = sy
         for x in range(sx):
             for y in range(sy):
                 for z in range(sz):
@@ -952,14 +957,23 @@ class StructureGrid(Grid):
                         self.water.add(at)
                     self.blocks.setdefault((x + 1, 0, z + 1), ("minecraft:barrier", {}))
         self.used = 1
+        dusted(self, tweak)
 
     @property
     def wide(self):
         return self._wide
 
+    @property
+    def top(self):
+        return max(self.tiers * TIER, 1 + self.lift + self._tall)
+
+    @property
+    def size(self):
+        return (self.wide, self.top, self.wide)
+
     def stand(self):
         middle = self.wide // 2
-        return (middle, 1 + GHOST, middle)
+        return (middle, 1 + self.lift, middle)
 
 
 ## redstone dust as it was saved, every signal, laid out in lines that join,
@@ -1448,7 +1462,7 @@ def name_blocks(grid, n, tiles, cols):
             along = first + c
             for r in range(NAME_ROWS):
                 ## drawn GHOST above where it is put, and above every ghost
-                y = grid.top + (NAME_ROWS - 1 - r) - GHOST + 1
+                y = grid.top + (NAME_ROWS - 1 - r) - grid.lift + 1
                 at = (along, y, across) if axis == "z" else (across, y, along)
                 ## which column of the words this block shows, read from each side
                 out_c = c if outer_way > 0 else cols - 1 - c
@@ -1725,6 +1739,9 @@ def main(argv=None):
     parser.add_argument("--trials", action="store_true",
                         help="three calibrated sculk sensors whose ghosts try "
                              "three ways round a plane's clear texels")
+    parser.add_argument("--dust-tweaks", action="store_true",
+                        help="with --structure, the structure again once per "
+                             "dust tweak, its dust drawn with that tweak")
     parser.add_argument("--structure", action="append", default=[], metavar="FILE",
                         help="a structure placed as it was saved, on a plot of "
                              "its own; may be given more than once")
@@ -1912,6 +1929,10 @@ def main(argv=None):
             grids.append(grid)
     for path in args.structure:
         grids.append(StructureGrid(path))
+        if args.dust_tweaks:
+            base = os.path.splitext(os.path.basename(path))[0]
+            for _group, tweak, title in DUST_TWEAKS:
+                grids.append(StructureGrid(path, "%s %s" % (base, title), tweak))
     if args.dust_world:
         grids.append(DustGrid(None, "Plain dust"))
         grids.append(DustJoinGrid())
@@ -1961,7 +1982,7 @@ def main(argv=None):
             families.update(made)
             path = os.path.join(args.output, "gallery_%d.mcstructure" % n)
             shifts.append((path, grid.save(path, version, blocks)))
-        if args.dust_world:
+        if args.dust_world or args.dust_tweaks:
             variants = variants + [(title, tweak, "redstone_wire")
                                    for title, tweak, _plot in DUST_TWEAKS]
         ## each fill trial's hopper, where the builder will find it
@@ -1989,11 +2010,11 @@ def main(argv=None):
             sets.append((origin, grid, tag))
             stand = grid.stand()
             builder.add_model(tag, path)
-            ## a ghost at its block's place plus GHOST, with the stand in the
-            ## middle: an offset moves the model east, up and south, and the
-            ## structure was shifted to take in the plot's name
+            ## a ghost at its block's place plus the plot's lift, with the
+            ## stand in the middle: an offset moves the model east, up and
+            ## south, and the structure was shifted to take in the plot's name
             builder.set_model_offset(tag, [-stand[0] - shift[0],
-                                           GHOST - stand[1] - shift[1],
+                                           grid.lift - stand[1] - shift[1],
                                            -stand[2] - shift[2]])
         builder.generate_with_nametags()
         pack = builder.compile_pack(overwrite=True)
@@ -2013,7 +2034,7 @@ def main(argv=None):
             for family, case, (x, y, z) in grid.key:
                 f.write("%s\t%s\t%d\t%d\t%d\t%d\t%s\t%s\t%s\n" % (
                     tag, grid.title, origin[0] + x, origin[1] + y, origin[2] + z,
-                    origin[1] + y + GHOST, family, case.block, case.label))
+                    origin[1] + y + grid.lift, family, case.block, case.label))
     skipped = builder.get_skipped(write_file=False)
     print("%d cases in %d plots, the largest %d across and %d tiers, in %s" % (
         len(cases), len(grids), max(g.wide for g in grids),

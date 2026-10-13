@@ -62,6 +62,9 @@ ALWAYS_KEEP = {
     ## one pair that is deliberately *less* opaque than vanilla, so the opacity
     ## test above would hand them back to the game's pack every sync.
     "water_still_grey.png", "water_flow_grey.png",
+    ## the game's grey dust, which dust is tinted from by its power; written by
+    ## tools/textures/dust_line.py
+    "redstone_dust_cross_grey.png", "redstone_dust_line_grey.png",
     ## widened by tools/textures/chests.py to carry a double chest's two halves
     ## beside the single front
     "chest_front.png", "trapped_chest_front.png",

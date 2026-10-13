@@ -29,6 +29,11 @@ def _mean(path):
 
 
 def main():
+    ## the game's own grey pictures, which dust is drawn from, tinted by its
+    ## power as a pack is built
+    for name in ("redstone_dust_cross", "redstone_dust_line"):
+        Image.open(os.path.join(GAME, name + ".png")).convert("RGBA").save(
+            os.path.join(VANILLA, name + "_grey.png"))
     print("writing redstone dust's line")
     tint = _mean(os.path.join(VANILLA, "redstone_dust_cross.png")) / _mean(
         os.path.join(GAME, "redstone_dust_cross.png"))

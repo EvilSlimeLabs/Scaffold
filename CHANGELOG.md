@@ -13,9 +13,9 @@ no jargon. A paragraph, not a document: it is read in a dialog that cannot
 scroll. If an update needs anything doing, such as a pack being rebuilt or
 re-applied, say that first. Be succinct; too long and people won't bother to read it.
 
-## 1.4.0
+## 1.3.2
 
-Structure files saved by Minecraft 26.60 and later, which the game now compresses, can be opened. Older structure files open as before.
+Rebuild your packs to pick these up. Torches on walls were drawn on the wrong wall, and now sit where the real torch does. Redstone dust shows how strongly it is powered, dull red to bright, as it does in the game. Structure files saved by Minecraft 26.60 and later, which the game now compresses, can be opened, and their dust joins up exactly as it was saved.
 
 ## 1.3.1
 

@@ -938,16 +938,24 @@ never carried a copper golem's pose or a banner's design.
 
 ## Redstone dust, and what a block says about it
 
-**Bedrock saves no connections for dust.** A `redstone_wire` in a structure
-carries `redstone_signal` and nothing else; which of its sides join something
-is worked out by the game as it draws, and never written down. Java saves the
-four sides as states, Bedrock does not. So Scaffold joins dust itself:
+**Bedrock saved no connections for dust before 26.60.** A `redstone_wire` in
+an older structure carries `redstone_signal` and nothing else. From 26.60 it
+also carries `redstone_north`, `redstone_east`, `redstone_south` and
+`redstone_west`, each `none`, `side` or `up`, and `dust.saved` reads those as
+they are. The game saves the shape it draws rather than what touches what: a
+lone dust is saved joined on all four sides, the cross, and a dust joined on
+one side is saved joined on the opposite one too, a straight line, and the
+family draws both exactly as it draws the joins worked out below. For an older
+structure Scaffold joins dust itself:
 `scaffold/dust.py` reads the rules in `lookups/dust_connections.json` and core
 hands each dust `scaffold:dust_<side>`, `none`, `side` or `up`, which the
 `red_dust` family's `data` rule joins into one of its 81 forms
 (`tools/blocks/dust.py`). Every piece of every form reads a window of the
-block's own top picture, so a tweak that repaints the cross repaints the joined
-dust too.
+game's grey cross or line, tinted by `dust.colour` for its power, so each
+signal draws in its own shade. A tweak that repaints the dust keeps grey copies
+under the same names, which are read first, so it is tinted the same way. The
+Clearer Redstone dust options read their own picture per signal instead,
+untinted, from the slots they declare.
 
 **The table is the rules, by pattern**:
 

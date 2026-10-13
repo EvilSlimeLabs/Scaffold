@@ -428,11 +428,19 @@ few things outside them, which any reader has to get right.
   all planes, copper bars or kelp, has all of its water drawn after the planes.
   `core.water_families` decides; the families are `water`, `water_late`,
   `water_surface`, `water_surface_late` and `water_surface_early`.
-- **Redstone dust's joins are worked out, not read.** Bedrock saves a dust
-  block's `redstone_signal` and nothing about which way it runs, so Scaffold
-  works the joins out from the neighbours, by the rules in
-  `dust_connections.json`, and hands the `red_dust` family four states,
-  `scaffold:dust_north` and the rest, each `none`, `side` or `up`, which its
-  `data` rule joins into the form's name. A reader without that draws every
-  dust as the lone cross, its `default` form. `docs/Block Notes.md` has the
-  rules and where Bedrock differs from Java.
+- **Redstone dust's joins are read where saved and worked out where not.** A
+  structure saved by Minecraft 26.60 or later carries `redstone_north`,
+  `redstone_east`, `redstone_south` and `redstone_west` on each dust, `none`,
+  `side` or `up`; an older one carries only `redstone_signal`, and Scaffold
+  works the joins out from the neighbours by the rules in
+  `dust_connections.json`. Either way the `red_dust` family is handed four
+  states, `scaffold:dust_north` and the rest, which its `data` rule joins into
+  the form's name. A reader without either draws every dust as the lone cross,
+  its `default` form. `docs/Block Notes.md` has the rules and where Bedrock
+  differs from Java.
+- **Dust is tinted by its power.** The `red_dust` family reads the game's grey
+  `redstone_dust_cross_grey` and `redstone_dust_line_grey` with `tint`, and the
+  colour is the one Minecraft draws dust with at that `redstone_signal`: red
+  `f * 0.6 + 0.4` (0.3 with no power), green `f * f * 0.7 - 0.5` and blue
+  `f * f * 0.6 - 0.7`, each held between 0 and 1, where `f` is the signal over
+  15.

@@ -862,7 +862,10 @@ class MountingTests(unittest.TestCase):
         # a structure lands there as a tile of its own.
         from scaffold import core
 
+        from scaffold import dust
         pack = core.Scaffold.__new__(core.Scaffold)
+        ## the dust rules every build carries, which draw_block asks of each block
+        pack.dust = dust.Connections()
         states = {"cauldron_liquid": "water", "fill_level": 4}
         block = {"name": "minecraft:cauldron", "states": states}
         undyed = {"id": "Cauldron"}

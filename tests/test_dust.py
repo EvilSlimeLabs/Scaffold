@@ -67,5 +67,71 @@ class FacingTests(unittest.TestCase):
         self.assertEqual(self.rules.faces(block), {"north"})
 
 
+class SavedJoinsTests(unittest.TestCase):
+    """A structure saved by Minecraft 26.60 or later carries the joins the game
+    draws a dust with, and they are read instead of worked out.
+
+    `test_structures/26_60test.mcstructure` was saved by the 26.60 preview."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.found = StructureFile(os.path.join(ROOT, "test_structures", "26_60test.mcstructure"))
+        cls.geo = asgc.ArmorStandGeo("dust", offsets=[0, 0, 0])
+        cls.rules = dust.Connections()
+
+    def dusts(self):
+        sx, sy, sz = self.found.size
+        for x in range(sx):
+            for y in range(sy):
+                for z in range(sz):
+                    block = self.found.get_block(x, y, z)
+                    if self.rules.is_dust(block):
+                        yield (x, y, z), block
+
+    def test_every_dust_saved_its_joins(self):
+        for at, block in self.dusts():
+            with self.subTest(at):
+                self.assertIsNotNone(dust.saved(block["states"]))
+
+    def test_the_saved_joins_draw_what_the_worked_out_ones_do(self):
+        # the game saves a lone dust as the cross and an end as a straight line,
+        # and the family draws those exactly as it draws the joins worked out
+        shapes = self.geo.block_shapes["red_dust"]
+        windows = self.geo.block_uv["red_dust"]
+        for at, block in self.dusts():
+            with self.subTest(at):
+                saved = dust.saved(block["states"])
+                worked = self.rules.sides(lambda *a: core.block_at(self.found, *a), *at,
+                                          lambda b: core.whole_cube(self.geo, b))
+                name = lambda found: "-".join(found[dust.STATE % side] for side in SIDES)
+                self.assertEqual(shapes[name(saved)], shapes[name(worked)])
+                self.assertEqual(windows[name(saved)], windows[name(worked)])
+
+    def test_a_structure_from_before_26_60_has_none(self):
+        self.assertIsNone(dust.saved({"redstone_signal": 3}))
+
+    def test_an_unknown_join_is_not_trusted(self):
+        states = {"redstone_%s" % side: "side" for side in SIDES}
+        states["redstone_east"] = "sideways"
+        self.assertIsNone(dust.saved(states))
+
+
+class PowerColourTests(unittest.TestCase):
+    """Dust is tinted the colour Minecraft draws it at its power."""
+
+    def test_unpowered_dust_is_dull_red(self):
+        self.assertEqual(dust.colour(0), 0x4C0000)
+
+    def test_full_power_is_bright_with_a_touch_of_green(self):
+        self.assertEqual(dust.colour(15), 0xFF3300)
+
+    def test_every_level_is_its_own_shade(self):
+        self.assertEqual(len({dust.colour(p) for p in range(16)}), 16)
+
+    def test_a_signal_out_of_range_is_held_to_it(self):
+        self.assertEqual(dust.colour(40), dust.colour(15))
+        self.assertEqual(dust.colour("not a number"), dust.colour(0))
+
+
 if __name__ == "__main__":
     unittest.main()

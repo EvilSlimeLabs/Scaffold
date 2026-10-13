@@ -380,9 +380,11 @@ def flat_growth():
 # --- torches ---------------------------------------------------------------------------
 #
 # Java's torch, two pixels across and ten tall, standing or leaning out from a
-# wall. `torch_facing_direction` is the way a torch on a wall leans, away from
-# the wall; Java's wall torch rests leaning east. Every torch is this shape:
-# its picture is what tells a redstone torch from a soul torch.
+# wall. `torch_facing_direction` names the wall a torch is fixed to, and the
+# torch leans the other way, out from it: `west` is on the block to its west,
+# leaning east. Java's wall torch rests leaning east, so it rests as `west`.
+# Every torch is this shape: its picture is what tells a redstone torch from a
+# soul torch.
 
 TORCHES = ["torch", "soul_torch", "redstone_torch", "unlit_redstone_torch", "copper_torch",
            "underwater_torch", "colored_torch_blue", "colored_torch_purple",
@@ -395,8 +397,8 @@ def torches():
           pick=[{"when": {"torch_facing_direction": ["north", "south", "east", "west"]},
                  "form": "wall"}],
           turn_by=[{"state": "torch_facing_direction"}])
-    tables.turns("torch", {"top": [0, 0, 0], "east": [0, 0, 0], "north": [0, 90, 0],
-                           "west": [0, 180, 0], "south": [0, 270, 0]})
+    tables.turns("torch", {"top": [0, 0, 0], "west": [0, 0, 0], "south": [0, 90, 0],
+                           "east": [0, 180, 0], "north": [0, 270, 0]})
 
 
 # --- repeaters and comparators ------------------------------------------------------

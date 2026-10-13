@@ -97,7 +97,7 @@
 		"sticky_piston_arm": {"0": [90, 0, 0], "1": [270, 0, 0], "2": [0, 180, 0], "3": [0, 0, 0], "4": [0, 270, 0], "5": [0, 90, 0]},
 		"stonecutter_block": "minecraft:cardinal_direction",
 		"straw_bed": "minecraft:cardinal_direction",
-		"torch": {"top": [0, 0, 0], "east": [0, 0, 0], "north": [0, 90, 0], "west": [0, 180, 0], "south": [0, 270, 0]},
+		"torch": {"top": [0, 0, 0], "west": [0, 0, 0], "south": [0, 90, 0], "east": [0, 180, 0], "north": [0, 270, 0]},
 		"trapdoor": "weirdo_direction",
 		"tree": {"x": [0, 0, 270], "y": [0, 0, 0], "z": [90, 0, 0]},
 		"tripwire_hook": "direction",

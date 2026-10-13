@@ -42,6 +42,51 @@ OPPOSITE = {"north": "south", "south": "north", "east": "west", "west": "east",
             "up": "down", "down": "up"}
 EVERY = ("north", "south", "east", "west", "up", "down")
 NONE, SIDE, UP = "none", "side", "up"
+## the joins Minecraft saves on a dust from 26.60, one per side, each none,
+## side or up like the ones worked out here
+SAVED = "redstone_%s"
+SIGNAL = "redstone_signal"
+
+
+def saved(states):
+    """{side: none, side or up} as the structure saved them, or None.
+
+    A structure saved by Minecraft 26.60 or later carries the joins it draws a
+    dust with, so they are read rather than worked out. The game saves the
+    shape it draws: a lone dust is saved joined on every side, the cross, and a
+    dust joined on one side is saved joined on the opposite one as well, a
+    straight line. Those draw the same as the joins `sides` works out. A
+    structure from before 26.60 has none of them, and answers None.
+    """
+    found = {}
+    for side in SIDES:
+        value = states.get(SAVED % side)
+        if value is None:
+            return None
+        value = plain(value)
+        if value not in (NONE, SIDE, UP):
+            return None
+        found[STATE % side] = value
+    return found
+
+
+def colour(signal):
+    """The colour the game draws dust with at this power, as 0xRRGGBB.
+
+    A ghost cannot tint as it draws, so the dust's grey pictures are tinted by
+    this as the pack is built. It is the colour Minecraft gives redstone dust:
+    a dull red with no power, brightening toward full, and a touch of green in
+    the last few steps.
+    """
+    try:
+        power = max(0, min(15, int(plain(signal))))
+    except (TypeError, ValueError):
+        power = 0
+    f = power / 15.0
+    red = f * 0.6 + 0.4 if power else 0.3
+    green = max(0.0, min(1.0, f * f * 0.7 - 0.5))
+    blue = max(0.0, min(1.0, f * f * 0.6 - 0.7))
+    return (round(red * 255) << 16) | (round(green * 255) << 8) | round(blue * 255)
 
 
 def _named(pattern, name):
