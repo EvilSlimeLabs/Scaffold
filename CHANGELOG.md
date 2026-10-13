@@ -15,7 +15,7 @@ re-applied, say that first. Be succinct; too long and people won't bother to rea
 
 ## 1.3.2
 
-Rebuild your packs to pick these up. Torches on walls were drawn on the wrong wall, and now sit where the real torch does. Redstone dust shows how strongly it is powered, dull red to bright, as it does in the game. Structure files saved by Minecraft 26.60 and later, which the game now compresses, can be opened, and their dust joins up exactly as it was saved.
+Rebuild your packs to pick these up. Torches on walls were drawn on the wrong wall, and now sit where the real torch does. Redstone dust shows how strongly it is powered, dull red to bright, as it does in the game. Structure files saved by Minecraft 26.60 and later, which the game now compresses, can be opened, and 26.60 adds saved dust joins instead of us having to reconstruct them.
 
 ## 1.3.1
 
