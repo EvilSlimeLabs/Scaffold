@@ -132,7 +132,8 @@ tools/                     the scripts that build the data, and the ones that ch
   checks/                  blocks, coverage, render, generators, api, speed, upgrades, compass, gallery, worldfile, game_pack;
                            trials, water_trials, fill_trials, tweak_blocks, tweak_variants -- what the test worlds draw
   export/                  structura.py -- Scaffold's tables in the shape Structura 1.7 reads;
-                           handoff.py -- that, the format 2 tables and the guide, as one folder for Structura's developer
+                           handoff.py -- that, the format 2 tables and the guide, as one folder for Structura's developer;
+                           From Structura 1.7.md -- what is particular to Structura, shipped only in the handoff
 tests/                     unittest suite
 test_structures/           .mcstructure files to generate against
 docs/                      user-facing documentation: Block Notes.md, what to read before touching a block;

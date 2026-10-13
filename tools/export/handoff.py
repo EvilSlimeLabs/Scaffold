@@ -6,7 +6,8 @@
 Writes `handoff/structura/`, which git ignores, from the tree as it is now:
 
   README.md                the guide: what changed and the two ways to take it
-  Lookup Format 2.md       the specification
+  Lookup Format 2.md       the specification, docs/Lookup Format 2.md
+  From Structura 1.7.md    what is particular to Structura, tools/export/From Structura 1.7.md
   lookups/                 the format 2 tables and their schemas
   converter/               converts format 2 to Structura 1.7's tables, alone
 
@@ -90,7 +91,8 @@ Made from Scaffold {version}, tables checked against Minecraft {minecraft}.
 
 | | |
 | --- | --- |
-| `Lookup Format 2.md` | the specification: every file, every key, how a form is chosen, and every breaking change from 1.7 |
+| `From Structura 1.7.md` | how the files map onto 1.7's, every breaking change, what reading format 2 directly would take, and what the converter cannot carry |
+| `Lookup Format 2.md` | the specification: every file, every key, how a form is chosen, and what drawing a block needs beyond the tables |
 | `lookups/` | the format 2 tables, and a JSON schema for each geometry file in `lookups/schema/` |
 | `converter/` | converts the format 2 tables to 1.7's, with no Scaffold checkout needed |
 
@@ -109,7 +111,7 @@ python convert.py <out>
 copy over a Structura 1.7 checkout. Some blocks come out approximate, because
 1.7's code cannot express them: words as data values, a second rotation state,
 block entities. `python convert.py <out> --report` lists each one, and the last
-section of `Lookup Format 2.md` says why.
+section of `From Structura 1.7.md` says why.
 
 The converter does not translate format 2 by rule. It draws every state of every
 block through Scaffold's own code, which ships inside `converter/`, and files
@@ -120,8 +122,9 @@ what Scaffold draws, as near as 1.7 can say it.
 sixty lines. Around it Structura would also need to translate old blocks as a
 structure is read, read the texture object on every face of every cube, lay
 its texture sheet out as a grid, and read the block entity beside each block.
-`Lookup Format 2.md` is the specification, and its section "What it would take
-for Structura to read format 2" walks through that work piece by piece.
+`Lookup Format 2.md` is the specification, and "What it would take for
+Structura to read format 2" in `From Structura 1.7.md` walks through that work
+piece by piece.
 Scaffold's reference implementation is `scaffold/block_geometry.py`,
 `scaffold/block_upgrade.py`, and `ArmorStandGeo.choose`, `make_block` and
 `trim_plane` in `scaffold/pack/armor_stand_geo_class.py`, all MIT licensed like
@@ -129,12 +132,14 @@ Structura, and all inside `converter/` here.
 
 Taken this way, with block entities read as well, every block comes out as
 Scaffold draws it. Some of what the engine does is not in the tables and is
-worth porting with it; "Things the format relies on" has each:
+worth porting with it; "Drawing what the tables describe" in the
+specification has each:
 
 - **Draw order is the bones' names.** Every cutout seen in Scaffold's test
   worlds fits the game drawing a model's bones sorted by name, with only the
-  order of cubes within one bone holding as the camera moves. Scaffold names its tiers so they sort (`slice_` for blocks, `tier1_`
-  for planes, `tier2_` for water, `early_` before them all), and draws a
+  order of cubes within one bone holding as the camera moves. Scaffold names
+  its tiers so they sort (`slice_` for blocks, `tier1_` for planes, `tier2_`
+  for water, `early_` before them all), and draws a
   block's water and a container's count in the block's own bone, after it.
 - **Planes are cut to the painted part of their picture**, so their clear
   texels hide as little as they can.
@@ -196,6 +201,7 @@ def main(argv=None):
     io.open(os.path.join(out, "README.md"), "w", encoding="utf-8").write(
         GUIDE.format(version=version.read(), minecraft=geometry.get("minecraft", "")))
     shutil.copy(os.path.join(ROOT, "docs", "Lookup Format 2.md"), out)
+    shutil.copy(os.path.join(ROOT, "tools", "export", "From Structura 1.7.md"), out)
 
     lookups = os.path.join(out, "lookups")
     os.makedirs(lookups)
