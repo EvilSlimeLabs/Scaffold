@@ -9,13 +9,19 @@ have to read the same for as long as anyone has old files.
 The structures here are built in memory rather than read off disk, because the
 point is that two files carrying the same blocks in different tags give the
 same answer, and no pair of recorded files is identical enough to prove that.
+
+Minecraft 26.60 lets a version 2 file compress its structure compound with
+zlib, and says so in a `compression` tag at the root. The compressed files here
+are made from the uncompressed ones as the 26.60 notes describe the format.
 """
+import io
 import os
 import tempfile
 import unittest
+import zlib
 
 import nbtlib
-from nbtlib import Compound, Int, IntArray, List, String
+from nbtlib import ByteArray, Compound, Int, IntArray, List, String
 
 from scaffold.pack import structure_reader
 
@@ -62,6 +68,22 @@ def version_two(second_layer=True):
     return structure(2, layers)
 
 
+def compressed(nbt, method=1, wrapped=False):
+    """The same file with its structure compound serialized as little endian
+    NBT, zlib compressed and stored as a byte array, as Minecraft 26.60 writes
+    it. `wrapped` puts the compound under its own name first."""
+    inner = nbt["structure"]
+    if wrapped:
+        inner = Compound({"structure": inner})
+    buffer = io.BytesIO()
+    nbtlib.File(inner).write(buffer, byteorder="little")
+    packed = zlib.compress(buffer.getvalue())
+    out = nbtlib.File({key: value for key, value in nbt.items() if key != "structure"})
+    out["compression"] = Int(method)
+    out["structure"] = ByteArray(list(memoryview(packed).cast("b")))
+    return out
+
+
 def read(nbt):
     """Save the tags and read them back the way a build does."""
     handle, path = tempfile.mkstemp(suffix=".mcstructure")
@@ -96,6 +118,39 @@ class FormatVersionTests(unittest.TestCase):
         self.assertEqual(counts["minecraft:stone"], 4)
         self.assertEqual(counts["minecraft:oak_planks"], 2)
         self.assertNotIn("minecraft:air", counts)
+
+
+class CompressionTests(unittest.TestCase):
+    def test_a_compressed_file_reads_the_same(self):
+        self.assertEqual(read(compressed(version_two())), read(version_two()))
+
+    def test_a_compound_wrapped_in_its_own_name_reads_the_same(self):
+        self.assertEqual(read(compressed(version_two(), wrapped=True)),
+                         read(version_two()))
+
+    def test_compression_zero_is_no_compression(self):
+        plain = version_two()
+        plain["compression"] = Int(0)
+        self.assertEqual(read(plain), read(version_two()))
+
+    def test_the_metadata_stays_readable_without_decompressing(self):
+        # the window reads the origin of a big build's pieces straight from
+        # the root, and 26.60 leaves everything but the structure uncompressed
+        packed = compressed(version_two())
+        self.assertEqual([int(v) for v in packed["size"]], list(SIZE))
+
+    def test_an_unknown_method_is_refused(self):
+        with self.assertRaises(ValueError):
+            read(compressed(version_two(), method=2))
+
+    def test_a_recorded_structure_survives_compression(self):
+        path = os.path.join("test_structures", "redstone_dust.mcstructure")
+        original = nbtlib.load(path, byteorder="little")
+        reader = structure_reader.StructureFile(structure_reader.expanded(
+            compressed(original)))
+        plain = structure_reader.StructureFile(path)
+        self.assertEqual(dict(reader.get_block_list()), dict(plain.get_block_list()))
+        self.assertEqual(list(reader.size), list(plain.size))
 
 
 class RecordedStructureTests(unittest.TestCase):

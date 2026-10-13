@@ -1,3 +1,6 @@
+import io
+import zlib
+
 import nbtlib
 
 from scaffold import block_geometry
@@ -17,17 +20,58 @@ def embed( small_array, big_array, loc):
     ystop=ystart+small_array.shape[1]
     zstop=zstart+small_array.shape[2]
     big_array[xstart:xstop,ystart:ystop,zstart:zstop]=small_array
+## what a version 2 file's `compression` tag says its structure compound is
+UNCOMPRESSED = 0
+ZLIB = 1
+
+
+def load(path):
+    """A structure file's root compound, its structure compound readable.
+
+    Every reader of a .mcstructure goes through this, so none of them has to
+    know whether the file was compressed.
+    """
+    return expanded(nbtlib.load(path, byteorder="little"))
+
+
+def expanded(root):
+    """The root compound with its `structure` compound decompressed.
+
+    A version 2 file may carry a `compression` tag at its root: 0, or no tag at
+    all, for none, and 1 for zlib. Compressed, the whole structure compound is
+    serialized as little endian NBT, zlib compressed and stored as a byte array
+    in its place, while the rest of the root -- the size, the origin, the
+    format version -- stays as it is. The game writes compressed files from
+    Minecraft 26.60.
+    """
+    if "" in root.keys():
+        root = root[""]
+    method = int(root.get("compression", UNCOMPRESSED))
+    if method == UNCOMPRESSED or isinstance(root.get("structure"), nbtlib.Compound):
+        return root
+    if method != ZLIB:
+        raise ValueError("unknown structure compression %d" % method)
+    packed = bytes(root["structure"].astype("uint8"))
+    inner = nbtlib.File.parse(io.BytesIO(zlib.decompress(packed)), byteorder="little")
+    if "" in inner.keys():
+        inner = inner[""]
+    ## the serialized compound is the structure itself; one that arrives
+    ## wrapped under its own name is unwrapped
+    if "block_indices" not in inner and "structure" in inner:
+        inner = inner["structure"]
+    root["structure"] = nbtlib.Compound(inner)
+    return root
+
+
 class StructureFile:
     def __init__(self, file):
         global loaded
-        if type(file) is dict:
-            self.NBTfile = file
+        ## tags already loaded, an nbtlib File or a plain dict, or a path
+        if isinstance(file, dict):
+            self.NBTfile = expanded(file)
         else:
-            self.NBTfile = nbtlib.load(file, byteorder='little')
+            self.NBTfile = load(file)
         loaded=self.NBTfile
-        
-        if "" in self.NBTfile.keys():
-            self.NBTfile=self.NBTfile[""]
 
         ## block_indices is a list of layers, and the first is the one a
         ## ghost block is drawn from; the second carries waterlogging and
@@ -186,9 +230,7 @@ class CombinedStructures:
         
         for file in file_list:
             self.structs[file] = {}
-            self.structs[file]["nbt"] = nbtlib.load(file, byteorder='little')
-            if "" in self.structs[file]["nbt"].keys():
-                self.structs[file]["nbt"] = self.structs[file]["nbt"][""]
+            self.structs[file]["nbt"] = load(file)
             
             ## the first layer, as an array either way -- see StructureFile
             self.structs[file]["blocks"] = array(

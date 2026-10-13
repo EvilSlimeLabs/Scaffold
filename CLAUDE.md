@@ -348,6 +348,8 @@ Brevity here is about summaries and commit messages only. Detailed technical exp
 2. `generate_with_nametags()` reads each structure, and for every non-air block calls `armorstandgeo.make_block`, which resolves the block through the lookup tables into cubes with UVs and appends them to a per-layer bone.
 3. `compile_pack()` writes the manifest, copies the icon, zips the folder and renames it to `.mcpack`.
 
+**Every structure file is opened through `structure_reader.load`.** From Minecraft 26.60 a version 2 file may say `compression` 1 at its root and keep its `structure` compound as zlib compressed little endian NBT in a byte array; `structure_reader.expanded` turns it back into the compound, and everything else in the root, the size and the origin among them, was never compressed. Nothing that reads a structure's blocks calls `nbtlib.load` on one itself. The window reads only the origin from the root, so it is the one place that does.
+
 Blocks are batched into bones named `slice_<y>`, parented to `layer_<y % 12>`. The layer bones are what the pose animations scale up and down, which is how shift-right-clicking an armor stand steps through the build.
 
 ### Driving it from something other than the GUI

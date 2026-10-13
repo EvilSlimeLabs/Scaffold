@@ -13,6 +13,10 @@ no jargon. A paragraph, not a document: it is read in a dialog that cannot
 scroll. If an update needs anything doing, such as a pack being rebuilt or
 re-applied, say that first. Be succinct; too long and people won't bother to read it.
 
+## 1.4.0
+
+Structure files saved by Minecraft 26.60 and later, which the game now compresses, can be opened. Older structure files open as before.
+
 ## 1.3.1
 
 Scaffold installed from PyPI now knows its own version. It said 0.0.0, and packs it built were labelled 0.0.0 too. The downloadable program was not affected.

@@ -46,6 +46,7 @@ sys.path.insert(0, ROOT)
 import nbtlib
 
 from scaffold import block_upgrade
+from scaffold.pack import structure_reader
 
 
 def schema_version(data):
@@ -166,10 +167,9 @@ def structure_entries():
     seen = {}
     for path in glob.glob(os.path.join(ROOT, "test_structures", "**", "*.mcstructure"), recursive=True):
         try:
-            nbt = nbtlib.load(path, byteorder="little")
+            nbt = structure_reader.load(path)
         except Exception:
             continue
-        nbt = nbt.get("", nbt)
         for entry in nbt["structure"]["palette"]["default"]["block_palette"]:
             states = {k: plain(v) for k, v in entry["states"].items()}
             version = int(entry.get("version", 0))

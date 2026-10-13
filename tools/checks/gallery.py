@@ -300,7 +300,8 @@ def observed():
     seen = collections.defaultdict(collections.Counter)
     newest = 0
     for path in glob.glob(os.path.join(ROOT, "test_structures", "*.mcstructure")):
-        body = nbtlib.load(path, byteorder="little")
+        from scaffold.pack import structure_reader
+        body = structure_reader.load(path)
         for entry in body["structure"]["palette"]["default"]["block_palette"]:
             newest = max(newest, int(entry["version"]))
             ## a test structure is an old save, so its blocks are read the way
