@@ -6,28 +6,6 @@ item leaves this file when it ships, and goes into `CHANGELOG.md` instead.
 
 ---
 
-## Checks in game
-
-Blocks changed in the 1.3.0 round that no world had confirmed when its notes
-were closed. Each is a look, not a feature; drop a line once it has been seen.
-
-- **Facing:** cocoa pods and their stem, repeater and comparator torches, bells,
-  furnaces, the vault's east and west, wall coral fans, piston arms, observer
-  arrows, every trapdoor and door direction.
-- **Faces and textures:** big dripleaf's two side pictures, a chiseled
-  bookshelf's book order, the plain bookshelf's top, the double chest front, bed
-  sides, the calibrated sculk sensor's crystal size, hanging signs on a chain.
-- **Test worlds:** no stone platform at 0,0, and the signs hung under each door
-  and trapdoor.
-- **Waiting on an answer:** glazed terracotta facings 0 and 1; why door edges
-  read mirrored (a close-up of one edge, real beside ghost); a lit back on a
-  Clearer Redstone piston, now that the pack's source is in `redstone_tweaks/`;
-  which waterlogged copper blocks look inconsistent, and from which side; where
-  the Clearer Redstone dust look should go as an alternate; how see-through a
-  calibrated sculk sensor's clear texels should leave what is behind it.
-
----
-
 ## Blocks
 
 **Decorated pot sides.** A pot is drawn plain. A pot made from sherds keeps
@@ -98,12 +76,6 @@ still has the shape of Structura's builder, with its debug prints and a
 `LOW_SUFFIX` is defined in both `armor_stand_geo_class.py` and
 `block_geometry.py`, and should live in one.
 
-**A faster test suite.** The suite takes about thirteen minutes and every build
-runs it. Marking the slow tests, the render manifest and the world builders, so
-a quick run can leave them out, would make it something to run between edits.
-Several tests also open files without closing them and print a
-`ResourceWarning` each time (`test_unpublish.py`, `test_updates.py`).
-
 ---
 
 ## Packaging
@@ -111,11 +83,6 @@ Several tests also open files without closing them and print a
 **Classifiers that promise too much.** `pyproject.toml` lists
 "Environment :: X11 Applications" and "Operating System :: OS Independent",
 while the window is supported on Windows only.
-
-**The licence the package declares.** `pyproject.toml` says `license = "MIT"`,
-and the package also carries Bedrock Tweaks' art under its own licence and
-Redstone Tweaks' under CC BY-NC-SA 4.0. The declared licence, and
-`license-files`, could name all three.
 
 ---
 
