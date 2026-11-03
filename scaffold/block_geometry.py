@@ -2,7 +2,7 @@
 
 `lookups/block_geometry.json` describes every shape family:
 
-    {"format": 2, "minecraft": "26.50",
+    {"format": 2, "minecraft": "26.60",
      "families": {
         "<family>": {
             "forms": {"<form>": FORM, ...},

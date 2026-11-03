@@ -760,8 +760,11 @@ class Scaffold:
     def _add_blocks_to_geo(self,struct2make,model_name,export_big=False):
         [xlen, ylen, zlen] = struct2make.get_size()
         if export_big:
-            self.structure_files[model_name]['offsets'][0]-=xlen.item()+7
-            self.structure_files[model_name]['offsets'][2]-=zlen.item()+7
+            ## A big build is drawn exactly as a single structure is, then half
+            ## turned as a whole by its root bone; see
+            ## ArmorStandGeo.export_big. These offsets put the grid's corner
+            ## where animation_class.export_big expects it once turned.
+            self.structure_files[model_name]['offsets'] = list(asgc.BIG_OFFSETS)
         armorstand = asgc.ArmorStandGeo(model_name,alpha = self.opacity, size=[xlen, ylen, zlen], offsets=self.structure_files[model_name]['offsets'], low_geometry=self.low_geometry, tweaks=self.tweaks_used())
 
         ## the animation only needs the layers of the tallest model; a
@@ -786,8 +789,6 @@ class Scaffold:
                 z=int(loc[1])
                 block = struct2make.get_block(x, y, z)
                 blk_name=block["name"].replace("minecraft:", "")
-                ## a big build reads through a combined reader, which has no
-                ## entity data of its own
                 entity={}
                 if hasattr(struct2make,"get_block_entity"):
                     entity=paired(struct2make, x, y, z, block,
@@ -797,11 +798,11 @@ class Scaffold:
                 for drawn, beside in self._drawn_at(block, entity):
                     blk_name=drawn["name"].replace("minecraft:", "")
                     if debug:
-                        self.draw_block(armorstand, x, y, z, blk_name, drawn, beside, export_big,
+                        self.draw_block(armorstand, x, y, z, blk_name, drawn, beside,
                                         struct=struct2make)
                     else:
                         try:
-                            self.draw_block(armorstand, x, y, z, blk_name, drawn, beside, export_big,
+                            self.draw_block(armorstand, x, y, z, blk_name, drawn, beside,
                                             struct=struct2make)
                         except Exception as e:
                             variant = _variant(drawn)
@@ -825,23 +826,18 @@ class Scaffold:
                     try:
                         self.draw_block(armorstand, x, y, z,
                                         liquid["name"].replace("minecraft:", ""),
-                                        liquid, None, export_big,
-                                        struct=struct2make)
+                                        liquid, None, struct=struct2make)
                     except Exception:
                         pass
                 ## and whatever a tweak draws beside the block from what its
                 ## entity says; see scaffold/marks.py
-                self._draw_marks(armorstand, struct2make, x, y, z, block,
-                                 entity, export_big)
+                self._draw_marks(armorstand, struct2make, x, y, z, block, entity)
             ## consider temp file
-        ## and whatever stands in the structure that is not a block. A big
-        ## build reads through a combined reader, which merges several files
-        ## into one grid and has no entities of its own, the same way it has no
-        ## block entities.
+        ## and whatever stands in the structure that is not a block
         counted = struct2make.get_block_list()
         if hasattr(struct2make, "get_entities"):
             for key, count in self._add_entities_to_geo(
-                    struct2make, armorstand, export_big).items():
+                    struct2make, armorstand).items():
                 counted[key] = counted.get(key, 0) + count
         if export_big:
             armorstand.export_big(self.work_dir)
@@ -852,7 +848,7 @@ class Scaffold:
         return counted
 
     @staticmethod
-    def _draw_marks(armorstand, struct, x, y, z, block, entity, big=False):
+    def _draw_marks(armorstand, struct, x, y, z, block, entity):
         """Draw the marks a tweak defines for this block, if any does.
 
         A mark is not a block anybody placed, so one that fails is passed over
@@ -863,12 +859,12 @@ class Scaffold:
                 continue
             try:
                 armorstand.make_block(x, y, z, mark["name"],
-                                      states=mark["states"], big=big, beside=True)
+                                      states=mark["states"], beside=True)
             except Exception:
                 if debug:
                     raise
 
-    def _add_entities_to_geo(self, struct2make, armorstand, export_big=False):
+    def _add_entities_to_geo(self, struct2make, armorstand):
         """Draw the entities Scaffold knows, and count them for the list.
 
         An entity that nothing in ENTITY_MODELS names is passed over in silence
@@ -887,7 +883,7 @@ class Scaffold:
             try:
                 armorstand.make_block(x, y, z, model["block"],
                                       yaw=entity_yaw(entity["yaw"]),
-                                      data=form, big=export_big,
+                                      data=form,
                                       lift=entity.get("lift") or 0.0)
             except Exception:
                 ## the same bargain a block gets: it lands on the skipped list
@@ -1028,7 +1024,7 @@ class Scaffold:
 
 
         return finished
-    def draw_block(self, armorstand, x, y, z, blk_name, block, entity=None, big=False,
+    def draw_block(self, armorstand, x, y, z, blk_name, block, entity=None,
                    struct=None):
         """Draw one block from its states and its block entity.
 
@@ -1061,11 +1057,11 @@ class Scaffold:
         if struct is not None and block["name"] in LIQUIDS:
             family, top_family = water_families(armorstand, struct, x, y, z)
         armorstand.make_block(x, y, z, blk_name, states=states,
-                              entity=entity, big=big, tint=tint, yaw=yaw, hidden=hidden,
+                              entity=entity, tint=tint, yaw=yaw, hidden=hidden,
                               family=family)
         ## and water's top, unless more water is above it; see `water_families`
         if struct is not None and block["name"] in LIQUIDS and "up" not in hidden:
-            armorstand.make_block(x, y, z, blk_name, states=states, big=big, tint=tint,
+            armorstand.make_block(x, y, z, blk_name, states=states, tint=tint,
                                   family=top_family)
 
     def _process_block(self, block, entity=None, armorstand=None):

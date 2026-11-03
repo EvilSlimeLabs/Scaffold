@@ -1,7 +1,7 @@
 {
 	"$schema": "schema/state_rotations.schema.json",
 	"format": 2,
-	"minecraft": "26.50",
+	"minecraft": "26.60",
 	"about": "The turn Minecraft gives each value of each state that turns a block: x, y and z in degrees.",
 	"states": {
 		"direction": {"0": [0, 180, 0], "1": [0, 90, 0], "2": [0, 0, 0], "3": [0, 270, 0]},

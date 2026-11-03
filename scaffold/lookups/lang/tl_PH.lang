@@ -36,6 +36,7 @@ techpack help=Parehong pinapalitan ng Scaffold at TechPack ang armor stand, at p
 techpack missing=Hindi available ang TechPack sa build na ito
 lowgeo=Payak na Geometry
 lowgeo help=Buong detalye ang pagguhit ng Scaffold sa bawat bloke. Iniilawan ng Vibrant Visuals ang bawat isa sa mga hugis na iyon, kaya mabigat iruguhit ang malaking istruktura. Ang payak na geometry ay muling gumuguhit lamang sa mga pinakadetalyadong bloke bilang mas simpleng hugis, nananatili ang mga texture at posisyon ng mga ito, kaya mas magaan ito sa graphics card.
+bigbuild help=Para sa isang build na naka-save bilang ilang structure file. Naaalala ng bawat file kung saan ito na-save sa mundo, at ibinabalik ng big build mode ang bawat piraso sa lugar na iyon bilang iisang ghost model. Ang Sulok ay ang hilagang-kanlurang sulok sa ibaba ng buong build: ang pinakamababang X, Y at Z ng lahat ng piraso. Binabasa ito ng Kunin ang Global Cords mula sa mga file. Maglagay ng isang armor stand kahit saan malapit sa build; nananatili ang ghost sa kinaroroonan ng build, saanman nakaharap ang stand.
 settings=Mga Setting
 packicon=Icon ng pack
 description=Paglalarawan

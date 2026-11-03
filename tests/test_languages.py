@@ -195,6 +195,39 @@ class FontCoverageTests(unittest.TestCase):
                 % (code, len(missing)))
 
 
+class RuneFontTests(unittest.TestCase):
+    """The Enchanting language is English drawn in a rune face, built by
+    tools/app/fonts.py from Monocraft's Standard Galactic Alphabet."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            from fontTools.ttLib import TTFont
+        except ImportError:
+            raise unittest.SkipTest("fontTools is not installed")
+        from scaffold.ui import ui_fonts
+
+        cls.font = TTFont(ui_fonts.path("ScaffoldEnchanting.ttf"))
+
+    def test_every_letter_has_a_rune_in_both_cases(self):
+        cmap = self.font.getBestCmap()
+        for upper in range(ord("A"), ord("Z") + 1):
+            with self.subTest(chr(upper)):
+                self.assertIn(upper, cmap)
+                self.assertEqual(cmap[upper], cmap[upper + 32])
+
+    def test_the_licence_travels_with_the_font(self):
+        # Monocraft is under the SIL Open Font License, which asks for the
+        # licence and the copyright notice to go wherever the font goes
+        from scaffold.ui import ui_fonts
+
+        with open(ui_fonts.path("ScaffoldEnchanting-LICENSE.txt"), encoding="utf-8") as f:
+            licence = f.read()
+        self.assertIn("SIL Open Font License", licence)
+        self.assertIn("Idrees Hassan", licence)
+        self.assertIn("Idrees Hassan", self.font["name"].getDebugName(0))
+
+
 class DesktopLocaleTests(unittest.TestCase):
     """What the machine says its language is, and what that is taken to mean."""
 

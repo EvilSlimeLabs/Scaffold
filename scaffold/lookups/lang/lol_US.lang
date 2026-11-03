@@ -37,6 +37,7 @@ techpack help=Scaffold an TechPack both swap teh armor stand, an a resource pak 
 techpack missing=TechPack iz no here in this bild
 lowgeo=Smol Shaypz
 lowgeo help=Scaffold drawz every blok in full stuf. Vibrant Visuals lights each ov those shaypz, so a big strukchur can be demanding to draw. Smol shaypz redraws only teh most fancy blokz as simplr shaypz, keeping their skinz an their spotz, which iz far cheaper on teh grafix kard.
+bigbuild help=For a bild saved as several strukchur fielz. Each fiel remembers where in teh world it wuz saved, an BIG bild mode puts every piece back at that spot as one ghost model. Teh Cornr iz teh build's north-west cornr at teh bottom: teh lowest X, Y an Z ov all teh pieces. Haz Big Numberz reads it from teh fielz. Spot one armor stand anywhere near teh bild; teh ghost stays where teh bild iz, whichever way teh stand faces.
 settings=Settingz
 packicon=Pak pikchur
 description=Wut it iz

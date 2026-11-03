@@ -1,6 +1,6 @@
 {
 	"format": 2,
-	"minecraft": "26.50",
+	"minecraft": "26.60",
 	"about": "Which way redstone dust runs: Bedrock saves no joins for dust, so scaffold/dust.py works them out from the blocks round it with these rules. See docs/Block Notes.md, Redstone dust.",
 	"dust": [
 		"minecraft:redstone_wire"

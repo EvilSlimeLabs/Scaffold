@@ -1,6 +1,6 @@
 {
 	"format": 2,
-	"minecraft": "26.50",
+	"minecraft": "26.60",
 	"about": "The headings a block list is grouped under, in the order they are tried: shell globs on the block id, first match wins.",
 	"categories": [
 		{

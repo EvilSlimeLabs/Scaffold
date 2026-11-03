@@ -1,6 +1,6 @@
 {
 	"format": 2,
-	"minecraft": "26.50",
+	"minecraft": "26.60",
 	"about": "Every block id Scaffold draws, and the shape family it is drawn with. A block not here is skipped.",
 	"blocks": {
 		"dragon_head": "skull_dragon",

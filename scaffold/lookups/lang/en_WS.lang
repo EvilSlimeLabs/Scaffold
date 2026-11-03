@@ -37,6 +37,7 @@ techpack help=Scaffold and TechPack both supplant the armor stand, and a resourc
 techpack missing=TechPack is nay at hand in this raise
 lowgeo=Plain Form
 lowgeo help=Scaffold limns every stone in full nicety. Vibrant Visuals lights each of those forms, so a vast edifice can be demanding to limn. Plain form redraws only the most wrought stones as plainer forms, keeping their hues and their stations, which is far cheaper on the limning engine.
+bigbuild help=For a raise saved as several edifice scrolls. Each scroll remembers where in the world it was saved, and grand raise manner puts every piece back at that spot as one ghost model. The Nook is the build's north-west nook at the bottom: the lowest X, Y and Z of all the pieces. Fetch Worldly Bearings reads it from the scrolls. Station one armor stand anywhere near the raise; the ghost stays where the raise is, whichever way the stand faces.
 settings=Appointments
 packicon=Bundle likeness
 description=Epitaph

@@ -37,6 +37,7 @@ techpack help=Scaffold an' TechPack both swap out th' armor stand, an' a resourc
 techpack missing=TechPack be nay to be had in this raise
 lowgeo=Lean Carvin'
 lowgeo help=Scaffold paints every barnacle in full carvin'. Vibrant Visuals lights each o' those carvin's, so a grand wreck can be demanding t' paint. Lean carvin' redraws only th' most finely carved barnacles as plainer carvin's, keeping their paintwork an' their berths, which be far cheaper on th' paintin' engine.
+bigbuild help=Fer a raise saved as several wreck scrolls. Each scroll remembers where in th' world it were saved, an' grand raise way puts every piece back at that spot as one ghost model. Th' Nook be th' build's north-west nook at th' bottom: th' lowest X, Y an' Z o' all th' pieces. Fetch World-wide Bearin's reads it from th' scrolls. Berth one armor stand anywhere near th' raise; th' ghost stays where th' raise be, whichever way th' stand faces.
 settings=Riggin'
 packicon=Haul figurehead
 description=Yarn

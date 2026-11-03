@@ -36,6 +36,7 @@ techpack help=Scaffold y TechPack reemplazan el soporte para armaduras, y un paq
 techpack missing=TechPack no está disponible en esta versión
 lowgeo=Geometría Simplificada
 lowgeo help=Scaffold dibuja cada bloque con todo su detalle. Vibrant Visuals ilumina cada una de esas formas, así que una escaffold grande puede costar mucho de dibujar. La geometría simplificada redibuja solo los bloques más detallados con formas más sencillas, conservando sus texturas y sus posiciones, lo que exige mucho menos a la tarjeta gráfica.
+bigbuild help=Para una construcción guardada en varios archivos de estructura. Cada archivo recuerda en qué lugar del mundo se guardó, y el modo de construcción grande devuelve cada pieza a ese lugar como un solo modelo fantasma. La esquina es la esquina noroeste inferior de la construcción: la X, la Y y la Z más bajas de todas las piezas. Obtener Coordenadas Globales la lee de los archivos. Coloca un soporte para armadura en cualquier lugar cerca de la construcción; el fantasma se queda donde está la construcción, mire hacia donde mire el soporte.
 settings=Ajustes
 packicon=Icono
 description=Descripción

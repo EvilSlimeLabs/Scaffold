@@ -36,6 +36,7 @@ techpack help=test
 techpack missing=test
 lowgeo=test
 lowgeo help=test
+bigbuild help=test
 settings=test
 packicon=test
 description=test

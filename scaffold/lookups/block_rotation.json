@@ -1,7 +1,7 @@
 {
 	"$schema": "schema/block_rotation.schema.json",
 	"format": 2,
-	"minecraft": "26.50",
+	"minecraft": "26.60",
 	"about": "How each shape family that turns is turned: the name of a state in state_rotations.json, or a table of its own from value to Minecraft's turn.",
 	"families": {
 		"activator_rail": {"0": [0, 0, 0], "1": [0, 270, 0], "2": [0, 270, 315], "3": [0, 270, 45], "4": [315, 0, 0], "5": [45, 0, 0]},

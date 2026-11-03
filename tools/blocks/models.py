@@ -210,12 +210,39 @@ def bamboo():
           data={"join": ["bamboo_stalk_thickness", "bamboo_leaf_size"]})
 
 
+## a chorus plant's six sides, in the order its forms are named by, and the
+## (x, y) turn that carries Java's north arm to each
+CHORUS_SIDES = {"north": (0, 0), "east": (0, 90), "south": (0, 180), "west": (0, 270),
+                "up": (270, 0), "down": (90, 0)}
+
+
 def chorus_plant():
-    """The middle of a chorus plant: Bedrock keeps no record of which way its
-    branches go, so it is drawn as its core."""
+    """A chorus plant, the way Java puts one together: an arm toward every
+    side it joins, and the face of its middle toward every side it does not.
+
+    Minecraft saves which sides join in `minecraft:connection_<side>` from
+    26.60 on, and a form is named by the six, north, east, south, west, up,
+    down. A plant saved before that carries none of them and is drawn as its
+    whole core, which is what it always was. Java picks between four middles
+    at random; the first, the one it weights most, is the one drawn here."""
     core = [element for element in java_models_of("chorus_plant")
             if element["from"] == [2, 2, 2]]
-    write("chorus_plant", {"default": java.form(core, lambda name: None)}, ["chorus_plant"])
+    states = ["minecraft:connection_" + side for side in CHORUS_SIDES]
+
+    def pieces(on):
+        found = []
+        for side, (x, y) in CHORUS_SIDES.items():
+            model = ("chorus_plant_side" if on["minecraft:connection_" + side] == "1"
+                     else "chorus_plant_noside")
+            found.append((model, x, y, side != "north"))
+        return found
+
+    forms = {}
+    for picked in combinations(["0", "1"], len(states)):
+        forms["-".join(picked)] = java.form(
+            java.parts(pieces(dict(zip(states, picked))), None), lambda name: None)
+    forms["default"] = java.form(core, lambda name: None)
+    write("chorus_plant", forms, ["chorus_plant"], data={"join": states})
 
 
 ## Java's `cross`: two planes crossed through the middle, reaching the corners

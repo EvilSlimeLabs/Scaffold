@@ -36,6 +36,7 @@ techpack help=Scaffold and TechPack both replace the armor stand, and a resource
 techpack missing=TechPack is not available in this build
 lowgeo=Low Geometry
 lowgeo help=Scaffold draws every block in full detail. Vibrant Visuals lights each of those shapes, so a large structure can be demanding to render. Low geometry redraws only the most detailed blocks as simpler shapes, keeping their textures and their positions, which is far cheaper on the graphics card.
+bigbuild help=For a build saved as several structure files. Each file remembers where in the world it was saved, and big build mode puts every piece back at that spot as one ghost model. The Corner is the build's north-west corner at the bottom: the lowest X, Y and Z of all the pieces. Get Global Cords reads it from the files. Place one armor stand anywhere near the build; the ghost stays where the build is, whichever way the stand faces.
 settings=Settings
 packicon=Pack icon
 description=Description

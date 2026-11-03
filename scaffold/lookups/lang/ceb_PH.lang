@@ -36,6 +36,7 @@ techpack help=Ang Scaffold ug ang TechPack pareho nga mag-ilis sa armor stand, u
 techpack missing=Dili available ang TechPack niini nga build
 lowgeo=Yano nga Geometry
 lowgeo help=Gidrowing sa Scaffold ang matag bloke sa bug-os nga detalye. Gihayagan sa Vibrant Visuals ang matag usa niana nga porma, mao nga bug-at i-render ang dakong istruktura. Ang yano nga geometry mag-usab lang sa labing detalyado nga mga bloke ngadto sa mas simpleng porma, nga nagpabilin ang ilang mga texture ug posisyon, busa mas gaan kini sa graphics card.
+bigbuild help=Para sa usa ka build nga gi-save isip pipila ka structure file. Nahinumdom ang matag file kung asa kini gi-save sa kalibutan, ug ibalik sa big build mode ang matag piraso sa maong dapit isip usa ka ghost model. Ang Eskina mao ang amihanan-kasadpang eskina sa ubos sa tibuok build: ang pinakaubos nga X, Y ug Z sa tanang piraso. Basahon kini sa Kuhaa ang Global Cords gikan sa mga file. Pagbutang og usa ka armor stand bisan asa duol sa build; magpabilin ang ghost diin ang build, bisan asa moatubang ang stand.
 settings=Mga Setting
 packicon=Icon sa pack
 description=Paghulagway

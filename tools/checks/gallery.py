@@ -866,10 +866,14 @@ class Grid:
         self.key.append((family, case, (x, y, z)))
 
 
-    def save(self, path, version, extra=()):
+    def save(self, path, version, extra=(), world=(0, 0, 0)):
         """The plot as a structure: its blocks, and `extra` -- blocks only its
         ghosts carry -- shifted so nothing sits below or beside the origin.
-        Answers how far everything was shifted."""
+        Answers how far everything was shifted.
+
+        `world` is where the plot's own (0, 0, 0) is in the world, which is
+        saved as the structure's origin, less the shift, the way the game saves
+        where a structure was taken from."""
         found = dict(self.blocks)
         for at, name in self.ghost_as.items():
             found[at] = (name, found[at][1])
@@ -914,7 +918,8 @@ class Grid:
         nbtlib.File({
             "format_version": Int(1),
             "size": List[Int]([Int(sx), Int(sy), Int(sz)]),
-            "structure_world_origin": List[Int]([Int(0), Int(0), Int(0)]),
+            "structure_world_origin": List[Int]([Int(int(world[i]) - shift[i])
+                                                 for i in range(3)]),
             "structure": Compound({
                 "block_indices": List([List[Int]([Int(v) for v in layer]),
                                        List[Int]([Int(v) for v in second])]),
@@ -1658,10 +1663,14 @@ def label_pack(folder):
     return header
 
 
-def write_world(path, pack, sets, version, name=NAME, labels=True, per_batch=None):
+def write_world(path, pack, sets, version, name=NAME, labels=True, per_batch=None,
+                big=False):
     """One .mcworld, built whole: the blocks, the stands, the packs, the rules.
 
     `pack` is the ghost pack, or None for a world of the real blocks alone.
+    `big` puts a single stand by the first plot, facing east, for a big build:
+    its ghost stays where the build is in the world whichever way the stand
+    faces, and facing east rather than north is what shows it does.
     """
     import zipfile
     from tools.checks import worldfile
@@ -1670,6 +1679,8 @@ def write_world(path, pack, sets, version, name=NAME, labels=True, per_batch=Non
         world = worldfile.World(version)
         for origin, grid, tag in sets:
             into(world, grid, origin, labels)
+            if big:
+                continue
             sx, sy, sz = grid.stand()
             ## facing north, which is how the ghosts line up with the set, and
             ## named, which is what picks this set's ghosts
@@ -1678,6 +1689,12 @@ def write_world(path, pack, sets, version, name=NAME, labels=True, per_batch=Non
                                     origin[2] + sz + 0.5), 180.0,
                                    {"CustomName": String(tag),
                                     "CustomNameVisible": Byte(0)}))
+        if big:
+            origin, grid, _tag = sets[0]
+            sx, sy, sz = grid.stand()
+            world.entities.append(("minecraft:armor_stand",
+                                   (origin[0] + sx + 0.5, origin[1] + sy,
+                                    origin[2] + sz + 0.5), 270.0, {}))
         worldfile.write_db(os.path.join(work, "db"), world.items(), per_batch)
         origin, grid, _tag = sets[0]
         sx, sy, sz = grid.stand()
@@ -1739,6 +1756,10 @@ def main(argv=None):
     parser.add_argument("--trials", action="store_true",
                         help="three calibrated sculk sensors whose ghosts try "
                              "three ways round a plane's clear texels")
+    parser.add_argument("--big", action="store_true",
+                        help="with --structure, one big build of every plot, each at "
+                             "its place in the world, its ghost floating above it, "
+                             "and one stand facing east")
     parser.add_argument("--dust-tweaks", action="store_true",
                         help="with --structure, the structure again once per "
                              "dust tweak, its dust drawn with that tweak")
@@ -1770,6 +1791,9 @@ def main(argv=None):
     parser.add_argument("--per-batch", type=int, default=None,
                         help="write the database this many keys to a batch")
     args = parser.parse_args(argv)
+    if args.big and (not args.structure or args.fill_trials or args.water_trials
+                     or args.trials):
+        parser.error("--big draws --structure plots, and only those")
     if not (args.names or args.all or args.structure or args.waterlogged or args.trials
             or args.tweak_world or args.low or args.dust_world or args.water_trials
             or args.fill_trials):
@@ -1981,7 +2005,8 @@ def main(argv=None):
             blocks, made = name_blocks(grid, n, tiles, cols)
             families.update(made)
             path = os.path.join(args.output, "gallery_%d.mcstructure" % n)
-            shifts.append((path, grid.save(path, version, blocks)))
+            shifts.append((path, grid.save(path, version, blocks,
+                                           world=origins[n - 1] if args.big else (0, 0, 0))))
         if args.dust_world or args.dust_tweaks:
             variants = variants + [(title, tweak, "redstone_wire")
                                    for title, tweak, _plot in DUST_TWEAKS]
@@ -2010,20 +2035,30 @@ def main(argv=None):
             sets.append((origin, grid, tag))
             stand = grid.stand()
             builder.add_model(tag, path)
+            if args.big:
+                continue
             ## a ghost at its block's place plus the plot's lift, with the
             ## stand in the middle: an offset moves the model east, up and
             ## south, and the structure was shifted to take in the plot's name
             builder.set_model_offset(tag, [-stand[0] - shift[0],
                                            grid.lift - stand[1] - shift[1],
                                            -stand[2] - shift[2]])
-        builder.generate_with_nametags()
+        if args.big:
+            ## one big build of every plot, each at its place in the world,
+            ## its corner raised so every ghost floats above its own block
+            lift = max(grid.lift for grid in grids)
+            lowest = [min(int(o[i]) - s[i] for o, (_p, s) in zip(origins, shifts))
+                      for i in range(3)]
+            builder.make_big_model([lowest[0], lowest[1] + lift, lowest[2]])
+        else:
+            builder.generate_with_nametags()
         pack = builder.compile_pack(overwrite=True)
         kept = os.path.join(args.output, NAME + ".mcpack")
         shutil.copy(pack, kept)
         write_world(os.path.join(args.output, args.name + ".mcworld"),
                     None if args.no_ghosts else kept, sets, version,
                     name=args.name, labels=not args.no_labels,
-                    per_batch=args.per_batch)
+                    per_batch=args.per_batch, big=args.big)
     finally:
         core.asgc.ArmorStandGeo = real
         shutil.rmtree(work, ignore_errors=True)

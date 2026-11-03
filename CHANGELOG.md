@@ -13,6 +13,10 @@ no jargon. A paragraph, not a document: it is read in a dialog that cannot
 scroll. If an update needs anything doing, such as a pack being rebuilt or
 re-applied, say that first. Be succinct; too long and people won't bother to read it.
 
+## 1.3.3
+
+Rebuild your packs to pick these up. Updated for Minecraft 26.60: chorus plants in structures saved by 26.60 or later show their branches, and the shelf mushroom has its new texture. Big build mode now faces stairs, doors, fences, walls, levers and buttons the way they face in your world, and shows double chests, banners, beds and waterlogged blocks. The question mark beside the Big Build Mode switch explains where the corner is and how to place the armor stand. The Enchanting language's runes come from a new, openly licensed font and sit level with the rest of the text.
+
 ## 1.3.2
 
 Rebuild your packs to pick these up. Torches on walls were drawn on the wrong wall, and now sit where the real torch does. Redstone dust shows how strongly it is powered, dull red to bright, as it does in the game. Structure files saved by Minecraft 26.60 and later, which the game now compresses, can be opened, and 26.60 adds saved dust joins instead of us having to reconstruct them.

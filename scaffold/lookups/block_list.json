@@ -1,6 +1,6 @@
 {
 	"format": 2,
-	"minecraft": "26.50",
+	"minecraft": "26.60",
 	"about": "The name a block list gives each block id and variant.",
 	"names": {
 		"minecraft:raw_iron_block": {

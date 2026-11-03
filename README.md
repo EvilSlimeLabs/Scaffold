@@ -72,6 +72,11 @@ on their own: a fence as a post, a pane as a pillar, every stair straight.
 Re-export the structure from 26.50 or later to get them. Walls have saved their
 joins for much longer and are not affected.
 
+**Chorus plants join up in a structure saved by Minecraft 26.60 or newer.** An
+older one draws each chorus plant as its core alone. Redstone dust joins up
+either way: 26.60 saves its joins and Scaffold reads them, and for an older
+structure Scaffold works them out from the blocks around it.
+
 ---
 
 ## 2. Build the pack
@@ -107,7 +112,7 @@ That is the whole flow. Everything else is optional:
 
 **Big Build Mode** is for builds too large for one structure block. Export the build in pieces, add them all, and Scaffold assembles them into one model spread across the armor stand's layers.
 
-The name tag fields step aside while it is on, because big build mode names its own models, and the offset becomes the **Corner** of the whole assembly. **Get Global Cords** fills that in for you: every `.mcstructure` records where in the world it was taken from, so the corner is the lowest of those origins, and the ghost model lands back where the pieces came from without you reading coordinates off the structure blocks.
+The name tag fields step aside while it is on, because big build mode names its own models, and the offset becomes the **Corner** of the whole assembly: the north west corner at the bottom of the whole build, which is the smallest X, the smallest Y and the smallest Z of all the pieces. **Get Global Cords** fills that in for you: every structure file records where in the world it was taken from, so the ghost model lands back where the pieces came from without you reading coordinates off the structure blocks. Place one armor stand anywhere near the build; the ghost stays lined up with the world whichever way the stand faces. [Big Build Mode](https://github.com/EvilSlimeLabs/Scaffold/blob/master/docs/Big%20Build%20Mode.md) explains it step by step, with diagrams.
 
 Turning it off gives you your name tags and per-structure offsets back exactly as they were.
 
@@ -458,5 +463,7 @@ Every block in the 100+ bundled test structures builds, and every block Mojang's
 ### **Maintained by <span style="color:#55FF55;">EvilSlimeLabs</span> <span style="font-size:small;">([Website](https://evilsimelabs.com)) ([GitHub](https://github.com/EvilSlimeLabs)).</span>**
 
 Scaffold is forked from Structura, which was created by **DrAv0011**, **FondUnicycle** and **RavinMaddHatter**, and everything here is built on their work.
+
+The Enchanting language's runes come from [Monocraft](https://github.com/IdreesInc/Monocraft) by Idrees Hassan, under the SIL Open Font License.
 
 <br clear="left">

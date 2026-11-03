@@ -1,6 +1,6 @@
 {
 	"format": 2,
-	"minecraft": "26.50",
+	"minecraft": "26.60",
 	"about": "The inventory picture low geometry shows on a block drawn as one, by block id. Written by tools/textures/item_icons.py.",
 	"icons": {
 		"acacia_sapling": "textures/items/scaffold_slot_acacia_sapling",

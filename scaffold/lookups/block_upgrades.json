@@ -1,6 +1,6 @@
 {
 	"format": 2,
-	"minecraft": "26.50",
+	"minecraft": "26.60",
 	"about": "How blocks from older structures are named today: rules run top to bottom as a structure is read. See scaffold/block_upgrade.py.",
 	"rules": [
 		{

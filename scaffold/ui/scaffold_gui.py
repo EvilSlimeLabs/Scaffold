@@ -2352,7 +2352,8 @@ class App(ctk.CTk):
         ## has been installed over the years, so rather than guess, the switch
         ## is simply not built when the folder is not there.
         self.switches = [
-            self._switch(switches, 0, "bigbuild", self.big_build, self.on_big_build),
+            self._switch(switches, 0, "bigbuild", self.big_build, self.on_big_build,
+                         help_key="bigbuild help"),
             self._switch(switches, 1, "lists", self.block_lists, None),
             self._switch(switches, 2, "lowgeo", self.low_geometry,
                          self.on_low_geometry, help_key="lowgeo help"),

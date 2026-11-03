@@ -8,7 +8,7 @@ from scaffold import paths
 from scaffold import block_upgrade
 from math import floor
 
-from numpy import array, argwhere , int32, maximum, minimum, zeros, count_nonzero, flip
+from numpy import array, argwhere , int32, maximum, minimum, zeros, count_nonzero, full, where
 import json
 loaded={}
 def embed( small_array, big_array, loc):
@@ -221,67 +221,95 @@ class StructureFile:
             
         return block_counter
 class CombinedStructures:
+    """Several structures read as one grid, each at its place in the world.
+
+    A big build reads its structures through this. Each one is put at its own
+    `structure_world_origin`, counted from the lowest corner of them all, the
+    north west corner at the bottom, which becomes the grid's (0, 0, 0). It
+    answers the questions a single structure does -- blocks, block entities,
+    the water a block stands in, entities -- in the same frame and the same
+    order, so the geometry builder draws a big build exactly as it draws a
+    single structure. Where two structures overlap, the one listed later is
+    what is read, air included.
+    """
+
     def __init__(self,file_list,exclude_list=[]):
         self.structs={}
         self.maxs = array([-2147483647,-2147483647,-2147483647],dtype=int32)
         self.mins = array([2147483647,2147483647,2147483647],dtype=int32)
-        palette_size=0
         self.palette=[{"name":"minecraft:air","states":[],"version":"17959425"}]
-        
+
         for file in file_list:
-            self.structs[file] = {}
-            self.structs[file]["nbt"] = load(file)
-            
-            ## the first layer, as an array either way -- see StructureFile
-            self.structs[file]["blocks"] = array(
-                self.structs[file]["nbt"]["structure"]["block_indices"][0],
-                dtype=int32)
-            
-            self.structs[file]["size"] = array(list(map(int, self.structs[file]["nbt"]["size"])))
-            self.structs[file]["palette"] = [
-                block_upgrade.upgrade(entry) for entry in
-                self.structs[file]["nbt"]["structure"]["palette"]["default"]["block_palette"]]
+            info = self.structs[file] = {}
+            info["nbt"] = load(file)
+            info["size"] = array(list(map(int, info["nbt"]["size"])))
+            ## where this file's palette starts in the combined one, which every
+            ## index this file's layers hold is moved by
+            start = len(self.palette)
+            palette = [block_upgrade.upgrade(entry) for entry in
+                       info["nbt"]["structure"]["palette"]["default"]["block_palette"]]
             index_of_air = 0
-            for i in range(len(self.structs[file]["palette"])):
-                if self.structs[file]["palette"][i]["name"] == "minecraft:air":
+            for i in range(len(palette)):
+                if palette[i]["name"] == "minecraft:air":
                     index_of_air = i
-            self.structs[file]["mins"] = array(list(map(int,self.structs[file]["nbt"]["structure_world_origin"])))
-            self.structs[file]["maxs"] = self.structs[file]["mins"] + self.structs[file]["size"]
-            self.maxs=maximum(self.maxs, self.structs[file]["maxs"])
-            self.mins=minimum(self.mins, self.structs[file]["mins"])
-            self.structs[file]["blocks"] = self.structs[file]["blocks"].reshape(self.structs[file]["size"])
-            self.structs[file]["blocks"] = self.structs[file]["blocks"]+len(self.palette)
-            self.structs[file]["blocks"][self.structs[file]["blocks"]==index_of_air+len(self.palette)]=0
-            
-            self.structs[file]["entities"] = (
-                self.structs[file]["nbt"]["structure"].get("entities") or [])
-            self.palette += self.structs[file]["palette"]
+
+            ## the first layer, as an array either way -- see StructureFile
+            layers = info["nbt"]["structure"]["block_indices"]
+            blocks = array(layers[0], dtype=int32).reshape(info["size"]) + start
+            blocks[blocks == index_of_air + start] = 0
+            info["blocks"] = blocks
+            ## the water a waterlogged block stands in, -1 for nothing
+            info["liquid"] = None
+            if len(layers) > 1 and len(layers[1]) == blocks.size:
+                liquid = array(layers[1], dtype=int32).reshape(info["size"])
+                info["liquid"] = where(liquid < 0, -1, liquid + start)
+
+            info["entity_data"] = {}
+            entity_data = info["nbt"]["structure"]["palette"]["default"].get(
+                "block_position_data")
+            if entity_data:
+                for index, body in dict(entity_data).items():
+                    fields = body.get("block_entity_data")
+                    if fields is not None:
+                        info["entity_data"][int(index)] = dict(fields)
+
+            info["mins"] = array(list(map(int,info["nbt"]["structure_world_origin"])))
+            info["maxs"] = info["mins"] + info["size"]
+            self.maxs=maximum(self.maxs, info["maxs"])
+            self.mins=minimum(self.mins, info["mins"])
+            info["entities"] = info["nbt"]["structure"].get("entities") or []
+            self.palette += palette
+
+        ## the grid's own (0, 0, 0) in the world: what a double chest's
+        ## partner, which is kept as a world position, is counted from
+        self.origin = self.mins
         self.size = self.maxs-self.mins
         self.blocks = zeros(self.size, int)
+        self.liquid = full(self.size, -1, int)
+        self.block_entities = {}
         for file in file_list:
-            embed(self.structs[file]["blocks"],self.blocks,self.structs[file]["mins"]-self.mins)
-        self.blocks = flip(self.blocks,0)
-        self.blocks = flip(self.blocks,2)
+            info = self.structs[file]
+            corner = info["mins"] - self.mins
+            embed(info["blocks"], self.blocks, corner)
+            if info["liquid"] is not None:
+                embed(info["liquid"], self.liquid, corner)
+            else:
+                embed(full(info["size"], -1, int), self.liquid, corner)
+            ## a later structure replaces everything in its box, block
+            ## entities included
+            sx, sy, sz = (int(n) for n in info["size"])
+            cx, cy, cz = (int(n) for n in corner)
+            for at in [at for at in self.block_entities
+                       if cx <= at[0] < cx + sx and cy <= at[1] < cy + sy
+                       and cz <= at[2] < cz + sz]:
+                del self.block_entities[at]
+            for flat, fields in info["entity_data"].items():
+                x, rest = divmod(flat, sy * sz)
+                y, z = divmod(rest, sz)
+                self.block_entities[(x + cx, y + cy, z + cz)] = fields
+
     def get_entities(self):
-        """Every entity in every structure, in the combined grid's own cells.
-
-        **The same move the blocks make.** Each structure is embedded at its
-        own corner and then the whole grid is flipped along x and along z, so
-        an entity has to travel exactly that path or it lands somewhere its
-        own building is not. The flip is applied here rather than reasoned
-        about: `_combined_cell` is the one place that knows, and the blocks and
-        the entities both go through it.
-
-        **The yaw is not touched.** Flipping both x and z is a half turn about
-        y, so it is tempting to turn every entity with it -- but a block's
-        rotation state is handed to `make_block` unchanged in a big build too,
-        and whatever the flip is compensating for it compensates for both. An
-        entity turned here and a block not turned would face different ways in
-        the same model, which is the one thing that must not happen.
-
-        A big build had no entities at all before this, the way it still has no
-        block entities.
-        """
+        """Every entity in every structure, in the combined grid's own cells."""
         found = []
         for file in self.structs:
             info = self.structs[file]
@@ -293,29 +321,27 @@ class CombinedStructures:
                     continue
                 exact = [float(place[i]) - int(info["mins"][i]) + int(corner[i])
                          for i in range(3)]
-                at, lift = self._combined_cell(exact)
-                if at is None:
+                at = [int(floor(n)) for n in exact]
+                if any(n < 0 or n >= int(self.size[i]) for i, n in enumerate(at)):
                     continue
                 spin = entity.get("Rotation") or ()
-                yaw = float(spin[0]) if len(spin) else 0.0
-                found.append({"id": name, "at": at, "lift": lift,
-                              "yaw": yaw, "fields": dict(entity)})
+                found.append({"id": name, "at": tuple(at), "lift": exact[1] - at[1],
+                              "yaw": float(spin[0]) if len(spin) else 0.0,
+                              "fields": dict(entity)})
         return found
 
-    def _combined_cell(self, exact):
-        """A position in the assembled grid, as the cell and the lift.
+    def get_block_entity(self, x, y, z):
+        """The block entity stored at a position, or an empty mapping."""
+        return self.block_entities.get((int(x), int(y), int(z)), {})
 
-        `exact` is already offset to the assembled grid but not yet flipped.
-        Returns (None, 0.0) for anything outside it.
-        """
-        at = [int(floor(n)) for n in exact]
-        if any(n < 0 or n >= int(self.size[i]) for i, n in enumerate(at)):
-            return None, 0.0
-        lift = exact[1] - at[1]
-        ## the two flips the blocks get, so a cushion lands on its own building
-        at[0] = int(self.size[0]) - 1 - at[0]
-        at[2] = int(self.size[2]) - 1 - at[2]
-        return tuple(at), lift
+    def get_liquid(self, x, y, z):
+        """What shares a cell with the block there, the water a waterlogged
+        block stands in, or None."""
+        index = int(self.liquid[x, y, z])
+        if index < 0:
+            return None
+        found = self.palette[index]
+        return None if found["name"] == "minecraft:air" else found
 
     def get_layer_blocks(self,y):
         lb=self.blocks[:,y,:]

@@ -275,11 +275,19 @@ FLIP_X = {"north": "south", "south": "north", "east": "east", "west": "west",
           "up": "down", "down": "up"}
 
 
+## where each face of an element goes when it is turned a quarter about x, the
+## north side to the bottom
+QUARTER_X = {"north": "down", "down": "south", "south": "up", "up": "north",
+             "east": "east", "west": "west"}
+
+
 def turned(elements, x=0, y=0, uvlock=False):
     """Java elements turned the way a blockstate turns a model.
 
-    `x` is 0 or 180, turning the model upside down about the middle of the
-    block, and is applied first; `y` is a multiple of 90, clockwise seen from
+    `x` is a multiple of 90 about the middle of the block, and is applied
+    first: 180 turns the model upside down, and 90 carries its north side to
+    the bottom and 270 to the top, which only a uvlocked model with no turned
+    elements is turned by. `y` is a multiple of 90, clockwise seen from
     above. With `uvlock` every face reads its own place in the block afterwards,
     so the picture stays where it is in the world rather than turning with the
     model, which is what Java does for fences, walls and stairs.
@@ -292,6 +300,17 @@ def turned(elements, x=0, y=0, uvlock=False):
         for name, spec in faces.items():
             if "uv" not in spec:
                 spec["uv"] = list(default_uv(name, element["from"], element["to"]))
+        if x % 360 in (90, 270):
+            ## a quarter turn moves faces across the axis their pictures are
+            ## laid along, which only uvlock, reading each face afresh from
+            ## where it lands, can say without a table of turns per face
+            if not uvlock or rotation:
+                raise ValueError("a quarter turn about x needs uvlock and no "
+                                 "turned element")
+            for _ in range(x % 360 // 90):
+                ## (y, z) to (z, 16 - y): north goes down, down goes south
+                a, b = [a[0], a[2], 16 - b[1]], [b[0], b[2], 16 - a[1]]
+                faces = {QUARTER_X[name]: spec for name, spec in faces.items()}
         if x % 360 == 180:
             a, b = [a[0], 16 - b[1], 16 - b[2]], [b[0], 16 - a[1], 16 - a[2]]
             flipped = {}

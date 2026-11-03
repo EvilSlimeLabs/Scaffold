@@ -36,6 +36,7 @@ techpack help=Scaffold 与 TechPack 都会替换盔甲架，而资源包是替�
 techpack missing=此版本中没有 TechPack
 lowgeo=简化几何体
 lowgeo help=Scaffold 会完整绘制每个方块的细节。Vibrant Visuals 会为每一个形状计算光照，因此大型建筑渲染起来会很吃力。简化几何体只会把细节最多的方块改用更简单的形状绘制，纹理和位置保持不变，显卡负担因此大幅降低。
+bigbuild help=适用于分成多个结构文件保存的建筑。每个文件都记录了它在世界中保存的位置，大建筑模式会把每一部分放回原处，合成一个虚影。角落是整个建筑底部的西北角：所有部分中最小的 X、Y 和 Z。获取全局坐标会从文件中读取它。在建筑附近放置一个盔甲架即可，无论盔甲架朝向哪里，虚影都会留在原位。
 settings=设置
 packicon=包图标
 description=描述

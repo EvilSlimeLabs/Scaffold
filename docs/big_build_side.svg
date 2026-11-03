@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="340" viewBox="0 0 640 340" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+  <rect x="0" y="0" width="640" height="340" rx="10" fill="#f7f7f4"/>
+  <text x="20" y="26" font-size="15" font-weight="600" fill="#222">Side view: the same pieces, seen from the south</text>
+
+  <!-- grid, one line every four blocks -->
+  <g stroke="#e2e2dc" stroke-width="1">
+    <line x1="40" y1="40" x2="40" y2="264"/><line x1="72" y1="40" x2="72" y2="264"/>
+    <line x1="104" y1="40" x2="104" y2="264"/><line x1="136" y1="40" x2="136" y2="264"/>
+    <line x1="168" y1="40" x2="168" y2="264"/><line x1="200" y1="40" x2="200" y2="264"/>
+    <line x1="232" y1="40" x2="232" y2="264"/><line x1="264" y1="40" x2="264" y2="264"/>
+    <line x1="296" y1="40" x2="296" y2="264"/><line x1="328" y1="40" x2="328" y2="264"/>
+    <line x1="360" y1="40" x2="360" y2="264"/><line x1="392" y1="40" x2="392" y2="264"/>
+    <line x1="424" y1="40" x2="424" y2="264"/><line x1="456" y1="40" x2="456" y2="264"/>
+    <line x1="40" y1="40" x2="472" y2="40"/><line x1="40" y1="72" x2="472" y2="72"/>
+    <line x1="40" y1="104" x2="472" y2="104"/><line x1="40" y1="136" x2="472" y2="136"/>
+    <line x1="40" y1="168" x2="472" y2="168"/><line x1="40" y1="200" x2="472" y2="200"/>
+    <line x1="40" y1="232" x2="472" y2="232"/><line x1="40" y1="264" x2="472" y2="264"/>
+  </g>
+
+  <!-- the whole build -->
+  <rect x="72" y="72" width="368" height="160" fill="none" stroke="#7a7a72" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+  <!-- piece A: Y 60 to 80 -->
+  <rect x="72" y="72" width="192" height="160" fill="#9cc3e6" fill-opacity="0.75" stroke="#2f6fa8" stroke-width="2"/>
+  <text x="168" y="148" text-anchor="middle" font-weight="600" fill="#17426b">Piece A</text>
+  <text x="168" y="166" text-anchor="middle" fill="#17426b">Y 60 to 80</text>
+
+  <!-- piece B: Y 64 to 76 -->
+  <rect x="280" y="104" width="160" height="96" fill="#f2c48d" fill-opacity="0.8" stroke="#b06b1c" stroke-width="2"/>
+  <text x="360" y="148" text-anchor="middle" font-weight="600" fill="#6b3d07">Piece B</text>
+  <text x="360" y="166" text-anchor="middle" fill="#6b3d07">Y 64 to 76</text>
+
+  <!-- the corner -->
+  <circle cx="72" cy="232" r="7" fill="#c0392b"/>
+  <text x="86" y="256" font-weight="600" fill="#a02d22">Corner: X −40, Y 60</text>
+  <text x="86" y="274" fill="#a02d22" font-size="12">the lowest Y of every piece</text>
+
+  <!-- axes -->
+  <g transform="translate(550,150)">
+    <line x1="0" y1="0" x2="0" y2="-40" stroke="#333" stroke-width="2.5"/>
+    <polygon points="0,-48 -6,-36 6,-36" fill="#333"/>
+    <line x1="0" y1="0" x2="40" y2="0" stroke="#333" stroke-width="2.5"/>
+    <polygon points="48,0 36,-6 36,6" fill="#333"/>
+    <text x="0" y="-56" text-anchor="middle" font-weight="600" fill="#222">Up (+Y)</text>
+    <text x="54" y="-8" fill="#222" font-weight="600">East</text>
+  </g>
+
+  <text x="20" y="310" fill="#444">The corner is at the bottom of the build as well as at its north west: the lowest X, Y and Z</text>
+  <text x="20" y="328" fill="#444">of all the pieces, taken separately.</text>
+</svg>

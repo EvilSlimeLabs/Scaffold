@@ -20,8 +20,9 @@ debug = False##used in API test to force errors and break error handler, should 
 ## rather than keeping a second copy.
 EXCLUDED_BLOCKS = ("air", "structure_block")
 
-## how a shape family names its simpler form, in block_shapes and block_uv
-LOW_SUFFIX = "__low"
+## how a shape family names its simpler form, in block_shapes and block_uv;
+## block_geometry names them so as it reads the tables
+LOW_SUFFIX = block_geometry.LOW_SUFFIX
 
 
 def detailed(block_type):
@@ -200,6 +201,13 @@ def tinted(texture, colour):
     if colour is None:
         return texture.replace(TINT_WANTED, "")
     return texture.replace(TINT_WANTED, "%s%06x" % (TINT_MARK, colour & 0xFFFFFF))
+
+## Where a big build's grid is drawn, as the offsets `make_block` reads. A
+## cell is drawn centred on whole numbers in the model, so the grid's (0, 0, 0)
+## cell, its north west corner at the bottom, takes x -8.5 to -7.5 and z 7.5 to
+## 8.5, which the root bone's half turn carries to x 7.5 to 8.5 and z -8.5 to
+## -7.5, where animation_class.export_big expects the corner.
+BIG_OFFSETS = (8, 0, 8)
 
 ## Alpha the ghost blocks are drawn at when nothing sets one. The texture's
 ## alpha channel is multiplied by this, so it is a fraction, not a percentage.
@@ -381,11 +389,17 @@ class ArmorStandGeo:
             geometries[layer_name]["description"]["visible_bounds_width"] = 5120
             geometries[layer_name]["description"]["visible_bounds_height"] = 5120
             geometries[layer_name]["description"]["visible_bounds_offset"] = [0, 1.5, 0]
-            ## A big build turns its whole model with the stand, and a bone
-            ## rotates about its pivot, so this one and the offsets in
-            ## animation_class.export_big are a pair: change either and the
-            ## model swings around a different point.
-            geometries[layer_name]["bones"]=[{"name": "ghost_blocks","pivot": [0, 0, 0]},
+            ## **A big build is the ordinary model half turned.** Its blocks
+            ## are drawn exactly as a single structure's are, so every block
+            ## faces and joins the way it does in an ordinary pack, and the
+            ## root bone turns the whole of it half round about y. The
+            ## animation's counter-turn, which keeps the build still in the
+            ## world while the stand turns, adds to this one. The pivot, these
+            ## turns and BIG_OFFSETS go together with the offsets in
+            ## animation_class.export_big: change one and the model lands
+            ## somewhere else.
+            geometries[layer_name]["bones"]=[{"name": "ghost_blocks","pivot": [0, 0, 0],
+                                              "rotation": [0, 180, 0]},
                                              {"name": layer_name,"parent": "ghost_blocks","pivot": [0, 0, 0]}]
         
         for key in sorted(self.blocks.keys(), key=bone_tier):
@@ -452,7 +466,7 @@ class ArmorStandGeo:
         return "default", None, None
 
     def make_block(self, x, y, z, block_name, rot=None, data=0, states=None,
-                   entity=None, big=False, tint=None, lift=0.0, yaw=None, hidden=(),
+                   entity=None, tint=None, lift=0.0, yaw=None, hidden=(),
                    family=None, beside=False):
         # Resolves one block through the lookup tables and appends its cubes to
         # the slice bone: shape family, then form, then rotation, then the UV
@@ -547,8 +561,6 @@ class ArmorStandGeo:
                 rotation[1] = (rotation[1] + yaw) % 360
             if rotation is not None:
                 temp_block_group["rotation"] = to_bone(rotation)
-                if big:
-                    temp_block_group["rotation"][1] += 180
             elif debug:
                 print("no rotation for block type {} found".format(block_type))
             temp_block_group["cubes"] = []

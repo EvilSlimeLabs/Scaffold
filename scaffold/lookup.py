@@ -19,7 +19,7 @@ import json
 from scaffold import paths
 
 FORMAT = 2
-MINECRAFT = "26.50"
+MINECRAFT = "26.60"
 HEADER = ("$schema", "format", "minecraft", "about")
 ## the key each one-key table keeps what it holds under
 ENTRIES = {

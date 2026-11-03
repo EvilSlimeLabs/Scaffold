@@ -73,16 +73,6 @@ identity.
 still has the shape of Structura's builder, with its debug prints and a
 `make_block` that does everything; `core.py` is about 1,100 and
 `ui/scaffold_gui.py` about 3,400. Each would read better split by what it does.
-`LOW_SUFFIX` is defined in both `armor_stand_geo_class.py` and
-`block_geometry.py`, and should live in one.
-
----
-
-## Packaging
-
-**Classifiers that promise too much.** `pyproject.toml` lists
-"Environment :: X11 Applications" and "Operating System :: OS Independent",
-while the window is supported on Windows only.
 
 ---
 
